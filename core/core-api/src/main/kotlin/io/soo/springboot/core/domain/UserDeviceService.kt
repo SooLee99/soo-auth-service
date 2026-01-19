@@ -1,12 +1,13 @@
 package io.soo.springboot.core.domain
 
-import io.soo.springboot.core.enums.DeviceStatus
-import io.soo.springboot.storage.db.core.UserDeviceEntity
-import io.soo.springboot.storage.db.core.UserDeviceRepository
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+
+import io.soo.springboot.core.enums.DeviceStatus
+import io.soo.springboot.storage.db.core.UserDeviceEntity
+import io.soo.springboot.storage.db.core.UserDeviceRepository
 
 @Service
 class UserDeviceService(

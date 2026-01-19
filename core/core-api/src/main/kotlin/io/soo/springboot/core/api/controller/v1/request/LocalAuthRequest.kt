@@ -1,12 +1,11 @@
 package io.soo.springboot.core.api.controller.v1.request
 
-import com.fasterxml.jackson.annotation.JsonFormat
-import io.soo.springboot.core.support.valid.ValidBirthDate
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
-import java.time.LocalDate
+
+data class JwtLogoutRequest( val reason: String? = null, )
 
 data class SignUpRequest(
 
@@ -43,11 +42,9 @@ data class SignUpRequest(
     @field:Size(max = 1000, message = "썸네일 이미지 URL은 최대 1000자까지 입력할 수 있습니다.")
     val thumbnailImageUrl: String? = null,
 
-    @field:ValidBirthDate
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    val birthDate: LocalDate? = null,
-)
+    @field:Pattern(regexp = """^\d{4}$""", message = "birthyear는 yyyy 형식(4자리)이어야 합니다.")
+    val birthyear: String? = null,
 
-data class JwtLogoutRequest(
-    val reason: String? = null,
+    @field:Pattern(regexp = """^(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$""", message = "birthday는 MM-DD 형식이어야 합니다.")
+    val birthday: String? = null,
 )

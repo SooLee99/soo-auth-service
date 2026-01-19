@@ -1,7 +1,6 @@
 package io.soo.springboot.core.domain
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.soo.springboot.core.enums.AuthProvider
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.MediaType
@@ -10,6 +9,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component
 import java.time.Instant
 import java.time.LocalDateTime
+
+import io.soo.springboot.core.enums.AuthProvider
 
 @Component
 class LocalLoginSuccessHandler(

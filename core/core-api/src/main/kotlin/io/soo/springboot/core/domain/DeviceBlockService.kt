@@ -1,8 +1,10 @@
 package io.soo.springboot.core.domain
 
+import org.springframework.stereotype.Service
+
 import io.soo.springboot.core.enums.DeviceStatus
 import io.soo.springboot.storage.db.core.UserDeviceRepository
-import org.springframework.stereotype.Service
+
 
 @Service
 class DeviceBlockService(

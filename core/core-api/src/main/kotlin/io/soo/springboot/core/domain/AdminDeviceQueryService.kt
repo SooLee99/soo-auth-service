@@ -1,9 +1,10 @@
 package io.soo.springboot.core.domain
 
-import io.soo.springboot.core.api.controller.v1.response.AdminUserDeviceDto
-import io.soo.springboot.storage.db.core.UserDeviceRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+
+import io.soo.springboot.core.api.controller.v1.response.AdminUserDeviceDto
+import io.soo.springboot.storage.db.core.UserDeviceRepository
 
 @Service
 class AdminDeviceQueryService(
@@ -17,6 +18,7 @@ class AdminDeviceQueryService(
     @Transactional(readOnly = true)
     fun listUserDevices(userId: Long): List<AdminUserDeviceDto> {
         return userDeviceRepository.findAllByUserId(userId).map { e ->
+            // TODO: DTO에서 메서드로 묶기
             AdminUserDeviceDto(
                 id = e.id,
                 userId = e.userId,

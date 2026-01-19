@@ -1,9 +1,10 @@
 package io.soo.springboot.core.domain
 
-import io.soo.springboot.core.api.controller.v1.response.AdminSessionDto
-import io.soo.springboot.storage.db.core.UserSessionMapRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+
+import io.soo.springboot.core.api.controller.v1.response.AdminSessionDto
+import io.soo.springboot.storage.db.core.UserSessionMapRepository
 
 @Service
 class AdminSessionQueryService(
@@ -28,6 +29,7 @@ class AdminSessionQueryService(
         }
 
         return sessions.map {
+            // TODO: DTO에서 메서드로 묶기
             AdminSessionDto(
                 id = it.id,
                 sessionId = it.sessionId,
@@ -49,7 +51,7 @@ class AdminSessionQueryService(
     fun getSessionDetail(sessionId: String): AdminSessionDto {
         val s = userSessionMapRepository.findBySessionId(sessionId)
             ?: throw NoSuchElementException("Session not found: $sessionId")
-
+        // TODO: DTO에서 메서드로 묶기
         return AdminSessionDto(
             id = s.id,
             sessionId = s.sessionId,

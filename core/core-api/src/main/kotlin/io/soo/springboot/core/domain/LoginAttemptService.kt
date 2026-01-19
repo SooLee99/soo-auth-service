@@ -1,10 +1,11 @@
 package io.soo.springboot.core.domain
 
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.storage.db.core.LoginAttemptEntity
 import io.soo.springboot.storage.db.core.LoginAttemptRepository
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
 class LoginAttemptService(

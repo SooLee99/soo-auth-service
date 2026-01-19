@@ -1,6 +1,5 @@
 package io.soo.springboot.core.domain
 
-import io.soo.springboot.core.enums.AuthProvider
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.LoggerFactory
@@ -10,6 +9,9 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.session.Session
 import org.springframework.session.SessionRepository
 import org.springframework.stereotype.Component
+
+import io.soo.springboot.core.enums.AuthProvider
+
 
 @Component
 class OAuth2LoginSuccessHandler(

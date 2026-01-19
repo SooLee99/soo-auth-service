@@ -1,11 +1,12 @@
 package io.soo.springboot.core.domain
 
-import io.soo.springboot.storage.db.core.JwtDenylistEntity
-import io.soo.springboot.storage.db.core.JwtDenylistRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.MessageDigest
 import java.time.Instant
+
+import io.soo.springboot.storage.db.core.JwtDenylistEntity
+import io.soo.springboot.storage.db.core.JwtDenylistRepository
 
 @Service
 class JwtDenylistService(

@@ -1,17 +1,20 @@
 package io.soo.springboot.core.domain
 
-import io.soo.springboot.core.api.controller.v1.response.AdminLoginAttemptDto
-import io.soo.springboot.core.api.controller.v1.response.AdminLoginAttemptStatsDto
-import io.soo.springboot.core.api.controller.v1.response.KeyCountDto
-import io.soo.springboot.core.api.controller.v1.response.PagedResult
-import io.soo.springboot.core.api.controller.v1.response.toPageMetaDto
-import io.soo.springboot.core.enums.AuthProvider
-import io.soo.springboot.storage.db.core.LoginAttemptRepository
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+
+// TODO: 의존성 역전 발생. 추후 대처 필요.
+import io.soo.springboot.core.api.controller.v1.response.AdminLoginAttemptDto
+import io.soo.springboot.core.api.controller.v1.response.AdminLoginAttemptStatsDto
+import io.soo.springboot.core.api.controller.v1.response.KeyCountDto
+import io.soo.springboot.core.api.controller.v1.response.PagedResult
+import io.soo.springboot.core.api.controller.v1.response.toPageMetaDto
+
+import io.soo.springboot.core.enums.AuthProvider
+import io.soo.springboot.storage.db.core.LoginAttemptRepository
 
 @Service
 class AdminLoginAttemptQueryService(
@@ -36,6 +39,7 @@ class AdminLoginAttemptQueryService(
 
         val p = loginAttemptRepository.findAll(spec, pageable)
         val items = p.content.map {
+            // TODO: DTO에서 메서드로 묶기
             AdminLoginAttemptDto(
                 id = it.id,
                 success = it.success,
@@ -62,7 +66,7 @@ class AdminLoginAttemptQueryService(
     fun getLoginAttempt(attemptId: Long): AdminLoginAttemptDto {
         val a = loginAttemptRepository.findById(attemptId)
             .orElseThrow { NoSuchElementException("LoginAttempt not found: $attemptId") }
-
+        // TODO: DTO에서 메서드로 묶기
         return AdminLoginAttemptDto(
             id = a.id,
             success = a.success,
@@ -103,6 +107,7 @@ class AdminLoginAttemptQueryService(
 
         val byProvider = loginAttemptRepository.groupByProviderInRange(effectiveFrom, effectiveTo, provider, userId, deviceId, ip)
             .map { row ->
+                // TODO: DTO에서 메서드로 묶기
                 KeyCountDto(
                     key = row.key?.toString() ?: "UNKNOWN",
                     count = row.cnt,
@@ -111,6 +116,7 @@ class AdminLoginAttemptQueryService(
 
         val failureByErrorCode = loginAttemptRepository.failureGroupByErrorCodeInRange(effectiveFrom, effectiveTo, provider, userId, deviceId, ip)
             .map { row ->
+                // TODO: DTO에서 메서드로 묶기
                 KeyCountDto(
                     key = row.key?.toString() ?: "NONE",
                     count = row.cnt,
@@ -121,6 +127,7 @@ class AdminLoginAttemptQueryService(
 
         val topFailedIps = loginAttemptRepository.topFailedIpsInRange(effectiveFrom, effectiveTo, provider, userId, deviceId, ip, topPageable)
             .map { row ->
+                // TODO: DTO에서 메서드로 묶기
                 KeyCountDto(
                     key = row.key?.toString() ?: "UNKNOWN",
                     count = row.cnt,
@@ -129,12 +136,14 @@ class AdminLoginAttemptQueryService(
 
         val topFailedDeviceIds = loginAttemptRepository.topFailedDeviceIdsInRange(effectiveFrom, effectiveTo, provider, userId, deviceId, ip, topPageable)
             .map { row ->
+                // TODO: DTO에서 메서드로 묶기
                 KeyCountDto(
                     key = row.key?.toString() ?: "UNKNOWN",
                     count = row.cnt,
                 )
             }
 
+        // TODO: DTO에서 메서드로 묶기
         return AdminLoginAttemptStatsDto(
             from = effectiveFrom,
             to = effectiveTo,
@@ -160,6 +169,7 @@ class AdminLoginAttemptQueryService(
         val list = loginAttemptRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable)
 
         return list.map {
+            // TODO: DTO에서 메서드로 묶기
             AdminLoginAttemptDto(
                 id = it.id,
                 success = it.success,

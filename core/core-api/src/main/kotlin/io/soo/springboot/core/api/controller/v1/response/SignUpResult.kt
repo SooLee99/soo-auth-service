@@ -11,7 +11,7 @@ import java.time.LocalDateTime
  */
 data class SignUpResult(
     val userId: Long,
-    val email: String,
+    val email: String?,
     val emailVerified: Boolean?,
     val provider: AuthProvider,
     val profile: SignUpProfile,
@@ -27,7 +27,8 @@ data class SignUpProfile(
     val nickname: String?,
     val profileImageUrl: String?,
     val thumbnailImageUrl: String?,
-    val birthDate: LocalDate?,
+    val birthyear: String?,
+    val birthday: String?,
 )
 
 /**
@@ -39,3 +40,4 @@ data class CredentialStatus(
     val failedLoginCount: Int,
     val lockUntil: LocalDateTime?,
 )
+

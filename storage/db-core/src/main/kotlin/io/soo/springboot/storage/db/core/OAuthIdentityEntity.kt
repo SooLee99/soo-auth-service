@@ -30,8 +30,17 @@ class OAuthIdentityEntity(
     @Column(name = "provider_user_id", nullable = false, length = 255)
     var providerUserId: String,
 
+    // Kakao CI 등 “추가 식별자”
+    @Column(name = "ci", length = 255)
+    var ci: String? = null,
+
     @Lob
-    @Column(name = "raw_attributes_json", columnDefinition = "TEXT")
+    @Column(name = "raw_attributes_json")
     var rawAttributesJson: String? = null,
 
-) : BaseEntity()
+    // (OIDC 쓸 때) id_token claims 저장(선택)
+    @Lob
+    @Column(name = "id_token_claims_json")
+    var idTokenClaimsJson: String? = null,
+
+    ) : BaseEntity()

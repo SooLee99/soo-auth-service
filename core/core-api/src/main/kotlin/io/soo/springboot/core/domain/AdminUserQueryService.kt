@@ -1,13 +1,23 @@
 package io.soo.springboot.core.domain
 
-import io.soo.springboot.core.api.controller.v1.response.*
-import io.soo.springboot.core.enums.AuthProvider
-import io.soo.springboot.storage.db.core.*
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+
+// TODO: 의존성 역전 발생. 추후 대처 필요.
+import io.soo.springboot.core.api.controller.v1.response.AdminLoginAttemptDto
+import io.soo.springboot.core.api.controller.v1.response.AdminOAuthIdentityDto
+import io.soo.springboot.core.api.controller.v1.response.AdminSessionDto
+import io.soo.springboot.core.api.controller.v1.response.AdminUserDetailDto
+import io.soo.springboot.core.api.controller.v1.response.AdminUserDeviceDto
+import io.soo.springboot.core.api.controller.v1.response.AdminUserSummaryDto
+import io.soo.springboot.core.api.controller.v1.response.PagedResult
+import io.soo.springboot.core.api.controller.v1.response.toPageMetaDto
+
+import io.soo.springboot.core.enums.AuthProvider
+import io.soo.springboot.storage.db.core.*
 
 @Service
 class AdminUserQueryService(
@@ -61,6 +71,7 @@ class AdminUserQueryService(
             .associate { it.userId to it.cnt.toInt() }
 
         val items = users.map { u ->
+            // TODO: DTO에서 메서드로 묶기
             AdminUserSummaryDto(
                 userId = u.id,
                 email = u.email,
@@ -86,6 +97,7 @@ class AdminUserQueryService(
         val user = userAccountRepository.findById(userId)
             .orElseThrow { NoSuchElementException("User not found: $userId") }
 
+        // TODO: DTO에서 메서드로 묶기
         val identities = oauthIdentityRepository.findAllByUserId(userId).map {
             AdminOAuthIdentityDto(
                 id = it.id,
