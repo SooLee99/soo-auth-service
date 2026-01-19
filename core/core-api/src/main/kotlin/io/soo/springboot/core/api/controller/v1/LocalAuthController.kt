@@ -41,7 +41,7 @@ class LocalAuthController(
      *
      * - 인증된 요청이어야 함(Bearer 토큰 필요)
      */
-    @PostMapping("/logout")
+    @PostMapping("/jwt/logout")
     fun logout(
         auth: JwtAuthenticationToken,
         @RequestBody(required = false) req: JwtLogoutRequest?,

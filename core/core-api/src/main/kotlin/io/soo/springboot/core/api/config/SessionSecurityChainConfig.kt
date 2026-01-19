@@ -81,7 +81,7 @@ class SessionSecurityChainConfig(
 
             // 로그아웃
             .logout {
-                it.logoutUrl("/api/v1/auth/logout")
+                it.logoutUrl("/api/v1/auth/session/logout")
                 it.addLogoutHandler(dbLogoutHandler)
                 it.logoutSuccessHandler(HttpStatusReturningLogoutSuccessHandler())
             }
