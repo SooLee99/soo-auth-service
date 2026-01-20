@@ -25,24 +25,40 @@ abstract class BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR")
-    private var status: EntityStatus = EntityStatus.ACTIVE
+    private var entityStatus: EntityStatus = EntityStatus.ACTIVE
 
     @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     val createdAt: LocalDateTime = LocalDateTime.MIN
 
     @UpdateTimestamp
+    @Column(nullable = false)
     val updatedAt: LocalDateTime = LocalDateTime.MIN
 
+    @Column(name = "deleted_at")
+    var deletedAt: LocalDateTime? = null
+        protected set
+
+    @Column(name = "deleted_reason", length = 500)
+    var deletedReason: String? = null
+        protected set
+
+    fun softDelete(reason: String? = null, at: LocalDateTime = LocalDateTime.now()) {
+        entityStatus = EntityStatus.DELETED
+        deletedAt = at
+        deletedReason = reason
+    }
+
     fun active() {
-        status = EntityStatus.ACTIVE
+        entityStatus = EntityStatus.ACTIVE
     }
 
     fun delete() {
-        status = EntityStatus.DELETED
+        entityStatus = EntityStatus.DELETED
     }
 
-    fun isActive(): Boolean = status == EntityStatus.ACTIVE
-    fun isDeleted(): Boolean = status == EntityStatus.DELETED
+    fun isActive(): Boolean = entityStatus == EntityStatus.ACTIVE
+    fun isDeleted(): Boolean = entityStatus == EntityStatus.DELETED
 
-    fun getEntityStatus(): EntityStatus = status
+    fun getEntityStatus(): EntityStatus = entityStatus
 }

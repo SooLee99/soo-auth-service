@@ -11,6 +11,7 @@ import java.time.Instant
 import java.time.LocalDateTime
 
 import io.soo.springboot.core.enums.AuthProvider
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 
 @Component
 class LocalLoginSuccessHandler(

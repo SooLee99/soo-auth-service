@@ -4,6 +4,7 @@ import io.soo.springboot.core.enums.AuthProvider
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import java.time.LocalDateTime
@@ -184,6 +185,10 @@ interface LoginAttemptRepository :
     ): List<KeyCountRow>
 
     fun findByUserIdOrderByCreatedAtDesc(userId: Long, pageable: Pageable): List<LoginAttemptEntity>
+
+    @Modifying
+    @Query("delete from OAuthIdentityEntity o where o.userId = :userId")
+    fun deleteAllByUserId(@Param("userId") userId: Long): Int
 }
 
 /**

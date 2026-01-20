@@ -2,13 +2,19 @@ package io.soo.springboot.core.api.controller.v1
 
 import io.soo.springboot.core.api.controller.v1.request.JwtLogoutRequest
 import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
+import io.soo.springboot.core.api.controller.v1.request.WithdrawRequest
 import io.soo.springboot.core.api.controller.v1.response.SignUpResult
 import io.soo.springboot.core.domain.JwtDenylistService
 import io.soo.springboot.core.domain.LocalAuthService
+import io.soo.springboot.core.domain.UserSessionMapService
 import io.soo.springboot.core.support.response.ApiResponse
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication
+import org.springframework.http.HttpStatus
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -57,6 +63,28 @@ class LocalAuthController(
             jti = jti,
             expiresAt = expiresAt,
             reason = req?.reason,
+        )
+
+        return ApiResponse.success(Unit)
+    }
+
+    @PostMapping("/withdraw")
+    fun withdraw(
+        request: HttpServletRequest,
+        auth: Authentication?,
+        @RequestBody(required = false) @Valid req: WithdrawRequest?,
+    ): ApiResponse<Unit> {
+        val session = request.getSession(false)
+            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "No session")
+
+        if (auth == null) {
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated")
+        }
+
+        localAuthService.withdrawBySession(
+            sessionId = session.id,
+            reason = req?.reason,
+            passwordForLocal = req?.password,
         )
 
         return ApiResponse.success(Unit)

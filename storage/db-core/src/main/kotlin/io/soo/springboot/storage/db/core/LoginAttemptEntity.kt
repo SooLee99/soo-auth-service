@@ -11,8 +11,8 @@ import jakarta.persistence.*
     ],
 )
 @AttributeOverride(
-    name = "status",
-    column = Column(name = "status", columnDefinition = "VARCHAR", nullable = false),
+    name = "entityStatus",
+    column = Column(columnDefinition = "VARCHAR", nullable = false),
 )
 class LoginAttemptEntity(
 

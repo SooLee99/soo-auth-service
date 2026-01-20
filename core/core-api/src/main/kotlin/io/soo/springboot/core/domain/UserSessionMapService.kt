@@ -26,29 +26,31 @@ class UserSessionMapService(
     @Transactional
     fun bind(sessionId: String, userId: Long, deviceId: String, provider: AuthProvider) {
         val now = LocalDateTime.now()
-        val sid = normSessionId(sessionId)
-        val did = normDeviceId(deviceId)
 
-        val entity = userSessionMapRepository.lockBySessionId(sid)
-            ?: UserSessionMapEntity(
-                sessionId = sid,
+        val existing = userSessionMapRepository.findBySessionId(sessionId)
+        if (existing != null) {
+            // 같은 sessionId가 이미 있으면 갱신(재로그인/재바인딩 케이스 방어)
+            existing.userId = userId
+            existing.deviceId = deviceId
+            existing.provider = provider
+            existing.lastAccessedAt = now
+            existing.revokedAt = null
+            existing.revokedReason = null
+            userSessionMapRepository.save(existing)
+            return
+        }
+
+        userSessionMapRepository.save(
+            UserSessionMapEntity(
+                sessionId = sessionId,
                 userId = userId,
-                deviceId = did,
+                deviceId = deviceId,
                 provider = provider,
                 lastAccessedAt = now,
                 revokedAt = null,
                 revokedReason = null,
             )
-
-        // 이미 있던 세션이면 바인딩 정보 갱신 (재로그인/재발급 대응)
-        entity.userId = userId
-        entity.deviceId = did
-        entity.provider = provider
-        entity.lastAccessedAt = now
-        entity.revokedAt = null
-        entity.revokedReason = null
-
-        userSessionMapRepository.save(entity)
+        )
     }
 
     fun findActive(sessionId: String): UserSessionMapEntity? =
@@ -56,24 +58,26 @@ class UserSessionMapService(
 
     @Transactional
     fun touch(sessionId: String) {
-        val sid = normSessionId(sessionId)
-        val m = userSessionMapRepository.lockBySessionId(sid) ?: return
+        val m = userSessionMapRepository.findBySessionId(sessionId) ?: return
         if (m.revokedAt != null) return
-
         m.lastAccessedAt = LocalDateTime.now()
         userSessionMapRepository.save(m)
     }
 
-    /**
-     * ✅ 세션 revoke(멱등)
-     */
     @Transactional
-    fun revoke(sessionId: String, reason: String?) {
+    fun revokeSession(sessionId: String, reason: String?) {
         val m = userSessionMapRepository.findBySessionId(sessionId) ?: return
-
         if (m.revokedAt != null) return
         m.revokedAt = LocalDateTime.now()
         m.revokedReason = reason
         userSessionMapRepository.save(m)
     }
+
+    @Transactional(readOnly = true)
+    fun activeSessionIds(userId: Long, deviceId: String? = null): List<String> =
+        if (deviceId.isNullOrBlank())
+            userSessionMapRepository.findActiveSessionIdsByUserId(userId)
+        else
+            userSessionMapRepository.findActiveSessionIdsByUserIdAndDeviceId(userId, deviceId)
+
 }

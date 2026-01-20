@@ -9,19 +9,28 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+import io.soo.springboot.storage.db.core.*
+import org.springframework.session.FindByIndexNameSessionRepository
+import org.springframework.session.Session
 import io.soo.springboot.core.api.controller.v1.response.CredentialStatus
 import io.soo.springboot.core.api.controller.v1.response.SignUpProfile
 import io.soo.springboot.core.api.controller.v1.response.SignUpResult
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.storage.db.core.LocalCredentialEntity
 import io.soo.springboot.storage.db.core.LocalCredentialRepository
+import io.soo.springboot.storage.db.core.OAuthIdentityRepository
 import io.soo.springboot.storage.db.core.UserAccountEntity
 import io.soo.springboot.storage.db.core.UserAccountRepository
+import io.soo.springboot.storage.db.core.UserDeviceRepository
 
 @Service
 class LocalAuthService(
     private val userAccountRepository: UserAccountRepository,
     private val localCredentialRepository: LocalCredentialRepository,
+    private val oauthIdentityRepository: OAuthIdentityRepository,
+    private val userDeviceRepository: UserDeviceRepository,
+    private val sessionRepository: FindByIndexNameSessionRepository<out Session>,
+    private val sessionMapService: UserSessionMapService,
     private val passwordEncoder: PasswordEncoder,
 ) {
 
@@ -106,5 +115,80 @@ class LocalAuthService(
         val dd = parts[1].toIntOrNull() ?: return null
         val yyyy = birthyear.toIntOrNull() ?: return null
         return runCatching { LocalDate.of(yyyy, mm, dd) }.getOrNull()
+    }
+
+    @Transactional
+    fun withdrawBySession(
+        sessionId: String,
+        reason: String?,
+        passwordForLocal: String?,
+    ) {
+        val binding = sessionMapService.findActive(sessionId)
+            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Session revoked or not mapped")
+
+        val userId = binding.userId
+        val now = LocalDateTime.now()
+        val withdrawReason = reason ?: "USER_WITHDRAWN"
+
+        val user = userAccountRepository.findById(userId).orElseThrow {
+            ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
+        }
+
+        // 이미 탈퇴한 계정이면 멱등 처리
+        if (user.isDeleted()) {
+            safeLogoutAllSessions(userId, withdrawReason)
+            return
+        }
+
+        // ✅ 로컬 계정이면 비밀번호 확인, OAuth 로그인 유저는 passwordForLocal 없이 통과
+        val localCredential = localCredentialRepository.findByUserId(userId)
+        if (localCredential != null && !passwordForLocal.isNullOrBlank()) {
+            if (!passwordEncoder.matches(passwordForLocal, localCredential.passwordHash)) {
+                throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Password mismatch")
+            }
+        } else if (localCredential != null && passwordForLocal.isNullOrBlank()) {
+           throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Password required")
+        }
+
+        // 1) ✅ 모든 세션 즉시 로그아웃 + 세션매핑 revoke
+        safeLogoutAllSessions(userId, withdrawReason)
+
+        // 2) ✅ user_account 소프트딜리트 + 익명화(권장)
+        user.softDelete(reason = withdrawReason, at = now)
+
+        // PII 익명화(정책에 맞게 조정)
+        user.email = null
+        user.emailVerified = false
+        user.name = null
+        user.givenName = null
+        user.familyName = null
+        user.nickname = null
+        user.locale = null
+        user.gender = null
+        user.ageRange = null
+        user.birthyear = null
+        user.birthday = null
+        user.phoneNumber = null
+        user.profileImageUrl = null
+        user.thumbnailImageUrl = null
+
+        userAccountRepository.save(user)
+
+        // 3) ✅ (선택) OAuth identity 소프트딜리트
+        oauthIdentityRepository.softDeleteByUserId(userId, now, withdrawReason)
+
+        // 4) ✅ 로컬 credential 소프트딜리트(+ 해시 무력화 옵션)
+        localCredentialRepository.softDeleteByUserId(userId, now, withdrawReason)
+
+        // 5) ✅ 디바이스 레코드 비활성화(또는 소프트딜리트)
+        userDeviceRepository.markWithdrawnByUserId(userId, now, withdrawReason)
+    }
+
+    private fun safeLogoutAllSessions(userId: Long, reason: String) {
+        val sessionIds = sessionMapService.activeSessionIds(userId, deviceId = null)
+        sessionIds.forEach { sid ->
+            sessionRepository.deleteById(sid)
+            sessionMapService.revokeSession(sid, reason)
+        }
     }
 }

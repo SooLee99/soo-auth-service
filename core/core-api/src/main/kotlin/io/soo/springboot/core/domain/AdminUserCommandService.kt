@@ -51,7 +51,7 @@ class AdminUserCommandService(
         if (req.nickname != null) user.nickname = req.nickname
         if (req.profileImageUrl != null) user.profileImageUrl = req.profileImageUrl
         if (req.thumbnailImageUrl != null) user.thumbnailImageUrl = req.thumbnailImageUrl
-        if (req.birthDate != null) user.birthdate = req.birthDate
+        if (req.birthDate != null) user.birthday = req.birthDate.toString()
         if (req.emailVerified != null) user.emailVerified = req.emailVerified
 
         userAccountRepository.save(user)

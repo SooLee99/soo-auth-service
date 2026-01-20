@@ -15,8 +15,8 @@ import jakarta.persistence.*
     indexes = [Index(name = "idx_oauth_identity_user_id", columnList = "user_id")],
 )
 @AttributeOverride(
-    name = "status",
-    column = Column(name = "status", columnDefinition = "VARCHAR", nullable = false),
+    name = "entityStatus",
+    column = Column(columnDefinition = "VARCHAR", nullable = false),
 )
 class OAuthIdentityEntity(
 

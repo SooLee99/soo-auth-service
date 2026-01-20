@@ -10,8 +10,8 @@ import java.time.LocalDateTime
     uniqueConstraints = [UniqueConstraint(name = "uq_user_device", columnNames = ["user_id", "device_id"])],
 )
 @AttributeOverride(
-    name = "status",
-    column = Column(name = "status", columnDefinition = "VARCHAR", nullable = false),
+    name = "entityStatus",
+    column = Column(columnDefinition = "VARCHAR", nullable = false),
 )
 class UserDeviceEntity(
 

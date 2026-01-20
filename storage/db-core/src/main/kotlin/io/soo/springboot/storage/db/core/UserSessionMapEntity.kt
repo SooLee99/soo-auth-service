@@ -15,8 +15,8 @@ import java.time.LocalDateTime
     ],
 )
 @AttributeOverride(
-    name = "status",
-    column = Column(name = "status", columnDefinition = "VARCHAR", nullable = false),
+    name = "entityStatus",
+    column = Column(columnDefinition = "VARCHAR", nullable = false),
 )
 class UserSessionMapEntity(
 

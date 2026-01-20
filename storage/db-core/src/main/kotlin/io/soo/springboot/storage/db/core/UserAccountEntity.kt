@@ -1,15 +1,22 @@
 package io.soo.springboot.storage.db.core
 
 import io.soo.springboot.core.enums.AuthProvider
+import io.soo.springboot.core.enums.Role
+import jakarta.persistence.AttributeOverride
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import jakarta.persistence.Table
 import java.time.Instant
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "user_account")
+@AttributeOverride(
+    name = "entityStatus",
+    column = Column(columnDefinition = "VARCHAR", nullable = false),
+)
 class UserAccountEntity(
 
     @Column
@@ -61,5 +68,18 @@ class UserAccountEntity(
 
     @Column(name = "last_login_at")
     var lastLoginAt: Instant? = null,
+
+    @Column(name = "suspended_at")
+    var suspendedAt: LocalDateTime? = null,
+
+    @Column(name = "suspended_until")
+    var suspendedUntil: LocalDateTime? = null,
+
+    @Column(name = "suspended_reason", length = 500)
+    var suspendedReason: String? = null,
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false, length = 20)
+    var role: Role = Role.USER
 
     ) : BaseEntity()

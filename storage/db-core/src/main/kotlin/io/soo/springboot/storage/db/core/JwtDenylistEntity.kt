@@ -15,7 +15,7 @@ import java.time.Instant
     ],
 )
 @AttributeOverride(
-    name = "status",
+    name = "entityStatus",
     column = Column(name = "status", columnDefinition = "VARCHAR", nullable = false),
 )
 class JwtDenylistEntity(
