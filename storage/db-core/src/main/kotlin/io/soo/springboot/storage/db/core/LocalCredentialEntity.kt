@@ -20,25 +20,25 @@ import java.time.LocalDateTime
 )
 class LocalCredentialEntity(
 
-    @Column(name = "user_id", nullable = false)
+    @Column(nullable = false)
     var userId: Long,
 
-    @Column(name = "password_hash", nullable = false, length = 200)
+    @Column(nullable = false, length = 200)
     var passwordHash: String,
 
-    @Column(name = "password_updated_at", nullable = false)
+    @Column( nullable = false)
     var passwordUpdatedAt: LocalDateTime = LocalDateTime.now(),
 
     // ✅ 로그인 실패 누적 횟수
-    @Column(name = "failed_login_count", nullable = false)
+    @Column(nullable = false)
     var failedLoginCount: Int = 0,
 
     // ✅ 마지막 실패 시각
-    @Column(name = "last_failed_at")
+    @Column
     var lastFailedAt: LocalDateTime? = null,
 
     // ✅ 잠금 해제 시각(이 시간 전에는 로그인 불가)
-    @Column(name = "lock_until")
+    @Column
     var lockUntil: LocalDateTime? = null,
 
 ) : BaseEntity() {

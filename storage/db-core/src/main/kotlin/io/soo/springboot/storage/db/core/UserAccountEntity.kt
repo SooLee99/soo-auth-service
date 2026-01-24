@@ -22,8 +22,14 @@ class UserAccountEntity(
     @Column
     var email: String? = null,
 
-    @Column(name = "email_verified", nullable = false)
+    @Column(nullable = false)
     var emailVerified: Boolean = false,
+
+    @Column
+    var phoneNumber: String? = null,
+
+    @Column
+    var phoneVerified: Boolean = false,
 
     @Column
     var nickname: String? = null,
@@ -31,10 +37,10 @@ class UserAccountEntity(
     @Column
     var name: String? = null,
 
-    @Column(name = "given_name")
+    @Column
     var givenName: String? = null,
 
-    @Column(name = "family_name")
+    @Column
     var familyName: String? = null,
 
     @Column
@@ -44,7 +50,7 @@ class UserAccountEntity(
     @Column
     var gender: String? = null,
 
-    @Column(name = "age_range")
+    @Column
     var ageRange: String? = null,
 
     @Column
@@ -53,33 +59,29 @@ class UserAccountEntity(
     @Column
     var birthyear: String? = null,  // "YYYY"
 
-    @Column(name = "phone_number")
-    var phoneNumber: String? = null,
-
-    @Column(name = "profile_image_url")
+    @Column
     var profileImageUrl: String? = null,
 
-    @Column(name = "thumbnail_image_url")
+    @Column
     var thumbnailImageUrl: String? = null,
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "last_login_provider", length = 30)
+    @Column(length = 30)
     var lastLoginProvider: AuthProvider? = null,
 
-    @Column(name = "last_login_at")
+    @Column
     var lastLoginAt: Instant? = null,
 
-    @Column(name = "suspended_at")
+    @Column
     var suspendedAt: LocalDateTime? = null,
 
-    @Column(name = "suspended_until")
+    @Column
     var suspendedUntil: LocalDateTime? = null,
 
-    @Column(name = "suspended_reason", length = 500)
+    @Column(length = 500)
     var suspendedReason: String? = null,
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false, length = 20)
+    @Column(nullable = false, length = 20)
     var role: Role = Role.USER
-
-    ) : BaseEntity()
+) : BaseEntity()

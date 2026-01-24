@@ -107,16 +107,6 @@ class LocalAuthService(
         )
     }
 
-    private fun toLocalDateOrNull(birthyear: String?, birthday: String?): LocalDate? {
-        if (birthyear.isNullOrBlank() || birthday.isNullOrBlank()) return null
-        val parts = birthday.split("-")
-        if (parts.size != 2) return null
-        val mm = parts[0].toIntOrNull() ?: return null
-        val dd = parts[1].toIntOrNull() ?: return null
-        val yyyy = birthyear.toIntOrNull() ?: return null
-        return runCatching { LocalDate.of(yyyy, mm, dd) }.getOrNull()
-    }
-
     @Transactional
     fun withdrawBySession(
         sessionId: String,

@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 
 interface UserAccountRepository : JpaRepository<UserAccountEntity, Long>, JpaSpecificationExecutor<UserAccountEntity> {
     fun findByEmail(email: String): UserAccountEntity?
-
+    fun findByPhoneNumber(phoneNumber: String): UserAccountEntity?
     @Query(
         """
         select u.id
