@@ -3,7 +3,7 @@ package io.soo.springboot.core.domain
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-import io.soo.springboot.core.api.controller.v1.response.AdminSessionDto
+import io.soo.springboot.core.api.controller.v1.response.AdminSessionResponse
 import io.soo.springboot.storage.db.core.UserSessionMapRepository
 
 @Service
@@ -21,7 +21,7 @@ class AdminSessionQueryService(
         userId: Long,
         deviceId: String?,
         activeOnly: Boolean,
-    ): List<AdminSessionDto> {
+    ): List<AdminSessionResponse> {
         val sessions = when {
             !deviceId.isNullOrBlank() -> userSessionMapRepository.findAllByUserIdAndDeviceIdOrderByCreatedAtDesc(userId, deviceId)
             activeOnly -> userSessionMapRepository.findAllByUserIdAndRevokedAtIsNullOrderByCreatedAtDesc(userId)
@@ -30,7 +30,7 @@ class AdminSessionQueryService(
 
         return sessions.map {
             // TODO: DTO에서 메서드로 묶기
-            AdminSessionDto(
+            AdminSessionResponse(
                 id = it.id,
                 sessionId = it.sessionId,
                 userId = it.userId,
@@ -48,11 +48,11 @@ class AdminSessionQueryService(
      * ✅ 세션 단건 상세 조회
      */
     @Transactional(readOnly = true)
-    fun getSessionDetail(sessionId: String): AdminSessionDto {
+    fun getSessionDetail(sessionId: String): AdminSessionResponse {
         val s = userSessionMapRepository.findBySessionId(sessionId)
             ?: throw NoSuchElementException("Session not found: $sessionId")
         // TODO: DTO에서 메서드로 묶기
-        return AdminSessionDto(
+        return AdminSessionResponse(
             id = s.id,
             sessionId = s.sessionId,
             userId = s.userId,

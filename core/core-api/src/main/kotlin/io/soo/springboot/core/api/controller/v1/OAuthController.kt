@@ -43,7 +43,6 @@ class OAuthController(
         return ApiResponse.success("/oauth2/authorization/$provider")
     }
 
-    // ✅ loginSuccess
     @GetMapping("/login/success")
     fun loginSuccess(
         request: HttpServletRequest,

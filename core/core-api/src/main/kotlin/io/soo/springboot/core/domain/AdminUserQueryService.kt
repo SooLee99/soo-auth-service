@@ -8,11 +8,11 @@ import java.time.LocalDateTime
 
 // TODO: 의존성 역전 발생. 추후 대처 필요.
 import io.soo.springboot.core.api.controller.v1.response.AdminLoginAttemptDto
-import io.soo.springboot.core.api.controller.v1.response.AdminOAuthIdentityDto
-import io.soo.springboot.core.api.controller.v1.response.AdminSessionDto
-import io.soo.springboot.core.api.controller.v1.response.AdminUserDetailDto
-import io.soo.springboot.core.api.controller.v1.response.AdminUserDeviceDto
-import io.soo.springboot.core.api.controller.v1.response.AdminUserSummaryDto
+import io.soo.springboot.core.api.controller.v1.response.AdminOAuthIdentityResponse
+import io.soo.springboot.core.api.controller.v1.response.AdminSessionResponse
+import io.soo.springboot.core.api.controller.v1.response.AdminUserDetailResponse
+import io.soo.springboot.core.api.controller.v1.response.AdminUserDevicResponse
+import io.soo.springboot.core.api.controller.v1.response.AdminUserSummaryResponse
 import io.soo.springboot.core.api.controller.v1.response.PagedResult
 import io.soo.springboot.core.api.controller.v1.response.toPageMetaDto
 
@@ -46,7 +46,7 @@ class AdminUserQueryService(
         suspended: Boolean?,
         createdFrom: LocalDateTime?,
         createdTo: LocalDateTime?,
-    ): PagedResult<AdminUserSummaryDto> {
+    ): PagedResult<AdminUserSummaryResponse> {
         val pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"))
         val spec = UserAccountSpecs.filter(q, email, nickname, provider, suspended, createdFrom, createdTo)
 
@@ -72,7 +72,7 @@ class AdminUserQueryService(
 
         val items = users.map { u ->
             // TODO: DTO에서 메서드로 묶기
-            AdminUserSummaryDto(
+            AdminUserSummaryResponse(
                 userId = u.id,
                 email = u.email,
                 nickname = u.nickname,
@@ -93,13 +93,13 @@ class AdminUserQueryService(
      * ✅ 유저 상세(연동/디바이스/세션/최근 로그인 시도 포함)
      */
     @Transactional(readOnly = true)
-    fun getUserDetail(userId: Long): AdminUserDetailDto {
+    fun getUserDetail(userId: Long): AdminUserDetailResponse {
         val user = userAccountRepository.findById(userId)
             .orElseThrow { NoSuchElementException("User not found: $userId") }
 
         // TODO: DTO에서 메서드로 묶기
         val identities = oauthIdentityRepository.findAllByUserId(userId).map {
-            AdminOAuthIdentityDto(
+            AdminOAuthIdentityResponse(
                 id = it.id,
                 provider = it.provider,
                 providerUserId = it.providerUserId,
@@ -108,7 +108,7 @@ class AdminUserQueryService(
         }
 
         val devices = userDeviceRepository.findAllByUserId(userId).map {
-            AdminUserDeviceDto(
+            AdminUserDevicResponse(
                 id = it.id,
                 userId = it.userId,
                 deviceId = it.deviceId,
@@ -124,7 +124,7 @@ class AdminUserQueryService(
         }
 
         val sessions = userSessionMapRepository.findAllByUserIdOrderByCreatedAtDesc(userId).map {
-            AdminSessionDto(
+            AdminSessionResponse(
                 id = it.id,
                 sessionId = it.sessionId,
                 userId = it.userId,
@@ -153,7 +153,7 @@ class AdminUserQueryService(
             )
         }
 
-        return AdminUserDetailDto(
+        return AdminUserDetailResponse(
             userId = user.id,
             email = user.email,
             nickname = user.nickname,

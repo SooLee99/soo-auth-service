@@ -1,7 +1,6 @@
 package io.soo.springboot.core.api.controller.v1.response
 
 import io.soo.springboot.core.enums.AuthProvider
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 /**

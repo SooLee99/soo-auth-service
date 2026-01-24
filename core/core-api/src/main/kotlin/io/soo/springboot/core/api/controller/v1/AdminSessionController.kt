@@ -2,7 +2,7 @@ package io.soo.springboot.core.api.controller.v1
 
 import io.soo.springboot.core.api.controller.v1.request.RevokeAllSessionsRequest
 import io.soo.springboot.core.api.controller.v1.request.RevokeSessionRequest
-import io.soo.springboot.core.api.controller.v1.response.AdminSessionDto
+import io.soo.springboot.core.api.controller.v1.response.AdminSessionResponse
 import io.soo.springboot.core.domain.AdminSessionCommandService
 import io.soo.springboot.core.domain.AdminSessionQueryService
 import io.soo.springboot.core.support.response.ApiResponse
@@ -27,7 +27,7 @@ class AdminSessionController(
         @PathVariable userId: Long,
         @RequestParam(required = false) deviceId: String?,
         @RequestParam(defaultValue = "false") activeOnly: Boolean,
-    ): ApiResponse<List<AdminSessionDto>> {
+    ): ApiResponse<List<AdminSessionResponse>> {
         val items = sessionQuery.listUserSessions(
             userId = userId,
             deviceId = deviceId,
@@ -43,7 +43,7 @@ class AdminSessionController(
     @GetMapping("/sessions/{sessionId}")
     fun getSessionDetail(
         @PathVariable sessionId: String,
-    ): ApiResponse<AdminSessionDto> {
+    ): ApiResponse<AdminSessionResponse> {
         val dto = sessionQuery.getSessionDetail(sessionId)
         return ApiResponse.success(dto)
     }

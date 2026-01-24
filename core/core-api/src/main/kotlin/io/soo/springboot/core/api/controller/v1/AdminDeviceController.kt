@@ -2,7 +2,7 @@ package io.soo.springboot.core.api.controller.v1
 
 import io.soo.springboot.core.api.controller.v1.request.BlockDeviceRequest
 import io.soo.springboot.core.api.controller.v1.request.RevokeDeviceSessionsRequest
-import io.soo.springboot.core.api.controller.v1.response.AdminUserDeviceDto
+import io.soo.springboot.core.api.controller.v1.response.AdminUserDevicResponse
 import io.soo.springboot.core.domain.AdminDeviceCommandService
 import io.soo.springboot.core.domain.AdminDeviceQueryService
 import io.soo.springboot.core.domain.AdminSessionCommandService
@@ -24,7 +24,7 @@ class AdminDeviceController(
     @GetMapping
     fun listDevices(
         @PathVariable userId: Long,
-    ): ApiResponse<List<AdminUserDeviceDto>> {
+    ): ApiResponse<List<AdminUserDevicResponse>> {
         val items = deviceQuery.listUserDevices(userId)
         return ApiResponse.success(items)
     }

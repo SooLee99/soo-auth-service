@@ -2,8 +2,8 @@ package io.soo.springboot.core.api.controller.v1
 
 import io.soo.springboot.core.api.controller.v1.request.AdminSuspendUserRequest
 import io.soo.springboot.core.api.controller.v1.request.AdminUpdateUserRequest
-import io.soo.springboot.core.api.controller.v1.response.AdminUserDetailDto
-import io.soo.springboot.core.api.controller.v1.response.AdminUserSummaryDto
+import io.soo.springboot.core.api.controller.v1.response.AdminUserDetailResponse
+import io.soo.springboot.core.api.controller.v1.response.AdminUserSummaryResponse
 import io.soo.springboot.core.domain.AdminUserCommandService
 import io.soo.springboot.core.domain.AdminUserQueryService
 import io.soo.springboot.core.enums.AuthProvider
@@ -38,7 +38,7 @@ class AdminUserController(
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         createdTo: LocalDateTime?,
-    ): ApiResponse<List<AdminUserSummaryDto>> {
+    ): ApiResponse<List<AdminUserSummaryResponse>> {
         val r = userQuery.listUsers(
             page = page,
             size = size,
@@ -58,7 +58,7 @@ class AdminUserController(
      * GET /api/v1/admin/users/{userId}
      */
     @GetMapping("/{userId}")
-    fun getUserDetail(@PathVariable userId: Long): ApiResponse<AdminUserDetailDto> =
+    fun getUserDetail(@PathVariable userId: Long): ApiResponse<AdminUserDetailResponse> =
         ApiResponse.success(userQuery.getUserDetail(userId))
 
     /**
