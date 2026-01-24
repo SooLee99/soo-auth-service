@@ -174,7 +174,7 @@ class LocalAuthService(
 
         userAccountRepository.save(user)
 
-        // 3) ✅ (선택) OAuth identity 소프트딜리트
+        // 3) ✅ OAuth identity 소프트딜리트
         oauthIdentityRepository.softDeleteByUserId(userId, now, withdrawReason)
 
         // 4) ✅ 로컬 credential 소프트딜리트(+ 해시 무력화 옵션)

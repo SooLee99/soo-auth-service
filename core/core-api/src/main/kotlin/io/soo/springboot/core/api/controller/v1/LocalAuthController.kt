@@ -6,7 +6,6 @@ import io.soo.springboot.core.api.controller.v1.request.WithdrawRequest
 import io.soo.springboot.core.api.controller.v1.response.SignUpResult
 import io.soo.springboot.core.domain.JwtDenylistService
 import io.soo.springboot.core.domain.LocalAuthService
-import io.soo.springboot.core.domain.UserSessionMapService
 import io.soo.springboot.core.support.response.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid

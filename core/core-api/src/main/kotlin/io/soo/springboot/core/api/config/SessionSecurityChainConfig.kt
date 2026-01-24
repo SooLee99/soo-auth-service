@@ -73,10 +73,8 @@ class SessionSecurityChainConfig(
                 oauth.successHandler(oauth2LoginSuccessHandler)
                 oauth.failureHandler(oauth2LoginFailureHandler)
             }
-            // 로컬(JSON) 로그인 필터
+            // 로컬(JSON) 로그인 필터 & 로그인 이후 정책(차단/세션 revoke)
             .addFilterAt(localJsonLoginFilter, UsernamePasswordAuthenticationFilter::class.java)
-
-            // 로그인 이후 정책(차단/세션 revoke)
             .addFilterAfter(devicePolicyFilter, AuthorizationFilter::class.java)
 
             // 로그아웃
