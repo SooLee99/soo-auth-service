@@ -8,3 +8,15 @@ enum class VerificationStatus {
     INVALID,       // (확인) 코드 불일치/만료/없는 사용자 등
     INVALID_FORMAT // identifier 형식 오류
 }
+
+data class VerificationCodeResponse(
+    val status: VerificationStatus,
+    val retryAfterSeconds: Long? = null,
+)
+
+data class VerificationCodeConfirmResponse(
+    val verified: Boolean,
+    val status: VerificationStatus,
+    val retryAfterSeconds: Long? = null,
+    val remainingAttempts: Int? = null,
+)

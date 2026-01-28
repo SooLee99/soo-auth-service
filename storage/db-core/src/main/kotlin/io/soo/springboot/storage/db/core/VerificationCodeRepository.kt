@@ -1,0 +1,5 @@
+package io.soo.springboot.storage.db.core
+
+import org.springframework.data.jpa.repository.JpaRepository
+
+interface VerificationCodeRepository : JpaRepository<VerificationCodeEntity, String>
