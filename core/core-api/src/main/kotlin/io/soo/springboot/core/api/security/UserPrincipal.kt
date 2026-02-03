@@ -1,5 +1,6 @@
 package io.soo.springboot.core.api.security
 
+import io.soo.springboot.core.enums.Role
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
@@ -14,7 +15,7 @@ data class UserPrincipal(
     override fun getPassword(): String = passwordHash
 
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> =
-        mutableListOf(SimpleGrantedAuthority("ROLE_USER"))
+        mutableListOf(SimpleGrantedAuthority(Role.USER.authority))
 
     override fun isAccountNonExpired(): Boolean = true
     override fun isAccountNonLocked(): Boolean = true
