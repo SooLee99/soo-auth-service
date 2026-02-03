@@ -15,7 +15,7 @@ enum class ErrorType(
     INVALID_PARAMETER(HttpStatus.BAD_REQUEST, ErrorCode.E400, "요청 파라미터가 올바르지 않습니다.", LogLevel.WARN),
 
     // 401/403
-//    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "인증이 필요합니다.", LogLevel.WARN),
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "인증이 필요합니다.", LogLevel.WARN),
     FORBIDDEN(HttpStatus.FORBIDDEN, ErrorCode.E403, "접근 권한이 없습니다.", LogLevel.WARN),
 
     // 404/405
@@ -27,8 +27,9 @@ enum class ErrorType(
     NOT_ACCEPTABLE(HttpStatus.NOT_ACCEPTABLE, ErrorCode.E406, "요청한 응답 형식을 제공할 수 없습니다.", LogLevel.WARN),
     UNSUPPORTED_MEDIA_TYPE(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ErrorCode.E415, "지원하지 않는 Content-Type 입니다.", LogLevel.WARN),
 
-    // 409
+    // 409/429
     CONFLICT(HttpStatus.CONFLICT, ErrorCode.E409, "요청이 현재 상태와 충돌합니다.", LogLevel.WARN),
+    TOO_MANY_REQUESTS(HttpStatus.TOO_MANY_REQUESTS, ErrorCode.E429, "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.", LogLevel.WARN),
 
 //    // 5xx (외부 연동 포함)
 //    UPSTREAM_BAD_GATEWAY(HttpStatus.BAD_GATEWAY, ErrorCode.E502, "외부 시스템 연동 중 오류가 발생했습니다.", LogLevel.ERROR),
