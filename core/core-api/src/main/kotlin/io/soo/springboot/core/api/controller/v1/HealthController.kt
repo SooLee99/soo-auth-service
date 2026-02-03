@@ -1,4 +1,4 @@
-package io.soo.springboot.core.api.controller
+package io.soo.springboot.core.api.controller.v1
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
