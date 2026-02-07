@@ -10,7 +10,7 @@ import jakarta.persistence.Enumerated
 import java.time.Instant
 
 @Entity
-class UserAccountEntity(
+class UserEntity(
 
     @Column
     var email: String? = null,
