@@ -24,7 +24,7 @@ abstract class BaseEntity {
     var version: Long = 0
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR")
+    @Column(columnDefinition = "VARCHAR", name = "entity_status", nullable = false)
     private var status: EntityStatus = EntityStatus.ACTIVE
 
     @CreationTimestamp
