@@ -24,12 +24,8 @@ class LocalAccountService (
         birthyear: String?,
         birthday: String?,
     ): UserAccountEntity? {
-        if (accountRepository.findByEmail(email) != null) {
-            throw IllegalArgumentException("이미 존재하는 이메일입니다.")
-        }
-        if (accountRepository.findByPhoneNumber(phoneNumber) != null) {
-            throw IllegalArgumentException("이미 존재하는 전화번호입니다.")
-        }
+        require(!accountRepository.existsByEmail(email)) { "이미 존재하는 이메일입니다." }
+        require(!accountRepository.existsByPhoneNumber(phoneNumber)) { "이미 존재하는 전화번호입니다." }
 
         // TODO: 비밀번호 암호화 + 자격 증명 테이블 추가로 생성 및 저장 (추후 로그인이랑 연계 예정)
 
