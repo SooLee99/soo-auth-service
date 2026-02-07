@@ -11,7 +11,7 @@ import jakarta.persistence.Enumerated
 @Entity
 class UserEntity(
 
-    @Column
+    @Column(nullable = false)
     var email: String? = null,
 
     @Column(nullable = false)
@@ -33,8 +33,8 @@ class UserEntity(
     var locale: String? = null,
 
     // 동의 기반/선택 정보
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     var gender: Gender = Gender.UNKNOWN,
 
     @Column
@@ -53,7 +53,7 @@ class UserEntity(
     @Column(length = 30)
     var authProvider: AuthProvider? = null,
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
+    @Enumerated(EnumType.STRING)
     var role: Role = Role.USER
 ) : BaseEntity()
