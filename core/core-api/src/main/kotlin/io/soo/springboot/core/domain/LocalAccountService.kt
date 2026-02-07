@@ -1,10 +1,11 @@
 package io.soo.springboot.core.domain
 
+import jakarta.transaction.Transactional
+import org.springframework.stereotype.Service
+
 import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.storage.db.core.UserAccountEntity
 import io.soo.springboot.storage.db.core.UserAccountRepository
-import jakarta.transaction.Transactional
-import org.springframework.stereotype.Service
 
 @Service
 class LocalAccountService (
