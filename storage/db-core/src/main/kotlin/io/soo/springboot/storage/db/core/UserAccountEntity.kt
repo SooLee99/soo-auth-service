@@ -31,12 +31,6 @@ class UserAccountEntity(
     var name: String? = null,
 
     @Column
-    var givenName: String? = null,
-
-    @Column
-    var familyName: String? = null,
-
-    @Column
     var locale: String? = null,
 
     // 동의 기반/선택 정보
