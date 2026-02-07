@@ -7,7 +7,6 @@ import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import java.time.Instant
-import java.time.LocalDateTime
 
 @Entity
 class UserAccountEntity(
@@ -38,9 +37,6 @@ class UserAccountEntity(
     var gender: String? = null,
 
     @Column
-    var ageRange: String? = null,
-
-    @Column
     var birthday: String? = null,   // "MM-DD"
 
     @Column
@@ -58,15 +54,6 @@ class UserAccountEntity(
 
     @Column
     var lastLoginAt: Instant? = null,
-
-    @Column
-    var suspendedAt: LocalDateTime? = null,
-
-    @Column
-    var suspendedUntil: LocalDateTime? = null,
-
-    @Column(length = 500)
-    var suspendedReason: String? = null,
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
