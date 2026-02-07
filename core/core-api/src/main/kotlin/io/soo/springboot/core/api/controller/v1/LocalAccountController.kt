@@ -20,8 +20,9 @@ class LocalAccountController(
         localAccountService.signUp(
             request.email,
             request.password,
-            request.name,
             request.nickname,
+            request.name,
+            request.locale,
             request.gender,
             request.phoneNumber,
             request.profileImageUrl,
