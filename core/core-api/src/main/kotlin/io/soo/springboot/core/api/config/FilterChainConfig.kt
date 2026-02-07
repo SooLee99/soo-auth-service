@@ -18,6 +18,7 @@ class FilterChainConfig (
         private val PUBLIC_ENDPOINTS = arrayOf(
             "/login/**",
             "/api/v1/auth/login",
+            "/api/v1/auth/signup",
             "/error",
             "/actuator/**",
         )
@@ -25,6 +26,7 @@ class FilterChainConfig (
         private val CSRF_IGNORED_ENDPOINTS = arrayOf(
             "/login/**",
             "/api/v1/auth/login",
+            "/api/v1/auth/signup",
             "/h2-console/**",
         )
 

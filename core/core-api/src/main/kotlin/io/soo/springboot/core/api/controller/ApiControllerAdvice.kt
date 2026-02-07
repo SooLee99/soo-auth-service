@@ -37,11 +37,21 @@ class ApiControllerAdvice {
 
     @ExceptionHandler(CoreException::class)
     fun handleCoreException(e: CoreException, req: HttpServletRequest): ResponseEntity<ApiResponse<Any>> {
+        val now = LocalDateTime.now()
         logByLevel(e.errorType.logLevel, "CoreException : ${e.message}", e)
-        return ResponseEntity(
-            ApiResponse.error(e.errorType, enrich(req, mapOf("timestamp" to LocalDateTime.now())) + mapOf("data" to e.data)),
-            e.errorType.status,
-        )
+
+        return ResponseEntity
+            .status(e.errorType.status)
+            .body(
+                ApiResponse.error(
+                    type = e.errorType,
+                    path = req.requestURI,
+                    method = req.method,
+                    query = req.queryString,
+                    timestamp = now,
+                    data = e.data, // ✅ CoreException의 data는 그대로 루트 data로
+                )
+            )
     }
 
     // 400: JSON 바디 파싱 실패 (Enum/타입 변환 포함)
@@ -64,8 +74,8 @@ class ApiControllerAdvice {
                 val msg = "'$valueText'는 유효하지 않은 $enumType 값입니다. 사용 가능한 값: [$allowed]"
 
                 return respond(
-                    ErrorType.INVALID_REQUEST_BODY,
-                    req,
+                    type = ErrorType.INVALID_REQUEST_BODY,
+                    req = req,
                     userMessage = msg,
                     detail = e.message,
                     timestamp = now,
@@ -75,8 +85,8 @@ class ApiControllerAdvice {
             // 2) 타입 변환 실패
             val msg = "'$valueText'는 ${targetType.simpleName} 타입으로 변환할 수 없습니다."
             return respond(
-                ErrorType.INVALID_REQUEST_BODY,
-                req,
+                type = ErrorType.INVALID_REQUEST_BODY,
+                req = req,
                 userMessage = msg,
                 detail = e.message,
                 timestamp = now,
@@ -85,8 +95,8 @@ class ApiControllerAdvice {
 
         // 3) 일반 파싱 실패
         return respond(
-            ErrorType.INVALID_REQUEST_BODY,
-            req,
+            type = ErrorType.INVALID_REQUEST_BODY,
+            req = req,
             userMessage = "요청 본문이 올바른 형식이 아닙니다. JSON 형식을 확인해주세요.",
             detail = e.message,
             timestamp = now,
@@ -103,8 +113,8 @@ class ApiControllerAdvice {
         val errorDetails = e.bindingResult.fieldErrors.map { FieldErrorDetail.from(it) }
 
         return respond(
-            ErrorType.INVALID_INPUT_VALUE,
-            req,
+            type = ErrorType.INVALID_INPUT_VALUE,
+            req = req,
             userMessage = "입력값이 올바르지 않습니다.",
             detail = e.message,
             timestamp = now,
@@ -119,8 +129,8 @@ class ApiControllerAdvice {
         val errorDetails = e.bindingResult.fieldErrors.map { FieldErrorDetail.from(it) }
 
         return respond(
-            ErrorType.INVALID_PARAMETER,
-            req,
+            type = ErrorType.INVALID_PARAMETER,
+            req = req,
             userMessage = "요청 파라미터 바인딩에 실패했습니다. 입력값을 확인해 주세요.",
             detail = e.message,
             timestamp = now,
@@ -128,7 +138,7 @@ class ApiControllerAdvice {
         )
     }
 
-    // 400: @RequestParam/@PathVariable 타입 미스매치 (LocalDate/숫자/UUID/Enum 등)
+    // 400: @RequestParam/@PathVariable 타입 미스매치
     @ExceptionHandler(MethodArgumentTypeMismatchException::class)
     fun handleMethodArgumentTypeMismatchException(
         ex: MethodArgumentTypeMismatchException,
@@ -172,15 +182,15 @@ class ApiControllerAdvice {
         }
 
         return respond(
-            ErrorType.INVALID_PARAMETER,
-            req,
+            type = ErrorType.INVALID_PARAMETER,
+            req = req,
             userMessage = msg,
             detail = ex.message,
             timestamp = now,
         )
     }
 
-    // 400: @Validated 메서드 파라미터 검증 실패 (RequestParam/PathVariable 등)
+    // 400: @Validated 메서드 파라미터 검증 실패
     @ExceptionHandler(ValidationConstraintViolationException::class)
     fun handleConstraintViolationException(
         e: ValidationConstraintViolationException,
@@ -196,15 +206,14 @@ class ApiControllerAdvice {
         }
 
         return respond(
-            ErrorType.INVALID_PARAMETER,
-            req,
+            type = ErrorType.INVALID_PARAMETER,
+            req = req,
             userMessage = "요청 파라미터가 올바르지 않습니다.",
             detail = e.message,
             timestamp = now,
             extra = mapOf("errors" to errors),
         )
     }
-
 
     // 405: 메서드 미지원
     @ExceptionHandler(HttpRequestMethodNotSupportedException::class)
@@ -221,8 +230,8 @@ class ApiControllerAdvice {
         val msg = "지원하지 않는 HTTP 메서드입니다. 요청: ${e.method} / 허용: [$supported]"
 
         return respond(
-            ErrorType.METHOD_NOT_ALLOWED,
-            req,
+            type = ErrorType.METHOD_NOT_ALLOWED,
+            req = req,
             userMessage = msg,
             detail = e.message,
             timestamp = now,
@@ -239,15 +248,15 @@ class ApiControllerAdvice {
         val msg = "요청하신 API를 찾을 수 없습니다. (${e.httpMethod} ${e.requestURL})"
 
         return respond(
-            ErrorType.NOT_FOUND,
-            req,
+            type = ErrorType.NOT_FOUND,
+            req = req,
             userMessage = msg,
             detail = e.message,
             timestamp = now,
         )
     }
 
-    // 406/415: Accept / Content-Type 문제
+    // 415: Content-Type 문제
     @ExceptionHandler(HttpMediaTypeNotSupportedException::class)
     fun handleHttpMediaTypeNotSupported(
         e: HttpMediaTypeNotSupportedException,
@@ -258,14 +267,15 @@ class ApiControllerAdvice {
         val msg = "지원하지 않는 Content-Type 입니다. 요청: ${e.contentType} / 허용: [$supported]"
 
         return respond(
-            ErrorType.UNSUPPORTED_MEDIA_TYPE,
-            req,
+            type = ErrorType.UNSUPPORTED_MEDIA_TYPE,
+            req = req,
             userMessage = msg,
             detail = e.message,
             timestamp = now,
         )
     }
 
+    // 406: Accept 문제
     @ExceptionHandler(HttpMediaTypeNotAcceptableException::class)
     fun handleHttpMediaTypeNotAcceptable(
         e: HttpMediaTypeNotAcceptableException,
@@ -276,8 +286,8 @@ class ApiControllerAdvice {
         val msg = "요청한 응답 타입(Accept)을 지원하지 않습니다. 허용: [$supported]"
 
         return respond(
-            ErrorType.NOT_ACCEPTABLE,
-            req,
+            type = ErrorType.NOT_ACCEPTABLE,
+            req = req,
             userMessage = msg,
             detail = e.message,
             timestamp = now,
@@ -292,8 +302,8 @@ class ApiControllerAdvice {
     ): ResponseEntity<ApiResponse<Any>> {
         val now = LocalDateTime.now()
         return respond(
-            ErrorType.PAYLOAD_TOO_LARGE,
-            req,
+            type = ErrorType.PAYLOAD_TOO_LARGE,
+            req = req,
             userMessage = "업로드 용량이 너무 큽니다.",
             detail = e.message,
             timestamp = now,
@@ -309,8 +319,8 @@ class ApiControllerAdvice {
         val now = LocalDateTime.now()
         val root = e.mostSpecificCause.message
         return respond(
-            ErrorType.CONFLICT,
-            req,
+            type = ErrorType.CONFLICT,
+            req = req,
             userMessage = "데이터 제약조건 위반으로 요청을 처리할 수 없습니다.",
             detail = root ?: e.message,
             timestamp = now,
@@ -325,8 +335,8 @@ class ApiControllerAdvice {
     ): ResponseEntity<ApiResponse<Any>> {
         val now = LocalDateTime.now()
         return respond(
-            ErrorType.CONFLICT,
-            req,
+            type = ErrorType.CONFLICT,
+            req = req,
             userMessage = "리소스가 이미 변경되었습니다. 새로고침 후 다시 시도해 주세요.",
             detail = e.message,
             timestamp = now,
@@ -341,45 +351,13 @@ class ApiControllerAdvice {
     ): ResponseEntity<ApiResponse<Any>> {
         val now = LocalDateTime.now()
         return respond(
-            ErrorType.NOT_FOUND,
-            req,
+            type = ErrorType.NOT_FOUND,
+            req = req,
             userMessage = e.message ?: "요청하신 리소스를 찾을 수 없습니다.",
             detail = e.message,
             timestamp = now,
         )
     }
-
-//    // 401: 인증 실패 (Spring Security)
-//    @ExceptionHandler(AuthenticationException::class)
-//    fun handleAuthenticationException(
-//        e: AuthenticationException,
-//        req: HttpServletRequest,
-//    ): ResponseEntity<ApiResponse<Any>> {
-//        val now = LocalDateTime.now()
-//        return respond(
-//            ErrorType.UNAUTHORIZED,
-//            req,
-//            userMessage = "인증에 실패했습니다.",
-//            detail = e.message,
-//            timestamp = now,
-//        )
-//    }
-//
-//    // 403: 인가 실패 (Spring Security)
-//    @ExceptionHandler(SecurityAccessDeniedException::class)
-//    fun handleSecurityAccessDenied(
-//        e: SecurityAccessDeniedException,
-//        req: HttpServletRequest,
-//    ): ResponseEntity<ApiResponse<Any>> {
-//        val now = LocalDateTime.now()
-//        return respond(
-//            ErrorType.FORBIDDEN,
-//            req,
-//            userMessage = "접근 권한이 없습니다.",
-//            detail = e.message,
-//            timestamp = now,
-//        )
-//    }
 
     // 파일 시스템 권한 예외
     @ExceptionHandler(FileAccessDeniedException::class)
@@ -389,8 +367,8 @@ class ApiControllerAdvice {
     ): ResponseEntity<ApiResponse<Any>> {
         val now = LocalDateTime.now()
         return respond(
-            ErrorType.FORBIDDEN,
-            req,
+            type = ErrorType.FORBIDDEN,
+            req = req,
             userMessage = "파일 접근 권한이 없습니다.",
             detail = e.message,
             timestamp = now,
@@ -432,15 +410,14 @@ class ApiControllerAdvice {
         log.error("Exception : {}", e.message, e)
         val now = LocalDateTime.now()
         return respond(
-            ErrorType.DEFAULT_ERROR,
-            req,
+            type = ErrorType.DEFAULT_ERROR,
+            req = req,
             userMessage = "서버에서 처리 중 오류가 발생했습니다.",
             detail = e.message,
             timestamp = now,
         )
     }
 
-    // 공통 응답 생성 (ApiResponse.error(ErrorType, data) 방식)
     private fun respond(
         type: ErrorType,
         req: HttpServletRequest,
@@ -449,27 +426,24 @@ class ApiControllerAdvice {
         timestamp: LocalDateTime,
         extra: Map<String, Any?> = emptyMap(),
     ): ResponseEntity<ApiResponse<Any>> {
-        logByLevel(type.logLevel, "[${type.code}] $userMessage", null)
-
         val data = linkedMapOf<String, Any?>(
-            "message" to userMessage,
             "detail" to detail,
-            "timestamp" to timestamp,
-        )
-        data.putAll(enrich(req))
-        data.putAll(extra)
+        ).apply { putAll(extra) }
+            .filterValues { it != null }
 
-        return ResponseEntity(ApiResponse.error(type, data), type.status)
-    }
-
-    private fun enrich(req: HttpServletRequest, extra: Map<String, Any?> = emptyMap()): Map<String, Any?> {
-        val base = linkedMapOf<String, Any?>(
-            "path" to req.requestURI,
-            "method" to req.method,
-            "query" to req.queryString,
-        )
-        base.putAll(extra)
-        return base
+        return ResponseEntity
+            .status(type.status)
+            .body(
+                ApiResponse.error(
+                    type = type,
+                    message = userMessage,
+                    path = req.requestURI,
+                    method = req.method,
+                    query = req.queryString,
+                    timestamp = timestamp,
+                    data = data.takeIf { it.isNotEmpty() },
+                )
+            )
     }
 
     private fun logByLevel(level: LogLevel, msg: String, t: Throwable?) {
