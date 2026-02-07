@@ -61,6 +61,12 @@ data class SignUpRequest(
     )
     val phoneNumber: String,
 
+    @field:Pattern(
+        regexp = """^[a-zA-Z]{2,3}(-[a-zA-Z]{4})?(-[a-zA-Z]{2}|\d{3})?$""",
+        message = "locale 형식이 올바르지 않습니다. (예: ko-KR, en-US)"
+    )
+    val locale: String = "ko-KR",
+
     @field:Size(max = 1000, message = "프로필 이미지 URL은 최대 1000자까지 입력할 수 있습니다.")
     val profileImageUrl: String? = null,
 
