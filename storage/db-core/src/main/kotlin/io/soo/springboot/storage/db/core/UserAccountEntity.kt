@@ -1,6 +1,7 @@
 package io.soo.springboot.storage.db.core
 
 import io.soo.springboot.core.enums.AuthProvider
+import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.core.enums.Role
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -33,8 +34,9 @@ class UserAccountEntity(
     var locale: String? = null,
 
     // 동의 기반/선택 정보
-    @Column
-    var gender: String? = null,
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    var gender: Gender = Gender.UNKNOWN,
 
     @Column
     var birthday: String? = null,   // "MM-DD"
