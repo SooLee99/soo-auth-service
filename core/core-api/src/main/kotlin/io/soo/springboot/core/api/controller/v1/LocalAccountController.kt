@@ -1,6 +1,5 @@
 package io.soo.springboot.core.api.controller.v1
 
-import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
 import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.PostMapping
@@ -8,9 +7,11 @@ import org.springframework.web.bind.annotation.RequestBody
 
 import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
 import io.soo.springboot.core.domain.LocalAccountService
+import io.soo.springboot.core.domain.LocalSignUpCommand
+import org.springframework.web.bind.annotation.RestController
 
 
-@Controller
+@RestController
 @RequestMapping("/api/v1/auth")
 class LocalAccountController(
     private val localAccountService: LocalAccountService
@@ -18,17 +19,19 @@ class LocalAccountController(
     @PostMapping("/signup")
     fun signUp(@RequestBody @Valid request: SignUpRequest) {
         localAccountService.signUp(
-            request.email,
-            request.password,
-            request.nickname,
-            request.name,
-            request.locale,
-            request.gender,
-            request.phoneNumber,
-            request.profileImageUrl,
-            request.thumbnailImageUrl,
-            request.birthyear,
-            request.birthday,
+            LocalSignUpCommand(
+                email = request.email,
+                password = request.password,
+                phoneNumber = request.phoneNumber,
+                gender = request.gender,
+                locale = request.locale,
+                nickname = request.nickname,
+                name = request.name,
+                profileImageUrl = request.profileImageUrl,
+                thumbnailImageUrl = request.thumbnailImageUrl,
+                birthyear = request.birthyear,
+                birthday = request.birthday,
+            )
         )
     }
 }
