@@ -1,3 +1,24 @@
+### 회원가입
+POST http://localhost:8080/api/v1/auth/signup
+X-Device-Id: dev-123
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "a1@a.com",
+  "password": "password123@",
+  "phoneNumber": "010-1234-5678",
+  "gender": "MALE",
+  "locale": "ko-KR",
+  "nickname": "soo_01",
+  "name": "홍길동",
+  "profileImageUrl": "https://example.com/profile.png",
+  "thumbnailImageUrl": "https://example.com/thumb.png",
+  "birthyear": "1998",
+  "birthday": "02-07"
+}
+
+
 ### 로그인
 POST http://localhost:8080/api/v1/auth/login
 X-Device-Id: dev-123
