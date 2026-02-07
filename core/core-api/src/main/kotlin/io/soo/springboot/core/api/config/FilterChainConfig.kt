@@ -57,7 +57,7 @@ class FilterChainConfig (
             .csrf { csrf ->
                 csrf.ignoringRequestMatchers(*CSRF_IGNORED_ENDPOINTS)
             }
-            .headers { headers ->
+            .headers { _ ->
             }
     }
 
