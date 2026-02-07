@@ -31,16 +31,16 @@ enum class ErrorType(
     // 406
     NOT_ACCEPTABLE(HttpStatus.NOT_ACCEPTABLE, ErrorCode.E406, "요청한 응답 형식을 제공할 수 없습니다.", LogLevel.WARN),
 
+    // 409
+    CONFLICT(HttpStatus.CONFLICT, ErrorCode.E409, "요청이 현재 상태와 충돌합니다.", LogLevel.WARN),
+    DUPLICATE_EMAIL(HttpStatus.CONFLICT, ErrorCode.E409, "이미 존재하는 이메일입니다.", LogLevel.WARN),
+    DUPLICATE_PHONE_NUMBER(HttpStatus.CONFLICT, ErrorCode.E409, "이미 존재하는 전화번호입니다.", LogLevel.WARN),
+
     // 413
     PAYLOAD_TOO_LARGE(HttpStatus.PAYLOAD_TOO_LARGE, ErrorCode.E413, "업로드 용량이 너무 큽니다.", LogLevel.WARN),
 
     // 415
     UNSUPPORTED_MEDIA_TYPE(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ErrorCode.E415, "지원하지 않는 Content-Type 입니다.", LogLevel.WARN),
-
-    // 409
-    CONFLICT(HttpStatus.CONFLICT, ErrorCode.E409, "요청이 현재 상태와 충돌합니다.", LogLevel.WARN),
-    DUPLICATE_EMAIL(HttpStatus.CONFLICT, ErrorCode.E409, "이미 존재하는 이메일입니다.", LogLevel.WARN),
-    DUPLICATE_PHONE_NUMBER(HttpStatus.CONFLICT, ErrorCode.E409, "이미 존재하는 전화번호입니다.", LogLevel.WARN),
 
     // 429
     TOO_MANY_REQUESTS(HttpStatus.TOO_MANY_REQUESTS, ErrorCode.E429, "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.", LogLevel.WARN),

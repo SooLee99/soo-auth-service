@@ -18,12 +18,6 @@ import io.soo.springboot.core.support.error.ErrorType
 class LocalJsonLoginFilter(
     private val objectMapper: ObjectMapper,
 ) : UsernamePasswordAuthenticationFilter() {
-
-    class LoginValidationException(
-        val errorType: ErrorType,
-        val detail: String? = null,
-    ) : AuthenticationServiceException(errorType.message)
-
     companion object {
         const val ATTR_NORMALIZED_EMAIL = "ATTR_NORMALIZED_EMAIL"
         const val ATTR_AUTH_ERROR = "ATTR_AUTH_ERROR"
@@ -53,9 +47,7 @@ class LocalJsonLoginFilter(
         return authenticate(normalizedEmail, password, request)
     }
 
-    // -----------------------------
     // Step 1) Content-Type 검증
-    // -----------------------------
     private fun validateJsonContentType(request: HttpServletRequest) {
         val contentType = request.contentType.orEmpty()
 
@@ -70,9 +62,7 @@ class LocalJsonLoginFilter(
         }
     }
 
-    // -----------------------------
     // Step 2) Body 읽기
-    // -----------------------------
     private fun readRequestBody(request: HttpServletRequest): String {
         val body = request.reader.use { it.readText() }
         if (body.isBlank()) {
@@ -86,9 +76,7 @@ class LocalJsonLoginFilter(
         return body
     }
 
-    // -----------------------------
     // Step 3) JSON 파싱
-    // -----------------------------
     private fun parseLoginRequest(request: HttpServletRequest, body: String): LoginRequest {
         return try {
             objectMapper.readValue(body, LoginRequest::class.java)
@@ -128,9 +116,7 @@ class LocalJsonLoginFilter(
         }
     }
 
-    // -----------------------------
     // Step 4) 필수값 검증 + 정규화
-    // -----------------------------
     private fun validateAndNormalize(req: LoginRequest, request: HttpServletRequest): Pair<String, String> {
         val email = req.email?.trim().orEmpty()
         val password = req.password?.trim().orEmpty()
@@ -152,19 +138,14 @@ class LocalJsonLoginFilter(
         return normalizedEmail to password
     }
 
-    // -----------------------------
     // Step 5) 인증 위임
-    // -----------------------------
     private fun authenticate(email: String, password: String, request: HttpServletRequest): Authentication {
         val authRequest = UsernamePasswordAuthenticationToken(email, password)
         setDetails(request, authRequest)
         return authenticationManager.authenticate(authRequest)
     }
 
-    // -----------------------------
     // 공통 실패 처리
-    // - 실패 핸들러에서 request attribute로 에러 정보를 꺼내 쓰는 구조
-    // -----------------------------
     private fun fail(
         request: HttpServletRequest,
         type: ErrorType,

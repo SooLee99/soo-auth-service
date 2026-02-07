@@ -19,7 +19,6 @@ class LoginFilterConfig(
     fun localJsonLoginFilter(authenticationManager: AuthenticationManager): LocalJsonLoginFilter {
         return LocalJsonLoginFilter(objectMapper).apply {
             setAuthenticationManager(authenticationManager)
-            System.out.println("setFilterProcessesUrl")
             setFilterProcessesUrl("/api/v1/auth/login")
 //            setAuthenticationSuccessHandler(localLoginSuccessHandler)
             setAuthenticationFailureHandler(localLoginFailureHandler)
