@@ -20,12 +20,13 @@ class LocalAccountService(
 ) {
     @Transactional
     fun signUp(cmd: LocalSignUpCommand): UserEntity {
-        if (userRepository.existsByEmail(cmd.email)) {
+        // 1) 중복 이메일/전화번호 검사
+        if (userRepository.existsByEmail(cmd.email))
             throw CoreException(ErrorType.DUPLICATE_EMAIL, data = mapOf("email" to cmd.email))
-        }
-        if (userRepository.existsByPhoneNumber(cmd.phoneNumber)) {
+        if (userRepository.existsByPhoneNumber(cmd.phoneNumber))
             throw CoreException(ErrorType.DUPLICATE_PHONE_NUMBER, data = mapOf("phoneNumber" to cmd.phoneNumber))
-        }
+
+        // 2) 사용자 정보 저장
         val user = userRepository.save(
             UserEntity(
                 email = cmd.email,
@@ -43,6 +44,8 @@ class LocalAccountService(
                 authProvider = AuthProvider.LOCAL,
             )
         )
+
+        // 3) 로컬 자격증명 저장
         localAccountRepository.save(
             LocalCredentialEntity(
                 userId = requireNotNull(user.id) { "사용자 정보를 저장하지 못했습니다." },
