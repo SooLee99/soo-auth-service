@@ -49,7 +49,6 @@ class LocalAccountService(
                 passwordHash = passwordEncoder.encode(cmd.password),
             )
         )
-
         return user
     }
 }
