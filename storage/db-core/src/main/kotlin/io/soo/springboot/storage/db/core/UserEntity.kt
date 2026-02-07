@@ -7,7 +7,6 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
-import java.time.Instant
 
 @Entity
 class UserEntity(
@@ -52,10 +51,7 @@ class UserEntity(
 
     @Enumerated(EnumType.STRING)
     @Column(length = 30)
-    var lastLoginProvider: AuthProvider? = null,
-
-    @Column
-    var lastLoginAt: Instant? = null,
+    var authProvider: AuthProvider? = null,
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)

@@ -1,5 +1,6 @@
 package io.soo.springboot.core.domain
 
+import io.soo.springboot.core.enums.AuthProvider
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -7,10 +8,12 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.storage.db.core.UserEntity
 import io.soo.springboot.storage.db.core.UseRepository
+import io.soo.springboot.storage.db.core.LocalCredentialRepository
 
 @Service
 class LocalAccountService (
     private val accountRepository: UseRepository,
+    private val localAccountRepository: LocalCredentialRepository,
     private val passwordEncoder: PasswordEncoder
 ){
     @Transactional
@@ -30,10 +33,7 @@ class LocalAccountService (
         require(!accountRepository.existsByEmail(email)) { "이미 존재하는 이메일입니다." }
         require(!accountRepository.existsByPhoneNumber(phoneNumber)) { "이미 존재하는 전화번호입니다." }
 
-        // TODO: 비밀번호 암호화 + 자격 증명 테이블 추가로 생성 및 저장 (추후 로그인이랑 연계 예정)
-
-
-        return accountRepository.save(
+        val user = accountRepository.save(
             UserEntity(
                 email = email,
                 emailVerified = false,
@@ -47,7 +47,12 @@ class LocalAccountService (
                 birthday = birthday,
                 profileImageUrl = profileImageUrl,
                 thumbnailImageUrl = thumbnailImageUrl,
+                authProvider = AuthProvider.LOCAL,
             ),
         )
+
+        // TODO: 비밀번호 암호화 + 자격 증명 테이블 추가로 생성 및 저장 (추후 로그인이랑 연계 예정)
+
+        return accountRepository.save(user)
     }
 }
