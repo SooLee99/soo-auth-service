@@ -46,6 +46,7 @@ class LocalAccountService(
         localAccountRepository.save(
             LocalCredentialEntity(
                 userId = requireNotNull(user.id) { "사용자 정보를 저장하지 못했습니다." },
+                userEmail = cmd.email,
                 passwordHash = passwordEncoder.encode(cmd.password),
             )
         )

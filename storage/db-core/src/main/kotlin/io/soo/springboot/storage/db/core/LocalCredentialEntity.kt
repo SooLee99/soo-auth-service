@@ -8,6 +8,9 @@ class LocalCredentialEntity(
     @Column(nullable = false)
     var userId: Long,
 
+    @Column(nullable = false)
+    var userEmail: String,
+
     @Column(nullable = false, length = 200)
     var passwordHash: String,
 
