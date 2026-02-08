@@ -2,7 +2,7 @@ package io.soo.springboot.core.api.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.soo.springboot.core.domain.LocalJsonLoginFilter
-import io.soo.springboot.core.api.security.LocalLoginFailureHandler
+import io.soo.springboot.core.api.security.handler.LocalLoginFailureHandler
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

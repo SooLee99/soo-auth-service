@@ -1,5 +1,7 @@
 package io.soo.springboot.core.api.config
 
+import io.soo.springboot.core.api.security.handler.RestAccessDeniedHandler
+import io.soo.springboot.core.api.security.handler.RestAuthenticationEntryPoint
 import io.soo.springboot.core.domain.LocalJsonLoginFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -12,7 +14,9 @@ import org.springframework.security.web.context.SecurityContextRepository
 
 @Configuration
 class FilterChainConfig (
-    private val securityContextRepository: SecurityContextRepository
+    private val securityContextRepository: SecurityContextRepository,
+    private val restAuthenticationEntryPoint: RestAuthenticationEntryPoint,
+    private val restAccessDeniedHandler: RestAccessDeniedHandler,
 ) {
     companion object {
         private val PUBLIC_ENDPOINTS = arrayOf(
@@ -60,6 +64,10 @@ class FilterChainConfig (
                 csrf.ignoringRequestMatchers(*CSRF_IGNORED_ENDPOINTS)
             }
             .headers { _ ->
+            }
+            .exceptionHandling { ex ->
+                ex.authenticationEntryPoint(restAuthenticationEntryPoint) // 401
+                ex.accessDeniedHandler(restAccessDeniedHandler)           // 403
             }
     }
 
