@@ -82,3 +82,5 @@ data class SignUpRequest(
     )
     val birthday: String? = null,
 )
+
+data class RefreshRequest(val refreshToken: String)

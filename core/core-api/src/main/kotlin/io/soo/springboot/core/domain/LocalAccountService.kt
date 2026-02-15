@@ -8,26 +8,26 @@ import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.storage.db.core.UserEntity
-import io.soo.springboot.storage.db.core.UserRepository
+import io.soo.springboot.storage.db.core.UserJpaRepository
 import io.soo.springboot.storage.db.core.LocalCredentialEntity
-import io.soo.springboot.storage.db.core.LocalCredentialRepository
+import io.soo.springboot.storage.db.core.LocalCredentialJpaRepository
 
 @Service
 class LocalAccountService(
-    private val userRepository: UserRepository,
-    private val localAccountRepository: LocalCredentialRepository,
+    private val userJpaRepository: UserJpaRepository,
+    private val localAccountRepository: LocalCredentialJpaRepository,
     private val passwordEncoder: PasswordEncoder,
 ) {
     @Transactional
     fun signUp(cmd: LocalSignUpCommand): UserEntity {
         // 1) 중복 이메일/전화번호 검사
-        if (userRepository.existsByEmail(cmd.email))
+        if (userJpaRepository.existsByEmail(cmd.email))
             throw CoreException(ErrorType.DUPLICATE_EMAIL, data = mapOf("email" to cmd.email))
-        if (userRepository.existsByPhoneNumber(cmd.phoneNumber))
+        if (userJpaRepository.existsByPhoneNumber(cmd.phoneNumber))
             throw CoreException(ErrorType.DUPLICATE_PHONE_NUMBER, data = mapOf("phoneNumber" to cmd.phoneNumber))
 
         // 2) 사용자 정보 저장
-        val user = userRepository.save(
+        val user = userJpaRepository.save(
             UserEntity(
                 email = cmd.email,
                 emailVerified = false,
@@ -48,7 +48,7 @@ class LocalAccountService(
         // 3) 로컬 자격증명 저장
         localAccountRepository.save(
             LocalCredentialEntity(
-                userId = requireNotNull(user.id) { "사용자 정보를 저장하지 못했습니다." },
+                userId = user.id,
                 userEmail = cmd.email,
                 passwordHash = passwordEncoder.encode(cmd.password),
             )

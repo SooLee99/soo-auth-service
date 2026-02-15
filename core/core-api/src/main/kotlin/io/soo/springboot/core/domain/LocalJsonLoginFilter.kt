@@ -118,8 +118,8 @@ class LocalJsonLoginFilter(
 
     // Step 4) 필수값 검증 + 정규화
     private fun validateAndNormalize(req: LoginRequest, request: HttpServletRequest): Pair<String, String> {
-        val email = req.email?.trim().orEmpty()
-        val password = req.password?.trim().orEmpty()
+        val email = req.email.trim()
+        val password = req.password.trim()
 
         when {
             email.isBlank() && password.isBlank() ->
@@ -153,12 +153,12 @@ class LocalJsonLoginFilter(
         detail: String? = null,
         extra: Map<String, Any?> = emptyMap(),
     ): Nothing {
-        val error_payload = AuthErrorPayload(type = type, userMessage = userMessage, detail = detail, extra = extra)
+        val error = AuthErrorPayload(type = type, userMessage = userMessage, detail = detail, extra = extra)
         request.setAttribute(
             ATTR_AUTH_ERROR,
-            error_payload,
+            error,
         )
-        System.out.println("LocalJsonLoginFilter.fail: $error_payload")
+        System.out.println("LocalJsonLoginFilter.fail: $error")
         throw AuthenticationServiceException(userMessage)
     }
 }

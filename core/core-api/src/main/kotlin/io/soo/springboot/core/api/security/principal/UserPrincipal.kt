@@ -9,13 +9,14 @@ data class UserPrincipal(
     val userId: Long,
     val email: String,
     private val passwordHash: String,
+    val role: Role,
 ) : UserDetails {
 
     override fun getUsername(): String = email
     override fun getPassword(): String = passwordHash
 
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> =
-        mutableListOf(SimpleGrantedAuthority(Role.USER.authority))
+        mutableListOf(SimpleGrantedAuthority(role.authority))
 
     override fun isAccountNonExpired(): Boolean = true
     override fun isAccountNonLocked(): Boolean = true
