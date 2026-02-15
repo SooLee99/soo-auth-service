@@ -18,8 +18,8 @@ Accept: application/json
   "birthday": "02-07"
 }
 
-
-### 로그인
+### 로그인 (토큰 변수 저장)
+# @name login
 POST http://localhost:8080/api/v1/auth/login
 X-Device-Id: dev-123
 Content-Type: application/json
@@ -28,4 +28,39 @@ Accept: application/json
 {
   "email": "a1@a.com",
   "password": "password123@"
+}
+
+> {%
+    // 로그인 응답 예시:
+    // { "result": "OK", "data": { "accessToken": "...", "refreshToken": "...", ... } }
+    client.global.set("accessToken", response.body.data.accessToken);
+    client.global.set("refreshToken", response.body.data.refreshToken);
+%}
+
+### refresh (회전: 새 access + 새 refresh 발급) + 변수 업데이트
+# @name refresh
+POST http://localhost:8080/api/v1/auth/token/refresh
+X-Device-Id: dev-123
+Content-Type: application/json
+Accept: application/json
+
+{
+  "refreshToken": "73bbe0d2afb94760bf3e5fb80067805fe1655288c1e24d42955ee7b82eeb47ac"
+}
+
+> {%
+    client.global.set("accessToken", response.body.data.accessToken);
+    client.global.set("refreshToken", response.body.data.refreshToken);
+%}
+
+
+### logout (현재 access denylist + refresh revoke)
+POST http://localhost:8080/api/v1/auth/logout
+X-Device-Id: dev-123
+Authorization: "Bearer eyJraWQiOiJqd3QiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJhMUBhLmNvbSIsInVpZCI6MSwicm9sZXMiOlsiUk9MRV9VU0VSIl0sImlzcyI6InNvbyIsImV4cCI6MTc3MTE0MDEwNiwiaWF0IjoxNzcxMTM5MjA2LCJqdGkiOiIzMmYxNjcwYy1iZWRkLTRjZmQtOTVjYS1jMjBiZTYxMWQzY2MifQ.YxYCYF_qKe-eYAC72RizX41FvfkbhwiKcQP7N0CW5-ZMlQt7HxV7V8R2plgPTH6exSFpxDrRz97DAFozdbc1TTjkpob9aKDvSicnbcZVOCo0PVHgzzTdzoHNADR6zse0_yTEsilV6pmaMPuGcQlmO5U31r920sIMa71058vsgtnF5BUzG1JLP98l0tjQHhNkFxvk51m7RCBCYqge4cstUM3qZzTOl9gzpWGTywOo9UO-S_iEEW84SoZv6-wP0uurflpehW01hLKQZqy_5vEbZSNDm971JNqOMd7fQMPp2x3L3_Gap18f02ZtTjo2UFcEZt0LXyKW30-FRT3HQRa3Jw"
+Content-Type: application/json
+Accept: application/json
+
+{
+  "refreshToken": "d8085505855d4afd9e81554345c9a81f5b9e8b2ef1ba47febc9bb2135490ed8b"
 }
