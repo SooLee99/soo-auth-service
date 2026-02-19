@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
-import io.soo.springboot.core.api.controller.v1.request.LoginRequest
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.MediaType
@@ -13,6 +12,8 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+
+import io.soo.springboot.core.api.controller.v1.request.LoginRequest
 import io.soo.springboot.core.support.error.ErrorType
 
 class LocalJsonLoginFilter(
@@ -37,13 +38,13 @@ class LocalJsonLoginFilter(
         // 2) 바디 읽기 + 비어있는지 확인
         val body = readRequestBody(request)
 
-        // 3) JSON 파싱
-        val loginRequest = parseLoginRequest(request, body)
+        // 3) JSON 파싱 + 필수값 검증 + 정규화
+        val (normalizedEmail, password) = validateAndNormalize(
+            parseLoginRequest(request, body),
+            request
+        )
 
-        // 4) 필수값 검증 + 정규화
-        val (normalizedEmail, password) = validateAndNormalize(loginRequest, request)
-
-        // 5) AuthenticationManager로 인증 위임
+        // 4) AuthenticationManager로 인증 위임
         return authenticate(normalizedEmail, password, request)
     }
 

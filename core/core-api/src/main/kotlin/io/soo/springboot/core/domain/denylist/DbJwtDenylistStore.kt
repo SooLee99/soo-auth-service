@@ -1,13 +1,15 @@
-package io.soo.springboot.core.domain
+package io.soo.springboot.core.domain.denylist
 
-import io.soo.springboot.storage.db.core.JwtDenylistEntity
-import io.soo.springboot.storage.db.core.JwtDenylistJpaRepository
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
+
+import io.soo.springboot.storage.db.core.JwtDenylistEntity
+import io.soo.springboot.storage.db.core.JwtDenylistJpaRepository
+
 
 @Service
 class DbJwtDenylistStore(

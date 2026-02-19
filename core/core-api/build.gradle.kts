@@ -21,4 +21,6 @@ dependencies {
     implementation("org.springframework.session:spring-session-core")
     implementation("org.springframework.session:spring-session-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
+
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 }

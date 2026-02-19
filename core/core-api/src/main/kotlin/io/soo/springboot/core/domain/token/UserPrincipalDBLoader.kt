@@ -1,8 +1,6 @@
-package io.soo.springboot.core.domain
+package io.soo.springboot.core.domain.token
 
-import io.soo.springboot.core.api.security.principal.UserPrincipal
-import io.soo.springboot.storage.db.core.LocalCredentialJpaRepository
-import io.soo.springboot.storage.db.core.UserJpaRepository
+
 import org.springframework.context.annotation.Primary
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -10,9 +8,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
+import io.soo.springboot.storage.db.core.LocalCredentialJpaRepository
+import io.soo.springboot.storage.db.core.UserJpaRepository
+
+
 @Primary
 @Service
-class DbUserPrincipalLoader(
+class UserPrincipalDBLoader(
     private val userRepo: UserJpaRepository,
     private val credentialRepo: LocalCredentialJpaRepository,
 ) : UserPrincipalLoader, UserDetailsService {
@@ -41,7 +43,7 @@ class DbUserPrincipalLoader(
             ?: throw UsernameNotFoundException("User not found: email=$email")
 
         return UserPrincipal(
-            userId =  user.id,
+            userId = user.id,
             email = email,
             passwordHash = credentialRepo.findByUserEmail(email)?.passwordHash ?: "",
             role = user.role,

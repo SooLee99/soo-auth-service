@@ -1,4 +1,4 @@
-package io.soo.springboot.core.domain
+package io.soo.springboot.core.domain.token
 
 import org.springframework.security.core.userdetails.UserDetails
 

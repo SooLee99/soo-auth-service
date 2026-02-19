@@ -1,4 +1,4 @@
-package io.soo.springboot.core.domain
+package io.soo.springboot.core.domain.token
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -37,7 +37,7 @@ class JwtService(
     }
 
     /**
-     * ✅ 컨트롤러(/token/refresh)에서 호출
+     * ✅ 토큰 refresh
      * - refresh rotate 성공 시: 새 access + 새 refresh 반환
      */
     fun refresh(oldRefreshToken: String): Pair<RotateResult, IssuedTokens?> {
@@ -66,6 +66,9 @@ class JwtService(
         }
     }
 
+    /**
+     * ✅ 토큰 revoke
+     */
     fun revoke(token: String) = refreshTokenService.revoke(token)
     fun revokeAll(userId: Long) = refreshTokenService.revokeAllByUser(userId)
 }

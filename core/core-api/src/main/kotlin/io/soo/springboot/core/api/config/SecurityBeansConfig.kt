@@ -8,8 +8,11 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.oauth2.jwt.JwtDecoder
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository
 import org.springframework.security.web.context.SecurityContextRepository
+import java.security.interfaces.RSAPublicKey
 
 @Configuration
 class SecurityBeansConfig(
@@ -34,5 +37,10 @@ class SecurityBeansConfig(
     fun securityContextRepository(): SecurityContextRepository {
         // ✅ 세션(HttpSession)에 SecurityContext를 저장/복원하는 기본 구현체
         return HttpSessionSecurityContextRepository()
+    }
+
+    @Bean
+    fun jwtDecoder(rsaPublicKey: RSAPublicKey): JwtDecoder {
+        return NimbusJwtDecoder.withPublicKey(rsaPublicKey).build()
     }
 }

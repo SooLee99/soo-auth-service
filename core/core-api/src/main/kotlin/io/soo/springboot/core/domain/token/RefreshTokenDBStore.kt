@@ -1,15 +1,17 @@
-package io.soo.springboot.core.domain
+package io.soo.springboot.core.domain.token
 
-import io.soo.springboot.storage.db.core.RefreshTokenEntity
-import io.soo.springboot.storage.db.core.RefreshTokenJpaRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import java.time.Instant
 
+import io.soo.springboot.storage.db.core.RefreshTokenEntity
+import io.soo.springboot.storage.db.core.RefreshTokenJpaRepository
+
+
 @Service
-class DbRefreshTokenStore(
+class RefreshTokenDBStore(
     private val repo: RefreshTokenJpaRepository,
 ) : RefreshTokenStore {
 

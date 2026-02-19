@@ -1,4 +1,4 @@
-package io.soo.springboot.core.api.security.principal
+package io.soo.springboot.core.domain.token
 
 import io.soo.springboot.core.enums.Role
 import org.springframework.security.core.GrantedAuthority

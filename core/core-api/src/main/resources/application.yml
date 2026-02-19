@@ -1,6 +1,16 @@
+app:
+  security:
+    jwt:
+      issuer: "soo-auth-service"
+      keystore:
+        location: "classpath:keys/jwt-keystore.p12"
+        password: "admin123"
+        key-alias: "jwt"
+        key-password: "admin123"
+        type: "PKCS12"
+
 spring.application.name: core-api
 spring.profiles.active: local
-
 spring:
   config:
     import:

@@ -1,9 +1,8 @@
 package io.soo.springboot.core.api.security.userdetails
 
-import io.soo.springboot.core.api.security.principal.UserPrincipal
+import io.soo.springboot.core.domain.token.UserPrincipal
 import io.soo.springboot.storage.db.core.LocalCredentialJpaRepository
 import io.soo.springboot.storage.db.core.UserJpaRepository
-import org.springframework.context.annotation.Primary
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException

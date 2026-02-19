@@ -2,8 +2,8 @@ package io.soo.springboot.core.api.security.handler
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.soo.springboot.core.api.controller.v1.response.LoginSuccessResponse
-import io.soo.springboot.core.api.security.principal.UserPrincipal
-import io.soo.springboot.core.domain.JwtService
+import io.soo.springboot.core.domain.token.UserPrincipal
+import io.soo.springboot.core.domain.token.JwtService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.MediaType

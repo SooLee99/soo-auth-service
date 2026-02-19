@@ -1,4 +1,4 @@
-package io.soo.springboot.core.domain
+package io.soo.springboot.core.domain.token
 
 sealed class RotateResult {
     data class Success(val userId: Long) : RotateResult()

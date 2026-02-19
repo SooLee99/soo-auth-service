@@ -1,9 +1,11 @@
-package io.soo.springboot.core.domain
+package io.soo.springboot.core.domain.token
 
-import io.soo.springboot.core.api.config.AppJwtProperties
 import org.springframework.stereotype.Service
 import java.time.Instant
 import java.util.UUID
+
+import io.soo.springboot.core.api.config.AppJwtProperties
+
 
 data class IssuedRefreshToken(
     val token: String,

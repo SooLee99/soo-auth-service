@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType
+
 import io.soo.springboot.storage.db.core.UserEntity
 import io.soo.springboot.storage.db.core.UserJpaRepository
 import io.soo.springboot.storage.db.core.LocalCredentialEntity
