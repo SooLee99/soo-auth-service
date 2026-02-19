@@ -4,7 +4,6 @@ import io.soo.springboot.core.api.controller.v1.request.RefreshRequest
 import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
 import io.soo.springboot.core.domain.*
-import io.soo.springboot.core.domain.denylist.JwtDenylistStore
 import io.soo.springboot.core.domain.token.JwtService
 import io.soo.springboot.core.domain.token.RotateResult
 import jakarta.validation.Valid
@@ -12,15 +11,12 @@ import org.springframework.http.MediaType
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
-import java.time.Duration
-import java.time.Instant
 
 @RestController
 @RequestMapping("/api/v1/auth")
 class LocalAccountController(
     private val localAccountService: LocalAccountService,
     private val jwtService: JwtService,
-    private val denylistStore: JwtDenylistStore,
 ) {
     @PostMapping("/signup")
     fun signUp(@RequestBody @Valid request: SignUpRequest) {
@@ -56,29 +52,7 @@ class LocalAccountController(
         @AuthenticationPrincipal jwt: Jwt,
         @RequestBody(required = false) body: LogoutRequest?,
     ): Map<String, Any> {
-
-        // 1) access token denylist(jti)
-        val jti = jwt.id
-        val exp = jwt.expiresAt
-
-        // 2) expiration time check
-        if (!jti.isNullOrBlank() && exp != null) {
-            val ttl = Duration.between(Instant.now(), exp).coerceAtLeast(Duration.ZERO)
-            if (!ttl.isZero) denylistStore.deny(jti, ttl)
-        }
-
-        // 3) refresh token revoke
-        val refreshToken = body?.refreshToken
-        if (!refreshToken.isNullOrBlank()) {
-            jwtService.revoke(refreshToken)
-        }
-
-        // 4) 전체 로그아웃(옵션): 토큰에 uid claim이 있어야 함
-        if (body?.logoutAll == true) {
-            val uid = (jwt.claims["uid"] as? Number)?.toLong()
-            if (uid != null) jwtService.revokeAll(uid)
-        }
-
+        localAccountService.logout(jwt, body?.refreshToken ?: "", body?.logoutAll ?: false)
         return mapOf("result" to "OK")
     }
 }

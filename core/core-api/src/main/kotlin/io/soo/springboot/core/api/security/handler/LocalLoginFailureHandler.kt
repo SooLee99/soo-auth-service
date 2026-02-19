@@ -2,7 +2,7 @@ package io.soo.springboot.core.api.security.handler
 
 import io.soo.springboot.core.api.security.response.ApiSecurityResponseWriter
 import io.soo.springboot.core.api.security.response.SecurityErrorFields
-import io.soo.springboot.core.domain.LocalJsonLoginFilter
+import io.soo.springboot.core.api.security.LocalJsonLoginFilter
 import io.soo.springboot.core.support.error.ErrorType
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse

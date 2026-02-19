@@ -11,7 +11,7 @@ import io.soo.springboot.storage.db.core.RefreshTokenJpaRepository
 
 
 @Service
-class RefreshTokenDBStore(
+class DBRefreshTokenStore(
     private val repo: RefreshTokenJpaRepository,
 ) : RefreshTokenStore {
 

@@ -2,7 +2,7 @@ package io.soo.springboot.core.api.config
 
 import io.soo.springboot.core.api.security.handler.RestAccessDeniedHandler
 import io.soo.springboot.core.api.security.handler.RestAuthenticationEntryPoint
-import io.soo.springboot.core.domain.LocalJsonLoginFilter
+import io.soo.springboot.core.api.security.LocalJsonLoginFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order

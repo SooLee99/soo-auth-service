@@ -1,10 +1,12 @@
-package io.soo.springboot.core.domain
+package io.soo.springboot.core.api.security
 
 import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
+import io.soo.springboot.core.api.controller.v1.request.LoginRequest
+import io.soo.springboot.core.support.error.ErrorType
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.MediaType
@@ -12,9 +14,6 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-
-import io.soo.springboot.core.api.controller.v1.request.LoginRequest
-import io.soo.springboot.core.support.error.ErrorType
 
 class LocalJsonLoginFilter(
     private val objectMapper: ObjectMapper,
