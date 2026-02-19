@@ -16,7 +16,7 @@ import io.soo.springboot.core.domain.token.RotateResult
 
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/v1/auth/local/")
 class LocalAccountController(
     private val localAccountService: LocalAccountService,
     private val jwtService: JwtService,
