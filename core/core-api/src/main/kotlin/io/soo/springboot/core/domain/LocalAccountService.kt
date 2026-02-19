@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.security.crypto.password.PasswordEncoder
 
-
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType
@@ -18,6 +17,22 @@ import io.soo.springboot.storage.db.core.LocalCredentialEntity
 import io.soo.springboot.storage.db.core.LocalCredentialJpaRepository
 import io.soo.springboot.core.domain.denylist.JwtDenylistStore
 import io.soo.springboot.core.domain.token.JwtService
+import io.soo.springboot.core.enums.Gender
+
+
+data class LocalSignUpCommand(
+    val email: String,
+    val password: String,
+    val phoneNumber: String,
+    val gender: Gender,
+    val locale: String = "ko-KR",
+    val nickname: String? = null,
+    val name: String? = null,
+    val profileImageUrl: String? = null,
+    val thumbnailImageUrl: String? = null,
+    val birthyear: String? = null,
+    val birthday: String? = null,
+)
 
 @Service
 class LocalAccountService(
