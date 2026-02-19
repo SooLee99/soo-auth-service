@@ -29,7 +29,7 @@ class RestAccessDeniedHandler(
 
         objectMapper.writeValue(
             response.outputStream,
-            ApiResponse.Companion.error(
+            ApiResponse.error(
                 type = type,
                 req = request,
                 fields = mapOf("reason" to "ACCESS_DENIED"),
