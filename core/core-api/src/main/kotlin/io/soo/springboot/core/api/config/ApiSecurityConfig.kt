@@ -14,7 +14,8 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.context.SecurityContextRepository
-
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher
 @Configuration
 class ApiSecurityConfig(
     private val securityContextRepository: SecurityContextRepository,
@@ -51,21 +52,17 @@ class ApiSecurityConfig(
 
     @Bean
     @Order(0)
-    fun h2ConsoleSecurityFilterChain(http: HttpSecurity): SecurityFilterChain {
-        http.securityMatcher(H2_CONSOLE)
+    fun h2ConsoleChain(http: HttpSecurity): SecurityFilterChain {
+        http.securityMatcher(AntPathRequestMatcher("/h2-console/**"))
 
+        http.authorizeHttpRequests { it.anyRequest().permitAll() }
         http.csrf { it.disable() }
 
-        // H2 console은 frame 사용 => sameOrigin 또는 disable 필요
+        // ✅ H2 콘솔은 프레임 기반 -> SAMEORIGIN 허용
         http.headers { headers ->
-            headers.frameOptions { it.sameOrigin() } // 또는 headers.frameOptions { it.disable() }
+            headers.frameOptions { it.sameOrigin() }
         }
 
-        http.authorizeHttpRequests { auth ->
-            auth.anyRequest().permitAll()
-        }
-
-        // H2는 굳이 oauth2/jwt/filter 등 적용할 필요 없음
         return http.build()
     }
 
@@ -78,54 +75,47 @@ class ApiSecurityConfig(
         oAuth2LoginSuccessHandler: OAuth2LoginSuccessHandler,
     ): SecurityFilterChain {
 
+        // ✅ 이 체인은 /h2-console/** 요청을 절대 처리하지 않게 "제외"
+        http.securityMatcher(NegatedRequestMatcher(AntPathRequestMatcher("/h2-console/**")))
+
         http.authenticationProvider(daoAuthProvider)
 
-        // ✅ 세션/시큐리티 컨텍스트(로컬 로그인 + OAuth2 state 저장에 필요)
         http.securityContext { it.securityContextRepository(securityContextRepository) }
 
-        // ✅ 예외 처리(401/403) - API 스타일
         http.exceptionHandling { ex ->
             ex.authenticationEntryPoint(restAuthenticationEntryPoint)
             ex.accessDeniedHandler(restAccessDeniedHandler)
         }
 
-        // ✅ CSRF 제외
         http.csrf { csrf -> csrf.ignoringRequestMatchers(*CSRF_IGNORED_ENDPOINTS) }
 
-        // ✅ 불필요한 기본 로그인페이지/베이직 인증 끔
         http.formLogin { it.disable() }
         http.httpBasic { it.disable() }
 
-        // ✅ OAuth2 Login 활성화
         http.oauth2Login { oauth ->
-            oauth.authorizationEndpoint { ep -> ep.baseUri("/oauth2/authorization") } // 기본값
-            oauth.redirectionEndpoint { ep -> ep.baseUri("/login/oauth2/code/*") }   // 기본값
+            oauth.authorizationEndpoint { ep -> ep.baseUri("/oauth2/authorization") }
+            oauth.redirectionEndpoint { ep -> ep.baseUri("/login/oauth2/code/*") }
             oauth.successHandler(oAuth2LoginSuccessHandler)
         }
 
-        // ✅ JWT(Resource Server)
         http.oauth2ResourceServer { it.jwt { } }
 
-        // ✅ OAuth2는 state 저장 때문에 세션 필요할 수 있음
         http.sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) }
 
         http.authorizeHttpRequests { auth ->
             auth.requestMatchers(*PUBLIC_ENDPOINTS).permitAll()
-            auth.requestMatchers(H2_CONSOLE).permitAll()
+
+            // ❌ 여기서 H2 permitAll 제거 (H2는 0번 체인에서만 처리)
+            // auth.requestMatchers(H2_CONSOLE).permitAll()
+
             auth.requestMatchers(ADMIN_API).permitAll()
-            auth.requestMatchers(
-                HttpMethod.GET,
-                "/api/v1/auth/oauth2/*/authorize-url"
-            ).permitAll()
-            // ✅ 로그아웃은 인증 필요
+            auth.requestMatchers(HttpMethod.GET, "/api/v1/auth/oauth2/*/authorize-url").permitAll()
             auth.requestMatchers("/api/v1/auth/**/logout").authenticated()
 
-            // ✅ 나머지 API는 인증 필요
             auth.requestMatchers("/api/**").authenticated()
             auth.anyRequest().authenticated()
         }
 
-        // ✅ 로컬 JSON 로그인 필터
         http.addFilterAt(localJsonLoginFilter, UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
