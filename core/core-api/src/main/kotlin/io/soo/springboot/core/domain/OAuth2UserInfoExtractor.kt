@@ -24,7 +24,7 @@ object OAuth2UserInfoExtractor {
         val email = attrs.str("email")
         val emailVerified = attrs.bool("email_verified")
         val name = attrs.str("name")
-        val nickname = attrs.str("preferred_username") // 있을 수도
+        val nickname = attrs.str("preferred_username")
         val locale = attrs.str("locale")
         val picture = attrs.str("picture")
 
@@ -62,7 +62,6 @@ object OAuth2UserInfoExtractor {
         val kakaoAccount = attrs.map("kakao_account")
         val profileInAccount = kakaoAccount?.map("profile")
 
-        // 닉네임/프로필이미지는 properties 또는 kakao_account.profile 둘 다에 있을 수 있음
         val nickname =
             profileInAccount?.str("nickname")
                 ?: properties?.str("nickname")
@@ -88,12 +87,11 @@ object OAuth2UserInfoExtractor {
         // 카카오 birthday는 "MMDD" 형태가 올 수 있어 "MM-DD"로 정규화
         val birthday = kakaoAccount?.str("birthday")?.toBirthdayMMddOrMMdd()
 
-        val phoneNumber = kakaoAccount?.str("phone_number") // 제공/동의 시
-        val phoneNumberE164 = null // 카카오는 E164 별도 제공이 흔치 않아 우선 null
+        val phoneNumber = kakaoAccount?.str("phone_number")
+        val phoneNumberE164 = null
 
-        // 이름은 카카오는 기본적으로 "nickname" 중심이라 name은 별도 없을 수 있음
-        val name: String? = null
-        val locale: String? = null
+        val name = kakaoAccount?.str("name")
+        val locale = kakaoAccount?.str("locale")
 
         val extra = buildMap<String, Any?> {
             put("has_email", kakaoAccount?.bool("has_email"))
@@ -147,7 +145,7 @@ object OAuth2UserInfoExtractor {
     // -----------------------------
     @Suppress("UNCHECKED_CAST")
     private fun extractNaver(attrs: Map<String, Any?>): OAuth2UserInfo {
-        // 네이버는 보통 { resultcode, message, response: { ... } }
+        // 네이버 { resultcode, message, response: { ... } }
         val response = attrs.map("response") ?: error("naver: missing response")
 
         val id = response.str("id") ?: error("naver: missing response.id")
@@ -159,10 +157,9 @@ object OAuth2UserInfoExtractor {
         val thumbnailImageUrl = profileImageUrl // 별도 없으면 동일 사용
 
         val gender = response.str("gender")?.toGenderNaver()
-        val birthday = response.str("birthday")?.toBirthdayMMddOrMMdd() // 대개 "MM-DD"
+        val birthday = response.str("birthday")?.toBirthdayMMddOrMMdd() // "MM-DD"
         val birthyear = response.str("birthyear")
 
-        // age는 "20-29" 같은 문자열로 제공되는 경우가 많음
         val ageRange = response.str("age")
 
         val phoneNumber = response.str("mobile")
@@ -177,7 +174,6 @@ object OAuth2UserInfoExtractor {
             provider = AuthProvider.NAVER,
             providerUserId = id,
             email = email,
-            // 네이버는 email_verified 같은 값을 별도 제공하지 않는 경우가 흔함(없으면 null 유지)
             emailVerified = null,
             name = name,
             nickname = nickname,
