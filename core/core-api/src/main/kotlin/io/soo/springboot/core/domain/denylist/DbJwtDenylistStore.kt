@@ -8,12 +8,12 @@ import java.time.Duration
 import java.time.Instant
 
 import io.soo.springboot.storage.db.core.JwtDenylistEntity
-import io.soo.springboot.storage.db.core.JwtDenylistJpaRepository
+import io.soo.springboot.storage.db.core.JpaJwtDenylistRepository
 
 
 @Service
 class DbJwtDenylistStore(
-    private val repo: JwtDenylistJpaRepository,
+    private val repo: JpaJwtDenylistRepository,
     private val clock: Clock = Clock.systemUTC(),
 ) : JwtDenylistStore {
 

@@ -1,50 +1,34 @@
 package io.soo.springboot.core.api.security.handler
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.soo.springboot.core.api.controller.v1.response.LoginSuccessResponse
-import io.soo.springboot.core.domain.token.UserPrincipal
-import io.soo.springboot.core.domain.token.JwtService
+import io.soo.springboot.core.domain.UserIdResolver
+import io.soo.springboot.core.enums.AuthProvider
+import io.soo.springboot.core.domain.token.JsonWebTokenService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.springframework.http.MediaType
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
 import org.springframework.stereotype.Component
 
 @Component
 class LocalLoginSuccessHandler(
+    private val jsonWebTokenService: JsonWebTokenService,
     private val objectMapper: ObjectMapper,
-    private val jwtService: JwtService,
+    private val userIdResolver: UserIdResolver,
 ) : AuthenticationSuccessHandler {
 
     override fun onAuthenticationSuccess(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        authentication: Authentication,
+        authentication: Authentication
     ) {
-        val principal = authentication.principal as UserPrincipal
-        val roles = authentication.authorities.map { it.authority }.sorted()
-        val issued = jwtService.issue(authentication, principal.userId)
+        val deviceId = request.getHeader("X-Device-Id")?.trim().orEmpty()
+        require(deviceId.isNotBlank()) { "X-Device-Id header is required" }
 
-        val dto = LoginSuccessResponse(
-            data = LoginSuccessResponse.Data(
-                token = LoginSuccessResponse.Token(
-                    accessToken = issued.accessToken,
-                    expiresIn = issued.accessExpiresInSec,
-                    refreshToken = issued.refreshToken,
-                    refreshExpiresIn = issued.refreshExpiresInSec,
-                ),
-                user = LoginSuccessResponse.User(
-                    id = principal.userId,
-                    provider = "LOCAL",
-                    email = principal.email,
-                    roles = roles,
-                )
-            )
-        )
+        val userId = userIdResolver.resolve(authentication) // <- 너 프로젝트 방식대로 구현
+        val tokens = jsonWebTokenService.issue(authentication, userId, deviceId, AuthProvider.LOCAL)
 
-        response.status = 200
-        response.contentType = "${MediaType.APPLICATION_JSON_VALUE};charset=UTF-8"
-        objectMapper.writeValue(response.outputStream, dto)
+        response.contentType = "application/json;charset=UTF-8"
+        response.writer.write(objectMapper.writeValueAsString(mapOf("result" to "OK", "data" to tokens)))
     }
 }

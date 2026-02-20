@@ -2,7 +2,7 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create
     properties:
       hibernate.default_batch_fetch_size: 100
 
@@ -12,7 +12,7 @@ spring.config.activate.on-profile: local
 spring:
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: create-drop
     properties:
       hibernate:
         format_sql: true
@@ -20,6 +20,7 @@ spring:
   h2:
     console:
       enabled: true
+      path: /h2-console
 
 storage:
   datasource:

@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import java.time.Instant
 
-interface JwtDenylistJpaRepository : JpaRepository<JwtDenylistEntity, Long> {
+interface JpaJwtDenylistRepository : JpaRepository<JwtDenylistEntity, Long> {
 
     fun existsByJtiAndExpiresAtAfter(jti: String, now: Instant): Boolean
 

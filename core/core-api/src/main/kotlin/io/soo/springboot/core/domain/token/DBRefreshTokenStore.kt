@@ -7,12 +7,12 @@ import java.security.MessageDigest
 import java.time.Instant
 
 import io.soo.springboot.storage.db.core.RefreshTokenEntity
-import io.soo.springboot.storage.db.core.RefreshTokenJpaRepository
+import io.soo.springboot.storage.db.core.JpaRefreshTokenRepository
 
 
 @Service
 class DBRefreshTokenStore(
-    private val repo: RefreshTokenJpaRepository,
+    private val repo: JpaRefreshTokenRepository,
 ) : RefreshTokenStore {
 
     @Transactional
@@ -25,6 +25,8 @@ class DBRefreshTokenStore(
             tokenHash = sha256Hex(record.token),
             userId = record.userId,
             expiresAt = record.expiresAt,
+            deviceId = record.deviceId,
+            provider = record.provider,
         )
         repo.save(entity)
     }
@@ -54,11 +56,13 @@ class DBRefreshTokenStore(
         old.replacedByHash = newHash
         repo.save(old)
 
-        // 새 토큰 저장(유저는 old에서 가져옴)
+        // 새 토큰 저장
         val newEntity = RefreshTokenEntity(
             tokenHash = newHash,
             userId = old.userId,
             expiresAt = newRecord.expiresAt,
+            deviceId = old.deviceId,
+            provider = old.provider,
         )
         repo.save(newEntity)
 

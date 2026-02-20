@@ -51,7 +51,10 @@ class UserEntity(
 
     @Enumerated(EnumType.STRING)
     @Column(length = 30)
-    var authProvider: AuthProvider? = null,
+    var authProvider: AuthProvider,
+
+    @Column(length = 128)
+    var oauthProviderUserId: String? = null,
 
     @Column(nullable = false, length = 20)
     @Enumerated(EnumType.STRING)

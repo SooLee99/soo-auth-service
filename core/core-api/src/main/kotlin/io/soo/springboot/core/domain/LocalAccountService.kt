@@ -14,9 +14,9 @@ import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.storage.db.core.UserEntity
 import io.soo.springboot.storage.db.core.UserJpaRepository
 import io.soo.springboot.storage.db.core.LocalCredentialEntity
-import io.soo.springboot.storage.db.core.LocalCredentialJpaRepository
+import io.soo.springboot.storage.db.core.JpaLocalCredentialRepository
 import io.soo.springboot.core.domain.denylist.JwtDenylistStore
-import io.soo.springboot.core.domain.token.JwtService
+import io.soo.springboot.core.domain.token.JsonWebTokenService
 import io.soo.springboot.core.enums.Gender
 
 
@@ -37,10 +37,10 @@ data class LocalSignUpCommand(
 @Service
 class LocalAccountService(
     private val userJpaRepository: UserJpaRepository,
-    private val localAccountRepository: LocalCredentialJpaRepository,
+    private val localAccountRepository: JpaLocalCredentialRepository,
     private val passwordEncoder: PasswordEncoder,
     private val denylistStore: JwtDenylistStore,
-    private val jwtService: JwtService,
+    private val jsonWebTokenService: JsonWebTokenService,
 ) {
     @Transactional
     fun signUp(cmd: LocalSignUpCommand): UserEntity {
@@ -80,28 +80,42 @@ class LocalAccountService(
         return user
     }
 
-    fun logout(jwt: Jwt, refreshToken: String, isLogoutAll: Boolean) {
+    /**
+     * ✅ logout
+     * - access token denylist(jti)
+     * - refresh token revoke (단건 or device or all)
+     */
+    @Transactional
+    fun logout(jwt: Jwt, deviceId: String, refreshToken: String?, logoutAll: Boolean) {
         // 1) access token denylist(jti)
         val jti = jwt.id
         val exp = jwt.expiresAt
 
-        // 2) expiration time check
         if (!jti.isNullOrBlank() && exp != null) {
             val ttl = Duration.between(Instant.now(), exp).coerceAtLeast(Duration.ZERO)
             if (!ttl.isZero) denylistStore.deny(jti, ttl)
         }
 
-        // 3) refresh token revoke
-        val refreshToken = refreshToken
-        if (refreshToken.isNotBlank()) {
-            jwtService.revoke(refreshToken)
+        // userId claim
+        val uid = (jwt.claims["uid"] as? Number)?.toLong()
+
+        // 2) refresh revoke
+        if (logoutAll) {
+            if (uid != null) jsonWebTokenService.revokeAll(uid)
+            return
         }
 
-        // 4) 전체 로그아웃(옵션): 토큰에 uid claim이 있어야 함
-        if (isLogoutAll) {
-            val uid = (jwt.claims["uid"] as? Number)?.toLong()
-            if (uid != null) jwtService.revokeAll(uid)
+        val rt = refreshToken.orEmpty().trim()
+
+        // 바디로 refreshToken을 보내면 단건 revoke
+        if (rt.isNotBlank()) {
+            jsonWebTokenService.revoke(rt)
+            return
+        }
+
+        // refreshToken이 없으면 "현재 디바이스" 기준 revoke (권장)
+        if (uid != null && deviceId.isNotBlank()) {
+            jsonWebTokenService.revokeByDevice(uid, deviceId)
         }
     }
-
 }

@@ -22,7 +22,7 @@ data class LoginSuccessResponse(
 
     data class User(
         val id: Long,
-        val provider: String,
+        val provider: String?,
         val email: String?,
         val roles: List<String>,
     )

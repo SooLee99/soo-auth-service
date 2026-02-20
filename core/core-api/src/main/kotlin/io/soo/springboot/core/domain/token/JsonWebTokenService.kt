@@ -1,5 +1,6 @@
 package io.soo.springboot.core.domain.token
 
+import io.soo.springboot.core.enums.AuthProvider
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UserDetails
@@ -13,20 +14,17 @@ data class IssuedTokens(
 )
 
 @Service
-class JwtService(
+class JsonWebTokenService(
     private val accessTokenService: AccessTokenService,
     private val refreshTokenService: RefreshTokenService,
     private val userPrincipalLoader: UserPrincipalLoader,
 ) {
     /**
      * ✅ 토큰 발급
-     * - access token: 15분
-     * - refresh token: 14일
      */
-
-    fun issue(authentication: Authentication, userId: Long): IssuedTokens {
+    fun issue(authentication: Authentication, userId: Long, deviceId: String, provider: AuthProvider): IssuedTokens {
         val (access, accessExpSec) = accessTokenService.issue(authentication, userId)
-        val refresh = refreshTokenService.issue(userId)
+        val refresh = refreshTokenService.issue(userId, deviceId, provider)
 
         return IssuedTokens(
             accessToken = access,
@@ -37,21 +35,17 @@ class JwtService(
     }
 
     /**
-     * ✅ 토큰 refresh
-     * - refresh rotate 성공 시: 새 access + 새 refresh 반환
+     * ✅ refresh rotate
+     * - old refresh가 유효하면 새 access + 새 refresh 반환
      */
-    fun refresh(oldRefreshToken: String): Pair<RotateResult, IssuedTokens?> {
-        val (rotate, newRefresh) = refreshTokenService.rotate(oldRefreshToken)
+    fun refresh(oldRefreshToken: String, deviceId: String): Pair<RotateResult, IssuedTokens?> {
+        val (rotate, newRefresh) = refreshTokenService.rotate(oldRefreshToken, deviceId)
 
         return when (rotate) {
             is RotateResult.Success -> {
-                // userId로 UserDetails 로드
                 val user: UserDetails = userPrincipalLoader.loadByUserId(rotate.userId)
-
-                // roles 포함 Authentication 생성
                 val auth = UsernamePasswordAuthenticationToken(user.username, null, user.authorities)
 
-                // access token 발급
                 val (access, accessExpSec) = accessTokenService.issue(auth, rotate.userId)
 
                 rotate to IssuedTokens(
@@ -63,12 +57,11 @@ class JwtService(
             }
             RotateResult.NotFoundOrExpired -> rotate to null
             RotateResult.AlreadyUsed -> rotate to null
+            RotateResult.DeviceMismatch -> rotate to null
         }
     }
 
-    /**
-     * ✅ 토큰 revoke
-     */
     fun revoke(token: String) = refreshTokenService.revoke(token)
     fun revokeAll(userId: Long) = refreshTokenService.revokeAllByUser(userId)
+    fun revokeByDevice(userId: Long, deviceId: String) = refreshTokenService.revokeByDevice(userId, deviceId)
 }
