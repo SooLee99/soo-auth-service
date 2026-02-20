@@ -3,12 +3,23 @@ package io.soo.springboot.storage.db.core
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.core.enums.Role
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
+import jakarta.persistence.*
+import java.time.Instant
 
 @Entity
+@Table(
+    name = "user_entity",
+    uniqueConstraints = [
+        UniqueConstraint(
+            name = "uk_user_oauth_provider",
+            columnNames = ["authProvider", "oauthProviderUserId"]
+        )
+    ],
+    indexes = [
+        Index(name = "ix_user_email", columnList = "email"),
+        Index(name = "ix_user_oauth", columnList = "authProvider, oauthProviderUserId"),
+    ]
+)
 class UserEntity(
 
     @Column(nullable = false)
@@ -19,6 +30,9 @@ class UserEntity(
 
     @Column
     var phoneNumber: String? = null,
+
+    @Column
+    var phoneNumberE164: String? = null,
 
     @Column
     var phoneVerified: Boolean = false,
@@ -32,7 +46,6 @@ class UserEntity(
     @Column
     var locale: String? = null,
 
-    // 동의 기반/선택 정보
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     var gender: Gender = Gender.UNKNOWN,
@@ -44,17 +57,31 @@ class UserEntity(
     var birthyear: String? = null,  // "YYYY"
 
     @Column
+    var ageRange: String? = null,
+
+    @Column
     var profileImageUrl: String? = null,
 
     @Column
     var thumbnailImageUrl: String? = null,
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 30)
+    @Column(length = 30, nullable = false)
     var authProvider: AuthProvider,
 
     @Column(length = 128)
     var oauthProviderUserId: String? = null,
+
+    @Column
+    var oauthConnectedAt: Instant? = null,
+
+    @Lob
+    @Column
+    var oauthExtraJson: String? = null,
+
+    @Lob
+    @Column
+    var oauthRawJson: String? = null,
 
     @Column(nullable = false, length = 20)
     @Enumerated(EnumType.STRING)

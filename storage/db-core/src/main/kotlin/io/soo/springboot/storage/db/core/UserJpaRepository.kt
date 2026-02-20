@@ -12,9 +12,4 @@ interface UserJpaRepository : JpaRepository<UserEntity, Long>, JpaSpecificationE
         authProvider: AuthProvider,
         oauthProviderUserId: String
     ): UserEntity?
-
-    fun existsByAuthProviderAndOauthProviderUserId(
-        authProvider: AuthProvider,
-        oauthProviderUserId: String
-    ): Boolean
 }
