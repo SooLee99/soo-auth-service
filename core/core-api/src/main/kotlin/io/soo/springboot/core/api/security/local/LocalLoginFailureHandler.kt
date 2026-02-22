@@ -1,8 +1,8 @@
-package io.soo.springboot.core.api.security.handler
+package io.soo.springboot.core.api.security.local
 
-import io.soo.springboot.core.api.security.response.ApiSecurityResponseWriter
+import io.soo.springboot.core.api.security.response.SecurityErrorResponseWriter
 import io.soo.springboot.core.api.security.response.SecurityErrorFields
-import io.soo.springboot.core.api.security.LocalJsonLoginFilter
+import io.soo.springboot.core.api.security.local.LocalJsonLoginFilter
 import io.soo.springboot.core.support.error.ErrorType
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class LocalLoginFailureHandler(
-    private val writer: ApiSecurityResponseWriter,
+    private val writer: SecurityErrorResponseWriter,
 ) : AuthenticationFailureHandler {
 
     override fun onAuthenticationFailure(

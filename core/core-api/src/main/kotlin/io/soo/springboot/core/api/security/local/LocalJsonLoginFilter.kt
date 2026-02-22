@@ -1,4 +1,4 @@
-package io.soo.springboot.core.api.security
+package io.soo.springboot.core.api.security.local
 
 import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.core.JsonProcessingException

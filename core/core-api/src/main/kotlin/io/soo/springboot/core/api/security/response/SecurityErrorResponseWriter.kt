@@ -8,8 +8,9 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 
+// 인증이 필요한데(로그인 필요) 인증 정보가 없거나 유효하지 않을 때
 @Component
-class ApiSecurityResponseWriter(
+class SecurityErrorResponseWriter(
     private val objectMapper: ObjectMapper,
 ) {
     fun writeError(

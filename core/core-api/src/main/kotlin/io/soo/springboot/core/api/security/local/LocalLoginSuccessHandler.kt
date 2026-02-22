@@ -1,4 +1,4 @@
-package io.soo.springboot.core.api.security.handler
+package io.soo.springboot.core.api.security.local
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.soo.springboot.core.domain.UserIdResolver
@@ -25,7 +25,7 @@ class LocalLoginSuccessHandler(
         val deviceId = request.getHeader("X-Device-Id")?.trim().orEmpty()
         require(deviceId.isNotBlank()) { "X-Device-Id header is required" }
 
-        val userId = userIdResolver.resolve(authentication) // <- 너 프로젝트 방식대로 구현
+        val userId = userIdResolver.resolve(authentication)
         val tokens = jsonWebTokenService.issue(authentication, userId, deviceId, AuthProvider.LOCAL)
 
         response.contentType = "application/json;charset=UTF-8"

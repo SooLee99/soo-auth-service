@@ -1,4 +1,4 @@
-package io.soo.springboot.core.api.security.handler
+package io.soo.springboot.core.api.security.access
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.soo.springboot.core.support.error.ErrorType
@@ -29,7 +29,7 @@ class RestAccessDeniedHandler(
 
         objectMapper.writeValue(
             response.outputStream,
-            ApiResponse.Companion.error(
+            ApiResponse.error(
                 type = type,
                 req = request,
                 fields = mapOf("reason" to "ACCESS_DENIED"),
