@@ -21,6 +21,7 @@ class ApiSecurityConfig(
     private val securityContextRepository: SecurityContextRepository,
     private val unauthorizedEntryPoint: UnauthorizedEntryPoint,
     private val restAccessDeniedHandler: RestAccessDeniedHandler,
+    private val oAuth2LoginConfig: OAuth2LoginConfig,
 ) {
     companion object {
         private val PUBLIC_ENDPOINTS = arrayOf(
@@ -92,11 +93,7 @@ class ApiSecurityConfig(
         http.formLogin { it.disable() }
         http.httpBasic { it.disable() }
 
-        http.oauth2Login { oauth ->
-            oauth.authorizationEndpoint { ep -> ep.baseUri("/oauth2/authorization") }
-            oauth.redirectionEndpoint { ep -> ep.baseUri("/login/oauth2/code/*") }
-            oauth.successHandler(oAuth2LoginSuccessHandler)
-        }
+        oAuth2LoginConfig.configure(http)
 
         http.oauth2ResourceServer { it.jwt { } }
 
