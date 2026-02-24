@@ -1,14 +1,14 @@
 package io.soo.springboot.core.domain.token
 
+import io.soo.springboot.core.support.error.CoreException
+import io.soo.springboot.core.support.error.ErrorType
+import io.soo.springboot.storage.db.core.JpaRefreshTokenRepository
+import io.soo.springboot.storage.db.core.RefreshTokenEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import java.time.Instant
-
-import io.soo.springboot.storage.db.core.RefreshTokenEntity
-import io.soo.springboot.storage.db.core.JpaRefreshTokenRepository
-
 
 @Service
 class DBRefreshTokenStore(
@@ -32,24 +32,44 @@ class DBRefreshTokenStore(
     }
 
     @Transactional
-    override fun rotate(oldToken: String, newRecord: RefreshTokenRecord): RotateResult {
+    override fun rotate(oldToken: String, newRecord: RefreshTokenRecord): RefreshTokenEntity {
         val now = Instant.now()
-        if (oldToken.isBlank()) return RotateResult.NotFoundOrExpired
-        if (newRecord.token.isBlank()) return RotateResult.NotFoundOrExpired
-        if (!newRecord.expiresAt.isAfter(now)) return RotateResult.NotFoundOrExpired
+
+        // 입력 검증
+        if (oldToken.isBlank()) {
+            throw CoreException(ErrorType.REFRESH_TOKEN_REQUIRED, "old refresh token is blank")
+        }
+        if (newRecord.token.isBlank()) {
+            throw CoreException(ErrorType.INVALID_INPUT_VALUE, "new refresh token is blank")
+        }
+        if (!newRecord.expiresAt.isAfter(now)) {
+            throw CoreException(ErrorType.INVALID_INPUT_VALUE, "new refresh token expiresAt must be in the future")
+        }
 
         val oldHash = sha256Hex(oldToken)
         val newHash = sha256Hex(newRecord.token)
 
         // row lock으로 동시 rotate 경쟁 시 1건만 성공하도록 보장
-        val old = repo.findForUpdateByHash(oldHash) ?: return RotateResult.NotFoundOrExpired
+        val old = repo.findForUpdateByHash(oldHash)
+            ?: throw CoreException(ErrorType.INVALID_REFRESH_TOKEN, "refresh token not found")
 
-        // 만료/리보크는 "유효하지 않음" 취급
-        if (!old.expiresAt.isAfter(now)) return RotateResult.NotFoundOrExpired
-        if (old.revokedAt != null) return RotateResult.NotFoundOrExpired
+        // 만료/리보크는 외부적으로는 "유효하지 않음"으로 처리
+        if (!old.expiresAt.isAfter(now)) {
+            throw CoreException(ErrorType.EXPIRED_REFRESH_TOKEN, "refresh token is expired")
+            // 보안을 위해 통일하고 싶으면:
+            // throw CoreException(ErrorType.INVALID_REFRESH_TOKEN, "refresh token is expired")
+        }
+
+        if (old.revokedAt != null) {
+            throw CoreException(ErrorType.REVOKED_REFRESH_TOKEN, "refresh token is revoked")
+            // 보안을 위해 통일하고 싶으면:
+            // throw CoreException(ErrorType.INVALID_REFRESH_TOKEN, "refresh token is revoked")
+        }
 
         // 이미 rotate로 소모된 토큰이면 재사용 감지
-        if (old.usedAt != null) return RotateResult.AlreadyUsed
+        if (old.usedAt != null) {
+            throw CoreException(ErrorType.REFRESH_TOKEN_REUSED, "refresh token already used")
+        }
 
         // old 토큰 소모 처리
         old.usedAt = now
@@ -66,7 +86,7 @@ class DBRefreshTokenStore(
         )
         repo.save(newEntity)
 
-        return RotateResult.Success(old.userId)
+        return newEntity
     }
 
     @Transactional
