@@ -15,8 +15,7 @@ import org.springframework.security.web.context.SecurityContextRepository
 import java.security.interfaces.RSAPublicKey
 
 @Configuration
-class SecurityBeansConfig(
-) {
+class SecurityBeansConfig {
     @Bean fun authenticationManager(cfg: AuthenticationConfiguration): AuthenticationManager = cfg.authenticationManager
 
     @Bean

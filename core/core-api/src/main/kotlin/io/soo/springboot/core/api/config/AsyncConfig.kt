@@ -9,7 +9,7 @@ import java.util.concurrent.Executor
 
 @Configuration
 @EnableAsync
-open class AsyncConfig : AsyncConfigurer {
+class AsyncConfig : AsyncConfigurer {
     override fun getAsyncExecutor(): Executor {
         val executor = ThreadPoolTaskExecutor()
         executor.corePoolSize = 10

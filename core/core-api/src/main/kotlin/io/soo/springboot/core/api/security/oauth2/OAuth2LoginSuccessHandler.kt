@@ -70,7 +70,7 @@ class OAuth2LoginSuccessHandler(
             writeJson(
                 response,
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                ApiResponse.Companion.error(
+                ApiResponse.error(
                     type = ErrorType.DEFAULT_ERROR,
                     message = "UserPrincipal을 로드할 수 없습니다.",
                     req = request,
@@ -111,7 +111,7 @@ class OAuth2LoginSuccessHandler(
         writeJson(
             response,
             HttpServletResponse.SC_OK,
-            ApiResponse.Companion.success(req = request, data = payload)
+            ApiResponse.success(req = request, data = payload)
         )
     }
 

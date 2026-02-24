@@ -14,7 +14,7 @@ data class UserPrincipal(
 ) : UserDetails {
 
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> =
-        mutableListOf(SimpleGrantedAuthority("ROLE_${role.toString()}"))
+        mutableListOf(SimpleGrantedAuthority("ROLE_$role"))
 
     override fun getPassword(): String? = passwordHash
     override fun getUsername(): String = email ?: userId.toString()
