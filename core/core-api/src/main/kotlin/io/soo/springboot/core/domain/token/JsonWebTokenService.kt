@@ -38,27 +38,20 @@ class JsonWebTokenService(
      * ✅ refresh rotate
      * - old refresh가 유효하면 새 access + 새 refresh 반환
      */
-    fun refresh(oldRefreshToken: String, deviceId: String): Pair<RotateResult, IssuedTokens?> {
-        val (rotate, newRefresh) = refreshTokenService.rotate(oldRefreshToken, deviceId)
+    fun refresh(oldRefreshToken: String, deviceId: String): IssuedTokens{
+        val (userId, newRefresh) = refreshTokenService.rotate(oldRefreshToken, deviceId)
 
-        return when (rotate) {
-            is RotateResult.Success -> {
-                val user: UserDetails = userPrincipalLoader.loadByUserId(rotate.userId)
-                val auth = UsernamePasswordAuthenticationToken(user.username, null, user.authorities)
+        val user: UserDetails = userPrincipalLoader.loadByUserId(userId)
+        val auth = UsernamePasswordAuthenticationToken(user.username, null, user.authorities)
 
-                val (access, accessExpSec) = accessTokenService.issue(auth, rotate.userId)
+        val (access, accessExpSec) = accessTokenService.issue(auth, userId)
 
-                rotate to IssuedTokens(
-                    accessToken = access,
-                    accessExpiresInSec = accessExpSec,
-                    refreshToken = newRefresh!!.token,
-                    refreshExpiresInSec = newRefresh.expiresInSec,
-                )
-            }
-            RotateResult.NotFoundOrExpired -> rotate to null
-            RotateResult.AlreadyUsed -> rotate to null
-            RotateResult.DeviceMismatch -> rotate to null
-        }
+        return IssuedTokens(
+            accessToken = access,
+            accessExpiresInSec = accessExpSec,
+            refreshToken = newRefresh!!.token,
+            refreshExpiresInSec = newRefresh.expiresInSec,
+        )
     }
 
     fun revoke(token: String) = refreshTokenService.revoke(token)

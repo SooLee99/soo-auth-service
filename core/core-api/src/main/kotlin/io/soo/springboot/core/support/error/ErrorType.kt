@@ -2,7 +2,6 @@ package io.soo.springboot.core.support.error
 
 import org.springframework.boot.logging.LogLevel
 import org.springframework.http.HttpStatus
-
 enum class ErrorType(
     val status: HttpStatus,
     val code: ErrorCode,
@@ -15,9 +14,23 @@ enum class ErrorType(
     INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, ErrorCode.E400, "입력값이 올바르지 않습니다.", LogLevel.WARN),
     INVALID_PARAMETER(HttpStatus.BAD_REQUEST, ErrorCode.E400, "요청 파라미터가 올바르지 않습니다.", LogLevel.WARN),
 
+    // 토큰 요청값 누락/형식 문제 (400)
+    REFRESH_TOKEN_REQUIRED(HttpStatus.BAD_REQUEST, ErrorCode.E400, "리프레시 토큰이 필요합니다.", LogLevel.WARN),
+
     // 401
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "인증이 필요합니다.", LogLevel.WARN),
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "이메일 또는 비밀번호가 올바르지 않습니다.", LogLevel.WARN),
+
+    // Access Token
+    INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "유효하지 않은 액세스 토큰입니다.", LogLevel.WARN),
+    EXPIRED_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "만료된 액세스 토큰입니다.", LogLevel.WARN),
+
+    // Refresh Token
+    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "유효하지 않은 리프레시 토큰입니다.", LogLevel.WARN),
+    EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "만료된 리프레시 토큰입니다.", LogLevel.WARN),
+    REVOKED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "폐기된 리프레시 토큰입니다.", LogLevel.WARN),
+    REFRESH_TOKEN_REUSED(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "이미 사용된 리프레시 토큰입니다.", LogLevel.WARN),
+    REFRESH_TOKEN_DEVICE_MISMATCH(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "리프레시 토큰의 디바이스 정보가 일치하지 않습니다.", LogLevel.WARN),
 
     // 403
     FORBIDDEN(HttpStatus.FORBIDDEN, ErrorCode.E403, "접근 권한이 없습니다.", LogLevel.WARN),

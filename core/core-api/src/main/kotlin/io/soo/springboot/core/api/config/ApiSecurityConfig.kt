@@ -110,7 +110,8 @@ class ApiSecurityConfig(
 
             auth.requestMatchers(ADMIN_API).permitAll()
             auth.requestMatchers(HttpMethod.GET, "/api/v1/auth/oauth2/*/authorize-url").permitAll()
-            auth.requestMatchers("/api/v1/auth/**/logout").authenticated()
+            .requestMatchers("/api/v1/auth/local/logout").authenticated()
+            auth.requestMatchers("/api/v1/auth/**/login").authenticated()
 
             auth.requestMatchers("/api/**").authenticated()
             auth.anyRequest().authenticated()

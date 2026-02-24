@@ -1,15 +1,7 @@
 package io.soo.springboot.core.domain.token
 
-import io.soo.springboot.core.enums.AuthProvider
 import java.time.Instant
-
-data class RefreshTokenRecord(
-    val token: String,
-    val userId: Long,
-    val expiresAt: Instant,
-    val deviceId: String,
-    val provider: AuthProvider
-)
+import io.soo.springboot.storage.db.core.RefreshTokenEntity
 
 interface RefreshTokenStore {
     fun save(record: RefreshTokenRecord)
@@ -18,7 +10,7 @@ interface RefreshTokenStore {
      * oldToken을 1회용으로 소모(used 처리)하고, newRecord를 저장
      * - 성공 시 oldToken의 userId를 찾아 Success(userId) 반환
      */
-    fun rotate(oldToken: String, newRecord: RefreshTokenRecord): RotateResult
+    fun rotate(oldToken: String, newRecord: RefreshTokenRecord): RefreshTokenEntity
 
     /** 단일 refresh token 폐기 */
     fun revoke(token: String)

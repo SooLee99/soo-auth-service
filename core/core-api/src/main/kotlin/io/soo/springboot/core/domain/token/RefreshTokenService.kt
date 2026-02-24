@@ -3,6 +3,8 @@ package io.soo.springboot.core.domain.token
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.storage.db.core.RefreshTokenEntity
 import io.soo.springboot.storage.db.core.JpaRefreshTokenRepository
+import io.soo.springboot.core.support.error.CoreException
+import io.soo.springboot.core.support.error.ErrorType
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.MessageDigest
@@ -77,21 +79,36 @@ class RefreshTokenService(
      * - deviceId 일치 검증(요청 헤더 기반)
      */
     @Transactional
-    fun rotate(oldRefreshTokenRaw: String, deviceId: String): Pair<RotateResult, RefreshTokenIssued?> {
+    fun rotate(oldRefreshTokenRaw: String, deviceId: String): Pair<Long, RefreshTokenIssued?> {
         val now = now()
-        if (oldRefreshTokenRaw.isBlank()) return RotateResult.NotFoundOrExpired to null
+
+        if (oldRefreshTokenRaw.isBlank()) {
+            throw CoreException(ErrorType.REFRESH_TOKEN_REQUIRED, "refresh token is blank")
+        }
 
         val oldHash = sha256Hex(oldRefreshTokenRaw)
-        val old = repo.findByTokenHash(oldHash) ?: return RotateResult.NotFoundOrExpired to null
+        val old = repo.findByTokenHash(oldHash)
+            ?: throw CoreException(ErrorType.INVALID_REFRESH_TOKEN, "refresh token not found")
 
-        // 만료/폐기 체크
-        if (old.revokedAt != null || old.expiresAt.isBefore(now)) return RotateResult.NotFoundOrExpired to null
+        // 폐기 체크
+        if (old.revokedAt != null) {
+            throw CoreException(ErrorType.REVOKED_REFRESH_TOKEN, "refresh token is revoked")
+        }
+
+        // 만료 체크
+        if (old.expiresAt.isBefore(now)) {
+            throw CoreException(ErrorType.EXPIRED_REFRESH_TOKEN, "refresh token is expired")
+        }
 
         // 디바이스 검증
-        if (old.deviceId != deviceId) return RotateResult.DeviceMismatch to null
+        if (old.deviceId != deviceId) {
+            throw CoreException(ErrorType.REFRESH_TOKEN_DEVICE_MISMATCH, "device mismatch")
+        }
 
         // 재사용 방지: 이미 usedAt이 찍혔으면 재사용
-        if (old.usedAt != null) return RotateResult.AlreadyUsed to null
+        if (old.usedAt != null) {
+            throw CoreException(ErrorType.REFRESH_TOKEN_REUSED, "refresh token already used")
+        }
 
         // 새 refresh 생성
         val newRaw = randomTokenHex()
@@ -121,7 +138,7 @@ class RefreshTokenService(
             expiresInSec = ChronoUnit.SECONDS.between(now, newExpiresAt),
         )
 
-        return RotateResult.Success(old.userId) to issued
+        return old.userId to issued
     }
 
     /**

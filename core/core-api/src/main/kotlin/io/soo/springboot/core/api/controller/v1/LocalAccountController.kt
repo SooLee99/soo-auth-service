@@ -1,12 +1,17 @@
 package io.soo.springboot.core.api.controller.v1
 
+import io.soo.springboot.core.api.controller.v1.request.LoginRequest
 import io.soo.springboot.core.api.controller.v1.request.RefreshRequest
 import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
 import io.soo.springboot.core.domain.LocalAccountService
 import io.soo.springboot.core.domain.LocalSignUpCommand
+import io.soo.springboot.core.domain.token.IssuedTokens
 import io.soo.springboot.core.domain.token.JsonWebTokenService
-import io.soo.springboot.core.domain.token.RotateResult
+import io.soo.springboot.core.support.error.CoreException
+import io.soo.springboot.core.support.error.ErrorType
+import io.soo.springboot.core.support.response.ApiResponse
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -41,30 +46,29 @@ class LocalAccountController(
     @PostMapping("/token/refresh", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun refresh(
         @RequestHeader("X-Device-Id") deviceId: String,
-        @RequestBody req: RefreshRequest,
-    ): Map<String, Any?> {
-        val (status, tokens) = jsonWebTokenService.refresh(req.refreshToken, deviceId)
-
-        return when (status) {
-            is RotateResult.Success -> mapOf("result" to "OK", "data" to tokens)
-            RotateResult.NotFoundOrExpired -> mapOf("result" to "ERROR", "error" to mapOf("code" to "INVALID_REFRESH"))
-            RotateResult.AlreadyUsed -> mapOf("result" to "ERROR", "error" to mapOf("code" to "REUSED_REFRESH"))
-            RotateResult.DeviceMismatch -> mapOf("result" to "ERROR", "error" to mapOf("code" to "DEVICE_MISMATCH"))
-        }
+        @RequestBody request: RefreshRequest,
+        req: HttpServletRequest,
+    ): ApiResponse<Any?>{
+        val issued = jsonWebTokenService.refresh(request.refreshToken, deviceId)
+        return ApiResponse.success(req = req, data = issued)
     }
 
     @PostMapping("/logout", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun logout(
         @RequestHeader("X-Device-Id") deviceId: String,
-        @AuthenticationPrincipal jwt: Jwt,
+        @AuthenticationPrincipal jwt: Jwt?,
         @RequestBody(required = false) body: LogoutRequest?,
-    ): Map<String, Any> {
+        req: HttpServletRequest,
+    ): ApiResponse<Any?> {
+        val principalJwt = jwt ?: throw CoreException(ErrorType.UNAUTHORIZED, "authenticated jwt is required")
+
         localAccountService.logout(
-            jwt = jwt,
+            jwt = principalJwt,
             deviceId = deviceId,
             refreshToken = body?.refreshToken,
             logoutAll = body?.logoutAll ?: false,
         )
-        return mapOf("result" to "OK")
+
+        return ApiResponse.success(req = req, data = mapOf("result" to "OK"))
     }
 }
