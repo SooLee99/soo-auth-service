@@ -1,4 +1,4 @@
-package io.soo.springboot.core.api.security.handler
+package io.soo.springboot.core.api.security.local
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.soo.springboot.core.domain.UserIdResolver

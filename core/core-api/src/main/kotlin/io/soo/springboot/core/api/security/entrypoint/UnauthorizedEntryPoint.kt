@@ -1,7 +1,7 @@
-package io.soo.springboot.core.api.security.handler
+package io.soo.springboot.core.api.security.entrypoint
 
-import io.soo.springboot.core.api.security.response.ApiSecurityResponseWriter
 import io.soo.springboot.core.api.security.response.SecurityErrorFields
+import io.soo.springboot.core.api.security.response.SecurityErrorResponseWriter
 import io.soo.springboot.core.support.error.ErrorType
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -10,8 +10,8 @@ import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.stereotype.Component
 
 @Component
-class RestAuthenticationEntryPoint(
-    private val writer: ApiSecurityResponseWriter,
+class UnauthorizedEntryPoint(
+    private val writer: SecurityErrorResponseWriter,
 ) : AuthenticationEntryPoint {
 
     override fun commence(

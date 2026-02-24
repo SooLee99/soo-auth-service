@@ -1,9 +1,9 @@
 package io.soo.springboot.core.api.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.soo.springboot.core.api.security.LocalJsonLoginFilter
-import io.soo.springboot.core.api.security.handler.LocalLoginFailureHandler
-import io.soo.springboot.core.api.security.handler.LocalLoginSuccessHandler
+import io.soo.springboot.core.api.security.local.LocalJsonLoginFilter
+import io.soo.springboot.core.api.security.local.LocalLoginFailureHandler
+import io.soo.springboot.core.api.security.local.LocalLoginSuccessHandler
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

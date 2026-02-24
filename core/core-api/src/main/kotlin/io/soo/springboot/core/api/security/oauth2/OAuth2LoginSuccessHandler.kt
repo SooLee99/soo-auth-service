@@ -1,14 +1,6 @@
-package io.soo.springboot.core.api.security.handler
+package io.soo.springboot.core.api.security.oauth2
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
-import org.springframework.http.MediaType
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.Authentication
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler
-import org.springframework.stereotype.Component
-
 import io.soo.springboot.core.api.controller.v1.response.LoginSuccessResponse
 import io.soo.springboot.core.domain.UserIdResolver
 import io.soo.springboot.core.domain.token.JsonWebTokenService
@@ -17,6 +9,13 @@ import io.soo.springboot.core.domain.token.UserPrincipalLoader
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.response.ApiResponse
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
+import org.springframework.http.MediaType
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler
+import org.springframework.stereotype.Component
 
 @Component
 class OAuth2LoginSuccessHandler(
@@ -71,7 +70,7 @@ class OAuth2LoginSuccessHandler(
             writeJson(
                 response,
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                ApiResponse.error(
+                ApiResponse.Companion.error(
                     type = ErrorType.DEFAULT_ERROR,
                     message = "UserPrincipal을 로드할 수 없습니다.",
                     req = request,
@@ -112,7 +111,7 @@ class OAuth2LoginSuccessHandler(
         writeJson(
             response,
             HttpServletResponse.SC_OK,
-            ApiResponse.success(req = request, data = payload)
+            ApiResponse.Companion.success(req = request, data = payload)
         )
     }
 

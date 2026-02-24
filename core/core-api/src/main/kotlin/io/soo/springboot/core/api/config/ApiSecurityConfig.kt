@@ -1,9 +1,9 @@
 package io.soo.springboot.core.api.config
 
-import io.soo.springboot.core.api.security.LocalJsonLoginFilter
-import io.soo.springboot.core.api.security.handler.OAuth2LoginSuccessHandler
-import io.soo.springboot.core.api.security.handler.RestAccessDeniedHandler
-import io.soo.springboot.core.api.security.handler.RestAuthenticationEntryPoint
+import io.soo.springboot.core.api.security.local.LocalJsonLoginFilter
+import io.soo.springboot.core.api.security.oauth2.OAuth2LoginSuccessHandler
+import io.soo.springboot.core.api.security.access.RestAccessDeniedHandler
+import io.soo.springboot.core.api.security.entrypoint.UnauthorizedEntryPoint
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
@@ -19,8 +19,9 @@ import org.springframework.security.web.util.matcher.NegatedRequestMatcher
 @Configuration
 class ApiSecurityConfig(
     private val securityContextRepository: SecurityContextRepository,
-    private val restAuthenticationEntryPoint: RestAuthenticationEntryPoint,
+    private val unauthorizedEntryPoint: UnauthorizedEntryPoint,
     private val restAccessDeniedHandler: RestAccessDeniedHandler,
+    private val oAuth2LoginConfig: OAuth2LoginConfig,
 ) {
     companion object {
         private val PUBLIC_ENDPOINTS = arrayOf(
@@ -83,7 +84,7 @@ class ApiSecurityConfig(
         http.securityContext { it.securityContextRepository(securityContextRepository) }
 
         http.exceptionHandling { ex ->
-            ex.authenticationEntryPoint(restAuthenticationEntryPoint)
+            ex.authenticationEntryPoint(unauthorizedEntryPoint)
             ex.accessDeniedHandler(restAccessDeniedHandler)
         }
 
@@ -92,11 +93,7 @@ class ApiSecurityConfig(
         http.formLogin { it.disable() }
         http.httpBasic { it.disable() }
 
-        http.oauth2Login { oauth ->
-            oauth.authorizationEndpoint { ep -> ep.baseUri("/oauth2/authorization") }
-            oauth.redirectionEndpoint { ep -> ep.baseUri("/login/oauth2/code/*") }
-            oauth.successHandler(oAuth2LoginSuccessHandler)
-        }
+        oAuth2LoginConfig.configure(http)
 
         http.oauth2ResourceServer { it.jwt { } }
 
