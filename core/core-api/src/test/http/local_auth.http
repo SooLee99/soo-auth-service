@@ -1,6 +1,12 @@
+### 공통 변수
+@baseUrl = http://localhost:8080
+@deviceId = dev-123
+@logoutAll = false
+
 ### 회원가입
-POST http://localhost:8080/api/v1/auth/local/signup
-X-Device-Id: dev-123
+# @name signup
+POST {{baseUrl}}/api/v1/auth/local/signup
+X-Device-Id: {{deviceId}}
 Content-Type: application/json
 Accept: application/json
 
@@ -20,8 +26,8 @@ Accept: application/json
 
 ### 로그인 (토큰 변수 저장)
 # @name login
-POST http://localhost:8080/api/v1/auth/local/login
-X-Device-Id: dev-123
+POST {{baseUrl}}/api/v1/auth/local/login
+X-Device-Id: {{deviceId}}
 Content-Type: application/json
 Accept: application/json
 
@@ -31,37 +37,62 @@ Accept: application/json
 }
 
 > {%
-    // 로그인 응답 예시:
-    // { "result": "OK", "data": { "accessToken": "...", "refreshToken": "...", ... } }
-    client.global.set("accessToken", response.body.data.accessToken);
-    client.global.set("refreshToken", response.body.data.refreshToken);
+
+    const payload = response.body.data;
+
+    if (!payload?.accessToken || !payload?.refreshToken) {
+        throw new Error("토큰 파싱 실패: 응답 구조를 확인하세요. body=" + JSON.stringify(response.body));
+    }
+
+    client.global.set("accessToken", payload.accessToken);
+    client.global.set("refreshToken", payload.refreshToken);
+    client.global.set("deviceId", request.headers["X-Device-Id"] || "{{deviceId}}");
 %}
 
 ### refresh (회전: 새 access + 새 refresh 발급) + 변수 업데이트
 # @name refresh
-POST http://localhost:8080/api/v1/auth/local/token/refresh
-X-Device-Id: dev-123
+POST {{baseUrl}}/api/v1/auth/local/token/refresh
+X-Device-Id: {{deviceId}}
 Content-Type: application/json
 Accept: application/json
 
 {
-  "refreshToken": "ce0644fd734e45a5a1ad04836a91c4dfb498d87055b74e7894f3f9a4b0421ece"
+  "refreshToken": "{{refreshToken}}"
 }
 
 > {%
-    client.global.set("accessToken", response.body.data.accessToken);
-    client.global.set("refreshToken", response.body.data.refreshToken);
+    const payload = response.body?.data?.data ?? response.body?.data;
+
+    if (!payload?.accessToken || !payload?.refreshToken) {
+        throw new Error("토큰 파싱 실패: 응답 구조를 확인하세요. body=" + JSON.stringify(response.body));
+    }
+
+    client.global.set("accessToken", payload.accessToken);
+    client.global.set("refreshToken", payload.refreshToken);
 %}
 
-
 ### logout (현재 access denylist + refresh revoke)
-POST http://localhost:8080/api/v1/auth/local/logout
-X-Device-Id: dev-123
-Authorization: Bearer eyJraWQiOiJqd3QiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJhMUBhLmNvbSIsInVpZCI6MSwicm9sZXMiOlsiUk9MRV9VU0VSIl0sImlzcyI6InNvby1hdXRoLXNlcnZpY2UiLCJleHAiOjE3NzE0ODEzNjYsImlhdCI6MTc3MTQ4MDQ2NiwianRpIjoiNDBkOGI3YzItM2IyOS00YzhmLTg3MTMtOGE2ZjE2ZDFiNTU2In0.g_Ylbmk30MFTTcbNDed60LOIN7eWSH7mDLeiHKxToApbvX6qNrxawxDpGam6ww0_yKASSfNW73kikrLQVFGozA9OcNcMXEDHDE2w5Nbh3tqK-4MWQnQdZ1oQAtvF5vSQkb_gP0aYeYQQC7ADFXZrZqFRcLOR2DGsclpulJl7uviBKnKc5RBWOhwcb5gk6FyE29l34gc31qJbKH2a6gHdxwQt0JzeUkyhSPawpu_roVHFZgD1_N4lUGIy0ZKWqqyXiB8Yw53oHWJSd8NaT47Nv9JemlJJrVwfvRCRIJLsq7FbP5AZi7HE7cXx6H8MhgwoIPNYNa6irkEDyyj4_ZVaUA
+# @name logout
+POST {{baseUrl}}/api/v1/auth/local/logout
+X-Device-Id: {{deviceId}}
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 Accept: application/json
 
 {
-  "refreshToken": "ce0644fd734e45a5a1ad04836a91c4dfb498d87055b74e7894f3f9a4b0421ece",
+  "refreshToken": "{{refreshToken}}",
   "logoutAll": false
+}
+
+### (옵션) logoutAll = true 테스트용
+# @name logout_all
+POST {{baseUrl}}/api/v1/auth/local/logout
+X-Device-Id: {{deviceId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "refreshToken": "{{refreshToken}}",
+  "logoutAll": true
 }
