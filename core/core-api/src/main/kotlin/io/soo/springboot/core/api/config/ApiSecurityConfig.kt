@@ -74,7 +74,6 @@ class ApiSecurityConfig(
         http: HttpSecurity,
         localJsonLoginFilter: LocalJsonLoginFilter,
         daoAuthProvider: DaoAuthenticationProvider,
-        oAuth2LoginSuccessHandler: OAuth2LoginSuccessHandler,
     ): SecurityFilterChain {
 
         // ✅ /h2-console/** 는 이 체인에서 제외
