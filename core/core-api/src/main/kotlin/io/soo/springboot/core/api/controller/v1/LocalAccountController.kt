@@ -1,12 +1,10 @@
 package io.soo.springboot.core.api.controller.v1
 
-import io.soo.springboot.core.api.controller.v1.request.LoginRequest
 import io.soo.springboot.core.api.controller.v1.request.RefreshRequest
 import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
 import io.soo.springboot.core.domain.LocalAccountService
 import io.soo.springboot.core.domain.LocalSignUpCommand
-import io.soo.springboot.core.domain.token.IssuedTokens
 import io.soo.springboot.core.domain.token.JsonWebTokenService
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType

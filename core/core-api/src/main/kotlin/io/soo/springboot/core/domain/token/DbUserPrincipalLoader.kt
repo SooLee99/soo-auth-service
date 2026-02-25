@@ -1,26 +1,25 @@
 package io.soo.springboot.core.domain.token
 
 import io.soo.springboot.core.enums.AuthProvider
-import io.soo.springboot.storage.db.core.JpaLocalCredentialRepository
-import io.soo.springboot.storage.db.core.UserJpaRepository
+import io.soo.springboot.storage.db.core.LocalCredentialRepository
+import io.soo.springboot.storage.db.core.UserRepository
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Service
 
 @Service
 abstract class DbUserPrincipalLoader(
-    private val userJpaRepository: UserJpaRepository,
-    private val jpaLocalCredentialRepository: JpaLocalCredentialRepository,
+    private val userRepository: UserRepository,
+    private val localCredentialRepository: LocalCredentialRepository,
 ) : UserPrincipalLoader {
 
     override fun loadByUserId(userId: Long): UserPrincipal {
-        val user = userJpaRepository.findById(userId)
-            .orElseThrow { UsernameNotFoundException("User not found by id: $userId") }
+        val user = userRepository.findById(userId) ?: throw UsernameNotFoundException("User not found by id: $userId")
 
-        val provider = user.authProvider ?: AuthProvider.LOCAL
+        val provider = user.authProvider
         val email = user.email
         val passwordHash: String? =
             if (provider == AuthProvider.LOCAL) {
-                val cred = jpaLocalCredentialRepository.findByUserId(userId)
+                val cred = localCredentialRepository.findByUserId(userId)
                     ?: throw UsernameNotFoundException("LocalCredential not found by userId: $userId")
                 cred.passwordHash
             } else {

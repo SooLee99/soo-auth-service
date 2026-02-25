@@ -7,13 +7,12 @@ import java.time.Clock
 import java.time.Duration
 import java.time.Instant
 
-import io.soo.springboot.storage.db.core.JwtDenylistEntity
-import io.soo.springboot.storage.db.core.JpaJwtDenylistRepository
+import io.soo.springboot.storage.db.core.JwtDenylistRepository
 
 
 @Service
 class DbJwtDenylistStore(
-    private val repo: JpaJwtDenylistRepository,
+    private val repo: JwtDenylistRepository,
     private val clock: Clock = Clock.systemUTC(),
 ) : JwtDenylistStore {
 
@@ -37,7 +36,7 @@ class DbJwtDenylistStore(
 
         // 기본: insert 시도
         try {
-            repo.save(JwtDenylistEntity(jti = jti, expiresAt = expiresAt))
+            repo.save(jti = jti, expiresAt = expiresAt)
             return
         } catch (_: DataIntegrityViolationException) {
             // 유니크 충돌: 이미 존재 -> expiresAt을 더 큰 값으로 갱신(짧아지지 않게)
@@ -46,13 +45,12 @@ class DbJwtDenylistStore(
         val existing = repo.findByJti(jti)
         if (existing == null) {
             // 극히 드물게 레이스로 find가 null이면 재시도
-            repo.save(JwtDenylistEntity(jti = jti, expiresAt = expiresAt))
+            repo.save(jti = jti, expiresAt = expiresAt)
             return
         }
 
         if (existing.expiresAt.isBefore(expiresAt)) {
-            existing.expiresAt = expiresAt
-            repo.save(existing)
+            repo.save(jti, expiresAt)
         }
     }
 

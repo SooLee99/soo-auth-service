@@ -1,23 +1,20 @@
 package io.soo.springboot.core.domain
 
-import java.time.Duration
-import java.time.Instant
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.security.crypto.password.PasswordEncoder
 
-import io.soo.springboot.core.enums.AuthProvider
-import io.soo.springboot.core.support.error.CoreException
-import io.soo.springboot.core.support.error.ErrorType
-
-import io.soo.springboot.storage.db.core.UserEntity
-import io.soo.springboot.storage.db.core.UserJpaRepository
-import io.soo.springboot.storage.db.core.LocalCredentialEntity
-import io.soo.springboot.storage.db.core.JpaLocalCredentialRepository
-import io.soo.springboot.core.domain.denylist.JwtDenylistStore
-import io.soo.springboot.core.domain.token.JsonWebTokenService
 import io.soo.springboot.core.enums.Gender
+import io.soo.springboot.core.enums.AuthProvider
+import io.soo.springboot.core.support.error.ErrorType
+import io.soo.springboot.core.support.error.CoreException
+
+import io.soo.springboot.core.domain.token.JsonWebTokenService
+import io.soo.springboot.storage.db.core.LocalCredential
+import io.soo.springboot.storage.db.core.LocalCredentialRepository
+import io.soo.springboot.storage.db.core.User
+import io.soo.springboot.storage.db.core.UserRepository
 
 
 data class LocalSignUpCommand(
@@ -36,22 +33,22 @@ data class LocalSignUpCommand(
 
 @Service
 class LocalAccountService(
-    private val userJpaRepository: UserJpaRepository,
-    private val localAccountRepository: JpaLocalCredentialRepository,
+    private val userRepository: UserRepository,
+    private val localAccountRepository: LocalCredentialRepository,
     private val passwordEncoder: PasswordEncoder,
     private val jsonWebTokenService: JsonWebTokenService,
 ) {
     @Transactional
-    fun signUp(cmd: LocalSignUpCommand): UserEntity {
+    fun signUp(cmd: LocalSignUpCommand): User {
         // 1) 중복 이메일/전화번호 검사
-        if (userJpaRepository.existsByEmail(cmd.email))
+        if (userRepository.existsByEmail(cmd.email))
             throw CoreException(ErrorType.DUPLICATE_EMAIL, data = mapOf("email" to cmd.email))
-        if (userJpaRepository.existsByPhoneNumber(cmd.phoneNumber))
+        if (userRepository.existsByPhoneNumber(cmd.phoneNumber))
             throw CoreException(ErrorType.DUPLICATE_PHONE_NUMBER, data = mapOf("phoneNumber" to cmd.phoneNumber))
 
         // 2) 사용자 정보 저장
-        val user = userJpaRepository.save(
-            UserEntity(
+        val user = userRepository.save(
+            User(
                 email = cmd.email,
                 emailVerified = false,
                 phoneNumber = cmd.phoneNumber,
@@ -70,7 +67,7 @@ class LocalAccountService(
 
         // 3) 로컬 자격증명 저장
         localAccountRepository.save(
-            LocalCredentialEntity(
+            LocalCredential(
                 userId = user.id,
                 userEmail = cmd.email,
                 passwordHash = passwordEncoder.encode(cmd.password),

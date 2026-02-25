@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param
 import java.time.Instant
 import jakarta.persistence.LockModeType
 
-interface JpaRefreshTokenRepository : JpaRepository<RefreshTokenEntity, Long> {
+interface RefreshTokenJpaRepository : JpaRepository<RefreshTokenEntity, Long> {
 
     fun findByTokenHash(tokenHash: String): RefreshTokenEntity?
 
