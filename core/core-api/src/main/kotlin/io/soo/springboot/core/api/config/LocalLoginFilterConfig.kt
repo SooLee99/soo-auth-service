@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
 
 @Configuration
-class LoginFilterConfig(
+class LocalLoginFilterConfig(
     private val objectMapper: ObjectMapper,
     private val localLoginSuccessHandler: LocalLoginSuccessHandler,
     private val localLoginFailureHandler: LocalLoginFailureHandler,
