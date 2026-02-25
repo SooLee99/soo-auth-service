@@ -1,6 +1,5 @@
 package io.soo.springboot.core.api.security.userdetails
 
-import io.soo.springboot.core.domain.token.UserPrincipal
 import io.soo.springboot.storage.db.core.LocalCredentialRepository
 import io.soo.springboot.storage.db.core.UserRepository
 import org.springframework.security.core.userdetails.UserDetails

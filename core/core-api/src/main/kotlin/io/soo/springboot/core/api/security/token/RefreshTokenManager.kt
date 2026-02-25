@@ -1,4 +1,4 @@
-package io.soo.springboot.core.domain.token
+package io.soo.springboot.core.api.security.token
 
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.storage.db.core.RefreshToken
@@ -18,7 +18,7 @@ data class RefreshTokenIssued(
 )
 
 @Service
-class RefreshTokenService(
+class RefreshTokenManager(
     private val repository: RefreshTokenRepository,
 ) {
     companion object {
@@ -27,7 +27,6 @@ class RefreshTokenService(
         private val rng = SecureRandom()
     }
 
-    fun refreshTtlSeconds(): Long = ChronoUnit.DAYS.duration.seconds * REFRESH_TTL_DAYS
     private fun now(): Instant = Instant.now()
 
     private fun sha256Hex(input: String): String {

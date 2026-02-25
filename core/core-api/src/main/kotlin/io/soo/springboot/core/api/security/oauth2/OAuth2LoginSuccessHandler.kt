@@ -2,12 +2,10 @@ package io.soo.springboot.core.api.security.oauth2
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.soo.springboot.core.api.controller.v1.response.LoginSuccessResponse
-import io.soo.springboot.core.domain.UserIdResolver
-import io.soo.springboot.core.domain.token.JsonWebTokenService
-import io.soo.springboot.core.domain.token.UserPrincipal
-import io.soo.springboot.core.domain.token.UserPrincipalLoader
+import io.soo.springboot.core.api.security.auth.UserIdResolver
+import io.soo.springboot.core.api.security.token.AuthTokenManager
+import io.soo.springboot.core.api.security.userdetails.UserPrincipalLoader
 import io.soo.springboot.core.enums.AuthProvider
-import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.response.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -20,7 +18,7 @@ import org.springframework.stereotype.Component
 @Component
 class OAuth2LoginSuccessHandler(
     private val objectMapper: ObjectMapper,
-    private val jwtService: JsonWebTokenService,
+    private val jwtService: AuthTokenManager,
     private val userIdResolver: UserIdResolver,
     private val userPrincipalLoader: UserPrincipalLoader,
 ) : AuthenticationSuccessHandler {

@@ -10,7 +10,7 @@ import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.error.CoreException
 
-import io.soo.springboot.core.domain.token.JsonWebTokenService
+import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.storage.db.core.LocalCredential
 import io.soo.springboot.storage.db.core.LocalCredentialRepository
 import io.soo.springboot.storage.db.core.User
@@ -36,7 +36,7 @@ class LocalAccountService(
     private val userRepository: UserRepository,
     private val localAccountRepository: LocalCredentialRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val jsonWebTokenService: JsonWebTokenService,
+    private val authTokenManager: AuthTokenManager,
 ) {
     @Transactional
     fun signUp(cmd: LocalSignUpCommand): User {
@@ -83,7 +83,7 @@ class LocalAccountService(
      */
     @Transactional
     fun logout(jwt: Jwt, deviceId: String, refreshToken: String?, logoutAll: Boolean) {
-        jsonWebTokenService.invalidateTokens(
+        authTokenManager.invalidateTokens(
             jwt = jwt,
             deviceId = deviceId,
             refreshToken = refreshToken,

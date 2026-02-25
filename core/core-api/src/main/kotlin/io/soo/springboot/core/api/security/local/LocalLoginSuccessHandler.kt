@@ -1,9 +1,9 @@
 package io.soo.springboot.core.api.security.local
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.soo.springboot.core.domain.UserIdResolver
+import io.soo.springboot.core.api.security.auth.UserIdResolver
 import io.soo.springboot.core.enums.AuthProvider
-import io.soo.springboot.core.domain.token.JsonWebTokenService
+import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.support.response.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class LocalLoginSuccessHandler(
-    private val jsonWebTokenService: JsonWebTokenService,
+    private val authTokenManager: AuthTokenManager,
     private val objectMapper: ObjectMapper,
     private val userIdResolver: UserIdResolver,
 ) : AuthenticationSuccessHandler {
@@ -27,7 +27,7 @@ class LocalLoginSuccessHandler(
         require(deviceId.isNotBlank()) { "X-Device-Id header is required" }
 
         val userId = userIdResolver.resolve(authentication)
-        val tokens = jsonWebTokenService.issue(authentication, userId, deviceId, AuthProvider.LOCAL)
+        val tokens = authTokenManager.issue(authentication, userId, deviceId, AuthProvider.LOCAL)
 
         response.contentType = "application/json;charset=UTF-8"
         response.writer.write(objectMapper.writeValueAsString(

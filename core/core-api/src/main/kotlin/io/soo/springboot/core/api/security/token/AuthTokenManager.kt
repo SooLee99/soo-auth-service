@@ -1,5 +1,6 @@
-package io.soo.springboot.core.domain.token
+package io.soo.springboot.core.api.security.token
 
+import io.soo.springboot.core.api.security.userdetails.UserPrincipalLoader
 import io.soo.springboot.core.domain.denylist.JwtDenylistStore
 import io.soo.springboot.core.enums.AuthProvider
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -19,9 +20,9 @@ data class IssuedTokens(
 )
 
 @Service
-class JsonWebTokenService(
-    private val accessTokenService: AccessTokenService,
-    private val refreshTokenService: RefreshTokenService,
+class AuthTokenManager(
+    private val accessTokenIssuer: AccessTokenIssuer,
+    private val refreshTokenManager: RefreshTokenManager,
     private val userPrincipalLoader: UserPrincipalLoader,
     private val denylistStore: JwtDenylistStore,
 ) {
@@ -29,8 +30,8 @@ class JsonWebTokenService(
      * ✅ 토큰 발급
      */
     fun issue(authentication: Authentication, userId: Long, deviceId: String, provider: AuthProvider): IssuedTokens {
-        val (access, accessExpSec) = accessTokenService.issue(authentication, userId)
-        val refresh = refreshTokenService.issue(userId, deviceId, provider)
+        val (access, accessExpSec) = accessTokenIssuer.issue(authentication, userId)
+        val refresh = refreshTokenManager.issue(userId, deviceId, provider)
 
         return IssuedTokens(
             accessToken = access,
@@ -45,12 +46,12 @@ class JsonWebTokenService(
      * - old refresh가 유효하면 새 access + 새 refresh 반환
      */
     fun refresh(oldRefreshToken: String, deviceId: String): IssuedTokens{
-        val (userId, newRefresh) = refreshTokenService.rotate(oldRefreshToken, deviceId)
+        val (userId, newRefresh) = refreshTokenManager.rotate(oldRefreshToken, deviceId)
 
         val user: UserDetails = userPrincipalLoader.loadByUserId(userId)
         val auth = UsernamePasswordAuthenticationToken(user.username, null, user.authorities)
 
-        val (access, accessExpSec) = accessTokenService.issue(auth, userId)
+        val (access, accessExpSec) = accessTokenIssuer.issue(auth, userId)
 
         return IssuedTokens(
             accessToken = access,
@@ -105,7 +106,7 @@ class JsonWebTokenService(
         return (jwt.claims["uid"] as? Number)?.toLong()
     }
 
-    fun revoke(token: String) = refreshTokenService.revoke(token)
-    fun revokeAll(userId: Long) = refreshTokenService.revokeAllByUser(userId)
-    fun revokeByDevice(userId: Long, deviceId: String) = refreshTokenService.revokeByDevice(userId, deviceId)
+    fun revoke(token: String) = refreshTokenManager.revoke(token)
+    fun revokeAll(userId: Long) = refreshTokenManager.revokeAllByUser(userId)
+    fun revokeByDevice(userId: Long, deviceId: String) = refreshTokenManager.revokeByDevice(userId, deviceId)
 }

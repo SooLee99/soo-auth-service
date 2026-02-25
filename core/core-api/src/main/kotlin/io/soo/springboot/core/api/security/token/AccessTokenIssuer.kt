@@ -1,4 +1,4 @@
-package io.soo.springboot.core.domain.token
+package io.soo.springboot.core.api.security.token
 
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm
@@ -14,7 +14,7 @@ import io.soo.springboot.core.api.config.AppJwtProperties
 
 
 @Service
-class AccessTokenService(
+class AccessTokenIssuer(
     private val jwtEncoder: JwtEncoder,
     private val props: AppJwtProperties,
 ) {

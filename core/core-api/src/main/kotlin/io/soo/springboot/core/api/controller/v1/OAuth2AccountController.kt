@@ -8,21 +8,9 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.security.core.Authentication
-import org.springframework.http.MediaType
-import org.springframework.web.bind.annotation.PostMapping
 
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.response.ApiResponse
-import io.soo.springboot.core.support.error.CoreException
-
-import io.soo.springboot.core.api.controller.v1.response.LoginSuccessResponse
-
-import io.soo.springboot.core.domain.UserIdResolver
-import io.soo.springboot.core.domain.token.JsonWebTokenService
-import io.soo.springboot.core.domain.token.UserPrincipal
-import io.soo.springboot.core.domain.token.UserPrincipalLoader
-import io.soo.springboot.core.enums.AuthProvider
 
 
 @RestController

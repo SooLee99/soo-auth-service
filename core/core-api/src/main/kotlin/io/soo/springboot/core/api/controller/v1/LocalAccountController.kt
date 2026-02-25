@@ -5,7 +5,7 @@ import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
 import io.soo.springboot.core.domain.LocalAccountService
 import io.soo.springboot.core.domain.LocalSignUpCommand
-import io.soo.springboot.core.domain.token.JsonWebTokenService
+import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.response.ApiResponse
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1/auth/local")
 class LocalAccountController(
     private val localAccountService: LocalAccountService,
-    private val jsonWebTokenService: JsonWebTokenService,
+    private val authTokenManager: AuthTokenManager,
 ) {
     @PostMapping("/signup")
     fun signUp(@RequestBody @Valid request: SignUpRequest) {
@@ -47,7 +47,7 @@ class LocalAccountController(
         @RequestBody request: RefreshRequest,
         req: HttpServletRequest,
     ): ApiResponse<Any?>{
-        val issued = jsonWebTokenService.refresh(request.refreshToken, deviceId)
+        val issued = authTokenManager.refresh(request.refreshToken, deviceId)
         return ApiResponse.success(req = req, data = issued)
     }
 
