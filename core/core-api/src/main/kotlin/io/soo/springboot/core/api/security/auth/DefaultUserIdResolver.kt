@@ -1,8 +1,8 @@
 package io.soo.springboot.core.api.security.auth
 
 import io.soo.springboot.core.domain.OAuth2AccountService
-import io.soo.springboot.core.domain.OAuth2UserInfoExtractor
 import io.soo.springboot.core.api.security.userdetails.UserPrincipal
+import io.soo.springboot.core.domain.OAuth2UserInfoExtractor
 import io.soo.springboot.core.enums.AuthProvider
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
