@@ -27,11 +27,7 @@ import io.soo.springboot.core.enums.AuthProvider
 
 @RestController
 @RequestMapping("/api/v1/auth/oauth2")
-class OAuth2AccountController (
-    private val jsonWebTokenService: JsonWebTokenService,
-    private val userIdResolver: UserIdResolver,
-    private val userPrincipalLoader: UserPrincipalLoader,
-) {
+class OAuth2AccountController {
 
     @GetMapping("/{provider}/authorize-url")
     fun authorizeUrl(
@@ -54,58 +50,5 @@ class OAuth2AccountController (
 
         val authorizePath = "/oauth2/authorization/$provider"
         return ApiResponse.success(req = req, data = authorizePath)
-    }
-
-    /**
-     * ✅ 로그인 성공 응답 (JWT 발급)
-     * - payload는 LoginSuccessResponse.Data / Token / User 사용
-     */
-    @PostMapping("/login/success", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun loginSuccess(
-        req: HttpServletRequest,
-        authentication: Authentication,
-        @RequestHeader("X-Device-Id", required = true) deviceId: String,
-    ): ApiResponse<LoginSuccessResponse.Data> {
-
-        val normalizedDeviceId = deviceId.trim()
-        if (normalizedDeviceId.isBlank()) {
-            throw CoreException(
-                ErrorType.INVALID_REQUEST_BODY,
-                data = mapOf("deviceId" to "blank")
-            )
-        }
-
-        // 1) userId
-        val userId = userIdResolver.resolve(authentication)
-
-        // 2) user principal
-        val principal: UserPrincipal = userPrincipalLoader.loadByUserId(userId)
-
-        val provider: AuthProvider = principal.provider
-
-        // 3) JWT 발급 (✅ deviceId/provider 포함)
-        val issued = jsonWebTokenService.issue(authentication, userId, normalizedDeviceId, provider)
-
-        val roles = principal.authorities
-            .map { it.authority }
-            .distinct()
-            .sorted()
-
-        val payload = LoginSuccessResponse.Data(
-            token = LoginSuccessResponse.Token(
-                accessToken = issued.accessToken,
-                expiresIn = issued.accessExpiresInSec,
-                refreshToken = issued.refreshToken,
-                refreshExpiresIn = issued.refreshExpiresInSec,
-            ),
-            user = LoginSuccessResponse.User(
-                id = userId,
-                provider = provider.name,
-                email = principal.email ?: authentication.name,
-                roles = roles,
-            )
-        )
-
-        return ApiResponse.success(req, data = payload)
     }
 }
