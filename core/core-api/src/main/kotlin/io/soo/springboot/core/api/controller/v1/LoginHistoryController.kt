@@ -1,9 +1,9 @@
 package io.soo.springboot.core.api.controller.v1
 
 import io.soo.springboot.core.api.security.auth.UserIdResolver
+import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.core.support.response.ApiResponse
 import io.soo.springboot.storage.db.core.LoginHistory
-import io.soo.springboot.storage.db.core.LoginHistoryRepository
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -17,7 +17,7 @@ import java.time.LocalDateTime
 @RestController
 @RequestMapping("/api/v1/auth/login-history")
 class LoginHistoryController(
-    private val loginHistoryRepository: LoginHistoryRepository,
+    private val loginHistoryService: LoginHistoryService,
     private val userIdResolver: UserIdResolver,
 ) {
 
@@ -34,9 +34,9 @@ class LoginHistoryController(
         val pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"))
 
         val result = if (startDate != null && endDate != null) {
-            loginHistoryRepository.findByUserIdAndDateRange(userId, startDate, endDate, pageable)
+            loginHistoryService.findByUserIdAndDateRange(userId, startDate, endDate, pageable)
         } else {
-            loginHistoryRepository.findByUserId(userId, pageable)
+            loginHistoryService.findByUserId(userId, pageable)
         }
 
         return ApiResponse.success(req = req, data = result)

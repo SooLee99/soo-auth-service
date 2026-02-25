@@ -5,6 +5,7 @@ import io.soo.springboot.core.api.security.auth.UserIdResolver
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.api.security.userdetails.UserPrincipal
+import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.core.support.response.ApiResponse
 import io.soo.springboot.storage.db.core.LoginHistoryEntity
 import io.soo.springboot.storage.db.core.LoginHistoryRepository
@@ -19,7 +20,7 @@ class LocalLoginSuccessHandler(
     private val authTokenManager: AuthTokenManager,
     private val objectMapper: ObjectMapper,
     private val userIdResolver: UserIdResolver,
-    private val loginHistoryRepository: LoginHistoryRepository,
+    private val loginHistoryService: LoginHistoryService,
 ) : AuthenticationSuccessHandler {
 
     override fun onAuthenticationSuccess(
@@ -35,15 +36,13 @@ class LocalLoginSuccessHandler(
         val tokens = authTokenManager.issue(authentication, userId, deviceId, AuthProvider.LOCAL)
 
         // 로그인 성공 기록
-        loginHistoryRepository.save(
+        loginHistoryService.recordLoginSuccess(
             userId = userId,
             userEmail = principal.email,
             loginType = LoginHistoryEntity.LoginType.LOCAL,
-            status = LoginHistoryEntity.LoginStatus.SUCCESS,
             ipAddress = ip,
             userAgent = ua,
             deviceId = deviceId,
-            failureReason = null,
         )
 
         response.contentType = "application/json;charset=UTF-8"

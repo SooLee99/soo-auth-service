@@ -3,6 +3,7 @@ package io.soo.springboot.core.api.security.local
 import io.soo.springboot.core.api.security.response.SecurityErrorFields
 import io.soo.springboot.core.api.security.response.SecurityErrorResponseWriter
 import io.soo.springboot.core.domain.LocalLoginPolicyService
+import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.storage.db.core.LoginHistoryEntity
 import io.soo.springboot.storage.db.core.LoginHistoryRepository
@@ -20,7 +21,7 @@ import java.time.LocalDateTime
 class LocalLoginFailureHandler(
     private val writer: SecurityErrorResponseWriter,
     private val localLoginPolicyService: LocalLoginPolicyService,
-    private val loginHistoryRepository: LoginHistoryRepository,
+    private val loginHistoryService: LoginHistoryService,
     private val userRepository: UserRepository,
 ) : AuthenticationFailureHandler {
 
@@ -52,11 +53,10 @@ class LocalLoginFailureHandler(
                 LocalLoginPolicyService.FailureResult.NOT_FOUND -> "ACCOUNT_NOT_FOUND"
             }
 
-            loginHistoryRepository.save(
+            loginHistoryService.recordLoginFailure(
                 userId = user.id,
                 userEmail = normalizedEmail,
                 loginType = LoginHistoryEntity.LoginType.LOCAL,
-                status = LoginHistoryEntity.LoginStatus.FAILURE,
                 ipAddress = ip,
                 userAgent = ua,
                 deviceId = deviceId,

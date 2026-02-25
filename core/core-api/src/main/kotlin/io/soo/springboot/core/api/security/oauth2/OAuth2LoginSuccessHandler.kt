@@ -5,8 +5,10 @@ import io.soo.springboot.core.api.controller.v1.response.LoginSuccessResponse
 import io.soo.springboot.core.api.security.auth.UserIdResolver
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.api.security.userdetails.UserPrincipalLoader
+import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.support.response.ApiResponse
+import io.soo.springboot.storage.db.core.LoginHistoryEntity
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.MediaType
@@ -18,22 +20,21 @@ import org.springframework.stereotype.Component
 @Component
 class OAuth2LoginSuccessHandler(
     private val objectMapper: ObjectMapper,
-    private val jwtService: AuthTokenManager,
     private val userIdResolver: UserIdResolver,
     private val userPrincipalLoader: UserPrincipalLoader,
-) : AuthenticationSuccessHandler {
 
-    companion object {
-        private const val ATTR_DEVICE_ID = "DEVICE_ID"
-        private const val MAX_DEVICE_ID = 255
-        private fun normDeviceId(s: String) = s.trim().take(MAX_DEVICE_ID)
-    }
+    private val jwtService: AuthTokenManager,
+    private val loginHistoryService: LoginHistoryService,
+) : AuthenticationSuccessHandler {
 
     override fun onAuthenticationSuccess(
         request: HttpServletRequest,
         response: HttpServletResponse,
         authentication: Authentication,
     ) {
+        val ip = request.remoteAddr
+        val ua = request.getHeader("User-Agent")
+        val deviceId = request.getHeader("X-Device-Id")?.trim().orEmpty()
         val userId = userIdResolver.resolve(authentication)
         val principal = userPrincipalLoader.loadByUserId(userId)
         val provider: AuthProvider = principal.provider
@@ -55,9 +56,19 @@ class OAuth2LoginSuccessHandler(
             user = LoginSuccessResponse.User(
                 id = userId,
                 provider = provider.name,
-                email = principal.email ?: principal.username,
+                email = principal.email,
                 roles = roles,
             )
+        )
+
+        // 로그인 성공 기록
+        loginHistoryService.recordLoginSuccess(
+            userId = userId,
+            userEmail = principal.email,
+            loginType = LoginHistoryEntity.LoginType.LOCAL,
+            ipAddress = ip,
+            userAgent = ua,
+            deviceId = deviceId,
         )
 
         response.status = HttpServletResponse.SC_OK
