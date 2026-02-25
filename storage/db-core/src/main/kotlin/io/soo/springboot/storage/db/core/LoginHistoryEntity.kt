@@ -1,0 +1,49 @@
+package io.soo.springboot.storage.db.core
+
+import jakarta.persistence.*
+import java.time.LocalDateTime
+
+@Entity
+@Table(name = "login_history", indexes = [
+    Index(name = "idx_login_history_user_id", columnList = "userId"),
+    Index(name = "idx_login_history_created_at", columnList = "createdAt")
+])
+class LoginHistoryEntity(
+    @Column(nullable = false)
+    var userId: Long,
+
+    @Column(nullable = false, length = 100)
+    var userEmail: String,
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    var loginType: LoginType,
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    var status: LoginStatus,
+
+    @Column(length = 50)
+    var ipAddress: String? = null,
+
+    @Column(length = 500)
+    var userAgent: String? = null,
+
+    @Column(length = 100)
+    var deviceId: String? = null,
+
+    @Column(length = 200)
+    var failureReason: String? = null,
+
+) : BaseEntity() {
+
+    enum class LoginType {
+        LOCAL,
+        OAUTH2
+    }
+
+    enum class LoginStatus {
+        SUCCESS,
+        FAILURE
+    }
+}

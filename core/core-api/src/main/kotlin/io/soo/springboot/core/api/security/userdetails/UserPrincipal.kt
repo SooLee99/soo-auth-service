@@ -7,7 +7,7 @@ import io.soo.springboot.core.enums.AuthProvider
 
 data class UserPrincipal(
     val userId: Long,
-    val email: String?,
+    val email: String,
     val passwordHash: String?,
     val role: Any,
     val provider: AuthProvider,

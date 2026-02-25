@@ -2,6 +2,7 @@ package io.soo.springboot.core.support.error
 
 import org.springframework.boot.logging.LogLevel
 import org.springframework.http.HttpStatus
+
 enum class ErrorType(
     val status: HttpStatus,
     val code: ErrorCode,
@@ -19,7 +20,13 @@ enum class ErrorType(
 
     // 401
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "인증이 필요합니다.", LogLevel.WARN),
+
+    // 일반 인증 실패
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "이메일 또는 비밀번호가 올바르지 않습니다.", LogLevel.WARN),
+
+    // 로컬 로그인 정책 전용 인증 실패 (외부 메시지는 동일하게 유지)
+    LOGIN_BAD_CREDENTIALS(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "이메일 또는 비밀번호가 올바르지 않습니다.", LogLevel.WARN),
+    LOGIN_ACCOUNT_NOT_FOUND(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "이메일 또는 비밀번호가 올바르지 않습니다.", LogLevel.WARN),
 
     // Access Token
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "유효하지 않은 액세스 토큰입니다.", LogLevel.WARN),
@@ -58,6 +65,14 @@ enum class ErrorType(
 
     // 429
     TOO_MANY_REQUESTS(HttpStatus.TOO_MANY_REQUESTS, ErrorCode.E429, "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.", LogLevel.WARN),
+
+    // 로컬 로그인 정책 전용 제한
+    LOGIN_ATTEMPTS_EXCEEDED(
+        HttpStatus.TOO_MANY_REQUESTS,
+        ErrorCode.E429,
+        "로그인 시도 횟수가 초과되었습니다. 잠시 후 다시 시도해 주세요.",
+        LogLevel.WARN
+    ),
 
     // 500
     DEFAULT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E500, "예기치 않은 오류가 발생했습니다.", LogLevel.ERROR),

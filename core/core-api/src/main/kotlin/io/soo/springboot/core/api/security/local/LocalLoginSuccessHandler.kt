@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.soo.springboot.core.api.security.auth.UserIdResolver
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.api.security.token.AuthTokenManager
+import io.soo.springboot.core.api.security.userdetails.UserPrincipal
 import io.soo.springboot.core.support.response.ApiResponse
+import io.soo.springboot.storage.db.core.LoginHistoryEntity
+import io.soo.springboot.storage.db.core.LoginHistoryRepository
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.core.Authentication
@@ -16,6 +19,7 @@ class LocalLoginSuccessHandler(
     private val authTokenManager: AuthTokenManager,
     private val objectMapper: ObjectMapper,
     private val userIdResolver: UserIdResolver,
+    private val loginHistoryRepository: LoginHistoryRepository,
 ) : AuthenticationSuccessHandler {
 
     override fun onAuthenticationSuccess(
@@ -23,11 +27,24 @@ class LocalLoginSuccessHandler(
         response: HttpServletResponse,
         authentication: Authentication
     ) {
+        val ip = request.remoteAddr
+        val ua = request.getHeader("User-Agent")
         val deviceId = request.getHeader("X-Device-Id")?.trim().orEmpty()
-        require(deviceId.isNotBlank()) { "X-Device-Id header is required" }
-
         val userId = userIdResolver.resolve(authentication)
+        val principal = authentication.principal as UserPrincipal
         val tokens = authTokenManager.issue(authentication, userId, deviceId, AuthProvider.LOCAL)
+
+        // 로그인 성공 기록
+        loginHistoryRepository.save(
+            userId = userId,
+            userEmail = principal.email,
+            loginType = LoginHistoryEntity.LoginType.LOCAL,
+            status = LoginHistoryEntity.LoginStatus.SUCCESS,
+            ipAddress = ip,
+            userAgent = ua,
+            deviceId = deviceId,
+            failureReason = null,
+        )
 
         response.contentType = "application/json;charset=UTF-8"
         response.writer.write(objectMapper.writeValueAsString(

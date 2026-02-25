@@ -1,6 +1,7 @@
 package io.soo.springboot.storage.db.core
 
 import org.springframework.stereotype.Repository
+import java.time.LocalDateTime
 
 @Repository
 class LocalCredentialRepositoryImpl(
@@ -19,6 +20,14 @@ class LocalCredentialRepositoryImpl(
 
     override fun findByUserEmail(email: String): LocalCredential? {
         return jpaRepository.findByUserEmail(email)?.toModel()
+    }
+
+    override fun lockByUserId(userId: Long): LocalCredential? {
+        return jpaRepository.lockByUserId(userId)?.toModel()
+    }
+
+    override fun deleteByUserId(userId: Long): Int {
+        return jpaRepository.deleteByUserId(userId)
     }
 
     private fun LocalCredential.toEntity(): LocalCredentialEntity {
