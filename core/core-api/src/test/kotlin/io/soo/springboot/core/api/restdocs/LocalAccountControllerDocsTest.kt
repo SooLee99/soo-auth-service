@@ -1,0 +1,178 @@
+package io.soo.springboot.core.api.restdocs
+
+import io.mockk.every
+import io.mockk.mockk
+import io.soo.springboot.core.api.controller.v1.LocalAccountController
+import io.soo.springboot.core.api.controller.v1.request.RefreshRequest
+import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
+import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
+import io.soo.springboot.core.api.security.token.AuthTokenManager
+import io.soo.springboot.core.api.security.token.IssuedTokens
+import io.soo.springboot.core.domain.LocalAccountService
+import io.soo.springboot.core.enums.Gender
+import io.soo.springboot.test.api.RestDocsTest
+import io.soo.springboot.test.api.RestDocsUtils
+import io.soo.springboot.test.api.mockMvcDocument
+import io.soo.springboot.test.api.requestFields
+import io.soo.springboot.test.api.requestHeaders
+import io.soo.springboot.test.api.responseFields
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.springframework.http.MediaType
+import org.springframework.restdocs.headers.HeaderDocumentation.headerWithName
+import org.springframework.restdocs.payload.JsonFieldType
+import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.jwt.Jwt
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
+import java.time.Instant
+
+class LocalAccountControllerDocsTest : RestDocsTest() {
+
+    private val localAccountService = mockk<LocalAccountService>(relaxed = true)
+    private val authTokenManager = mockk<AuthTokenManager>()
+    private lateinit var controller: LocalAccountController
+
+    @BeforeEach
+    fun init() {
+        controller = LocalAccountController(localAccountService, authTokenManager)
+        mockMvc = mockController(controller)
+    }
+
+    @Test
+    fun signUp() {
+        val request = SignUpRequest(
+            email = "user@example.com",
+            password = "P@ssw0rd!",
+            name = "홍길동",
+            nickname = "gildong",
+            gender = Gender.MALE,
+            phoneNumber = "+82 10-1234-5678",
+            locale = "ko-KR",
+            profileImageUrl = "https://cdn.example.com/profile.png",
+            thumbnailImageUrl = "https://cdn.example.com/thumbnail.png",
+            birthyear = "1990",
+            birthday = "01-31",
+        )
+
+        given()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(request)
+            .`when`()
+            .post("/api/v1/auth/local/signup")
+            .then()
+            .statusCode(200)
+            .apply(
+                mockMvcDocument(
+                    "auth-local-signup",
+                    RestDocsUtils.requestPreprocessor(),
+                    RestDocsUtils.responsePreprocessor(),
+                    requestFields(
+                        fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
+                        fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호"),
+                        fieldWithPath("name").type(JsonFieldType.STRING).optional().description("이름"),
+                        fieldWithPath("nickname").type(JsonFieldType.STRING).optional().description("닉네임"),
+                        fieldWithPath("gender").type(JsonFieldType.STRING).description("성별 (MALE/FEMALE)"),
+                        fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("휴대폰 번호"),
+                        fieldWithPath("locale").type(JsonFieldType.STRING).optional().description("로케일 (기본값: ko-KR)"),
+                        fieldWithPath("profileImageUrl").type(JsonFieldType.STRING).optional().description("프로필 이미지 URL"),
+                        fieldWithPath("thumbnailImageUrl").type(JsonFieldType.STRING).optional().description("썸네일 이미지 URL"),
+                        fieldWithPath("birthyear").type(JsonFieldType.STRING).optional().description("출생연도 (yyyy)"),
+                        fieldWithPath("birthday").type(JsonFieldType.STRING).optional().description("생일 (MM-DD)"),
+                    )
+                )
+            )
+    }
+
+    @Test
+    fun refreshToken() {
+        every { authTokenManager.refresh(any(), any()) } returns IssuedTokens(
+            accessToken = "access-token",
+            accessExpiresInSec = 3600,
+            refreshToken = "refresh-token",
+            refreshExpiresInSec = 1209600,
+        )
+
+        val responseDescriptors =
+            ApiResponseFieldDescriptors.successCommon() + listOf(
+                fieldWithPath("data").type(JsonFieldType.OBJECT).description("토큰 정보"),
+                fieldWithPath("data.accessToken").type(JsonFieldType.STRING).description("액세스 토큰"),
+                fieldWithPath("data.accessExpiresInSec").type(JsonFieldType.NUMBER).description("액세스 토큰 만료(초)"),
+                fieldWithPath("data.refreshToken").type(JsonFieldType.STRING).description("리프레시 토큰"),
+                fieldWithPath("data.refreshExpiresInSec").type(JsonFieldType.NUMBER).description("리프레시 토큰 만료(초)"),
+            )
+
+        given()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .header("X-Device-Id", "device-001")
+            .body(RefreshRequest(refreshToken = "refresh-token"))
+            .`when`()
+            .post("/api/v1/auth/local/token/refresh")
+            .then()
+            .statusCode(200)
+            .apply(
+                mockMvcDocument(
+                    "auth-local-refresh",
+                    RestDocsUtils.requestPreprocessor(),
+                    RestDocsUtils.responsePreprocessor(),
+                    requestHeaders(
+                        headerWithName("X-Device-Id").description("디바이스 식별자"),
+                    ),
+                    requestFields(
+                        fieldWithPath("refreshToken").type(JsonFieldType.STRING).description("리프레시 토큰"),
+                    ),
+                    responseFields(*responseDescriptors.toTypedArray()),
+                )
+            )
+    }
+
+    @Test
+    fun logout() {
+        val jwt = Jwt.withTokenValue("token")
+            .header("alg", "none")
+            .claim("uid", 1L)
+            .issuedAt(Instant.now())
+            .expiresAt(Instant.now().plusSeconds(3600))
+            .build()
+
+        val authentication = JwtAuthenticationToken(jwt)
+        SecurityContextHolder.getContext().authentication = authentication
+
+        val responseDescriptors =
+            ApiResponseFieldDescriptors.successCommon() + listOf(
+                fieldWithPath("data").type(JsonFieldType.OBJECT).description("결과"),
+                fieldWithPath("data.result").type(JsonFieldType.STRING).description("OK"),
+            )
+
+        try {
+            given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header("X-Device-Id", "device-001")
+                .header("Authorization", "Bearer token")
+                .body(LogoutRequest(refreshToken = "refresh-token", logoutAll = false))
+                .`when`()
+                .post("/api/v1/auth/local/logout")
+                .then()
+                .statusCode(200)
+                .apply(
+                    mockMvcDocument(
+                        "auth-local-logout",
+                        RestDocsUtils.requestPreprocessor(),
+                        RestDocsUtils.responsePreprocessor(),
+                        requestHeaders(
+                            headerWithName("Authorization").description("Bearer 액세스 토큰"),
+                            headerWithName("X-Device-Id").description("디바이스 식별자"),
+                        ),
+                        requestFields(
+                            fieldWithPath("refreshToken").type(JsonFieldType.STRING).optional()
+                                .description("리프레시 토큰 (단건 로그아웃)"),
+                            fieldWithPath("logoutAll").type(JsonFieldType.BOOLEAN).optional().description("전체 로그아웃 여부"),
+                        ),
+                        responseFields(*responseDescriptors.toTypedArray()),
+                    )
+                )
+        } finally {
+            SecurityContextHolder.clearContext()
+        }
+    }
+}

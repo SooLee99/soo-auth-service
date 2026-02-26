@@ -17,7 +17,7 @@ data class UserPrincipal(
         mutableListOf(SimpleGrantedAuthority("ROLE_$role"))
 
     override fun getPassword(): String? = passwordHash
-    override fun getUsername(): String = email ?: userId.toString()
+    override fun getUsername(): String = email
 
     override fun isAccountNonExpired() = true
     override fun isAccountNonLocked() = true

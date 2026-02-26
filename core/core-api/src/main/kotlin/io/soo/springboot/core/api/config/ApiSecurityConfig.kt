@@ -115,6 +115,10 @@ class ApiSecurityConfig(
         http.authorizeHttpRequests { auth ->
             auth.requestMatchers(*PUBLIC_ENDPOINTS).permitAll()
             auth.requestMatchers(ADMIN_API).permitAll()
+            auth.requestMatchers("/docs/**").permitAll()
+            auth.requestMatchers("/swagger-ui/**").permitAll()
+            auth.requestMatchers("/swagger/**").permitAll()
+
             auth.requestMatchers(HttpMethod.GET, "/api/v1/auth/oauth2/*/authorize-url").permitAll()
             auth.requestMatchers("/api/v1/auth/local/logout").authenticated()
             auth.requestMatchers("/api/**").authenticated()

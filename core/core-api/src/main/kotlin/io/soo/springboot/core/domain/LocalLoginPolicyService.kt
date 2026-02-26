@@ -26,9 +26,9 @@ class LocalLoginPolicyService(
     }
 
     @Transactional
-    fun recordSuccessByUserId(userId: Long, now: LocalDateTime = LocalDateTime.now()) {
+    fun recordSuccessByUserId(userId: Long) {
         val cred = localCredentialRepository.lockByUserId(userId) ?: return
-        cred.recordLoginSuccess(now)
+        cred.recordLoginSuccess()
         localCredentialRepository.save(cred)
     }
 

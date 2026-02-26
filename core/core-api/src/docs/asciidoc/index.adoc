@@ -11,28 +11,103 @@
 
 This is the Core API documentation.
 
-== Example API
+== Health
 
-=== Example GET API
+=== Health Check
 ==== Curl Request
-include::{snippets}/exampleGet/curl-request.adoc[]
-==== Path Parameters
-include::{snippets}/exampleGet/path-parameters.adoc[]
-==== Query Parameters
-include::{snippets}/exampleGet/query-parameters.adoc[]
+include::{snippets}/health/curl-request.adoc[]
 ==== Http Response
-include::{snippets}/exampleGet/http-response.adoc[]
-==== Response Fields
-include::{snippets}/exampleGet/response-fields.adoc[]
+include::{snippets}/health/http-response.adoc[]
 
 '''
 
-=== Example POST API
+== Local Auth
+
+=== 회원가입
 ==== Curl Request
-include::{snippets}/examplePost/curl-request.adoc[]
+include::{snippets}/auth-local-signup/curl-request.adoc[]
 ==== Request Fields
-include::{snippets}/examplePost/request-fields.adoc[]
+include::{snippets}/auth-local-signup/request-fields.adoc[]
 ==== Http Response
-include::{snippets}/examplePost/http-response.adoc[]
+include::{snippets}/auth-local-signup/http-response.adoc[]
+
+'''
+
+=== 로그인
+* `X-Device-Id`는 선택 헤더입니다. 전달하면 refresh/로그아웃 정책에 활용됩니다.
+==== Curl Request
+include::{snippets}/auth-local-login/curl-request.adoc[]
+==== Request Headers
+include::{snippets}/auth-local-login/request-headers.adoc[]
+==== Request Fields
+include::{snippets}/auth-local-login/request-fields.adoc[]
+==== Http Response
+include::{snippets}/auth-local-login/http-response.adoc[]
 ==== Response Fields
-include::{snippets}/examplePost/response-fields.adoc[]
+include::{snippets}/auth-local-login/response-fields.adoc[]
+
+'''
+
+=== 토큰 갱신
+* `X-Device-Id`는 필수 헤더입니다.
+==== Curl Request
+include::{snippets}/auth-local-refresh/curl-request.adoc[]
+==== Request Headers
+include::{snippets}/auth-local-refresh/request-headers.adoc[]
+==== Request Fields
+include::{snippets}/auth-local-refresh/request-fields.adoc[]
+==== Http Response
+include::{snippets}/auth-local-refresh/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-local-refresh/response-fields.adoc[]
+
+'''
+
+=== 로그아웃
+* `Authorization`과 `X-Device-Id`는 필수 헤더입니다.
+==== Curl Request
+include::{snippets}/auth-local-logout/curl-request.adoc[]
+==== Request Headers
+include::{snippets}/auth-local-logout/request-headers.adoc[]
+==== Request Fields
+include::{snippets}/auth-local-logout/request-fields.adoc[]
+==== Http Response
+include::{snippets}/auth-local-logout/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-local-logout/response-fields.adoc[]
+
+'''
+
+== OAuth2 Auth
+
+=== 인가 URL 조회
+* `returnUrl`은 상대 경로만 허용됩니다. (예: `/app/callback`)
+==== Curl Request
+include::{snippets}/auth-oauth2-authorize-url/curl-request.adoc[]
+==== Request Headers
+include::{snippets}/auth-oauth2-authorize-url/request-headers.adoc[]
+==== Path Parameters
+include::{snippets}/auth-oauth2-authorize-url/path-parameters.adoc[]
+==== Query Parameters
+include::{snippets}/auth-oauth2-authorize-url/query-parameters.adoc[]
+==== Http Response
+include::{snippets}/auth-oauth2-authorize-url/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-oauth2-authorize-url/response-fields.adoc[]
+
+'''
+
+== Admin
+
+=== 로그인 이력 조회
+* 관리자 권한이 필요합니다.
+==== Curl Request
+include::{snippets}/auth-admin-login-history/curl-request.adoc[]
+==== Request Headers
+include::{snippets}/auth-admin-login-history/request-headers.adoc[]
+==== Query Parameters
+include::{snippets}/auth-admin-login-history/query-parameters.adoc[]
+==== Http Response
+include::{snippets}/auth-admin-login-history/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-admin-login-history/response-fields.adoc[]

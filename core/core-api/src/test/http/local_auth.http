@@ -11,9 +11,9 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "email": "a1@a.com",
-  "password": "password123@",
-  "phoneNumber": "010-1234-5678",
+  "email": "admin123@gmail.com",
+  "password": "admin123@",
+  "phoneNumber": "010-1234-5679",
   "gender": "MALE",
   "locale": "ko-KR",
   "nickname": "soo_01",

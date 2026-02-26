@@ -1,0 +1,842 @@
+openapi: 3.0.1
+info:
+  title: soo-auth-service API
+  description: 인증 서비스 API 가이드 (REST API Docs).
+  version: 0.0.1-SNAPSHOT
+servers:
+- url: http://localhost
+tags:
+- name: Auth
+  description: "인증/인가(로그인, 토큰, 로그아웃)"
+- name: Admin
+  description: 관리자 전용 API
+- name: Health
+  description: 헬스체크/모니터링
+- name: OAuth2
+  description: 소셜 로그인/인가
+paths:
+  /api/v1/auth/admin/login-history:
+    get:
+      tags:
+      - Admin
+      summary: 관리자 로그인 이력 조회
+      description: "관리자 권한으로 로그인 이력을 페이징 조회합니다.\n\n### 인증\n- `Authorization: Bearer\
+        \ {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요\n\n### 헤더\n- `Authorization`: Bearer\
+        \ 액세스 토큰\n\n### Query 파라미터\n- `page`: 페이지 번호 (0부터 시작)\n- `size`: 페이지 크기\n\
+        - `sort`: 정렬 조건(예: createdAt,desc)\n- `startDate`: 조회 시작 시각 (ISO-8601)\n-\
+        \ `endDate`: 조회 종료 시각 (ISO-8601)\n\n### 응답 바디 필드\n- `result`: 결과\n- `meta`:\
+        \ 메타 정보\n- `meta.timestamp`: 응답 생성 시각\n- `meta.request`: 요청 정보\n- `meta.request.path`:\
+        \ 요청 경로\n- `meta.request.method`: HTTP 메서드\n- `meta.request.query`: 쿼리 스트링\
+        (있으면 문자열, 없으면 null)\n- `meta.requestId`: 요청 ID(있으면 문자열)\n- `meta.durationMs`:\
+        \ 처리 시간(ms)\n- `meta.locale`: 로케일\n- `meta.paging`: 페이징 메타(있는 경우)\n- `data`:\
+        \ 로그인 이력 페이지(Page)\n- `data.content`: 로그인 이력 목록(Page.content)\n- `data.content[].id`:\
+        \ 이력 ID\n- `data.content[].userId`: 사용자 ID\n- `data.content[].userEmail`:\
+        \ 사용자 이메일\n- `data.content[].loginType`: 로그인 유형\n- `data.content[].status`:\
+        \ 로그인 상태\n- `data.content[].ipAddress`: IP 주소(없으면 null)\n- `data.content[].userAgent`:\
+        \ User-Agent(없으면 null)\n- `data.content[].deviceId`: 디바이스 ID(없으면 null)\n-\
+        \ `data.content[].failureReason`: 실패 사유(없으면 null)\n- `data.content[].createdAt`:\
+        \ 로그인 시각\n- `data.totalElements`: 전체 건수\n- `data.totalPages`: 전체 페이지 수\n-\
+        \ `data.size`: 페이지 크기\n- `data.number`: 현재 페이지 번호\n- `data.numberOfElements`:\
+        \ 현재 페이지 요소 수\n- `data.first`: 첫 페이지 여부\n- `data.last`: 마지막 페이지 여부\n- `data.empty`:\
+        \ 비어있는 페이지 여부\n- `data.pageable`: null\n- `data.sort`: null\n- `error`: 에러\
+        \ 정보(실패 시에만 존재)\n\n### 공통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요\
+        한 API)\n- **400** validation 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의\
+        \ **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-admin-login-history
+      parameters:
+      - name: page
+        in: query
+        description: 페이지 번호 (0부터 시작)
+        required: false
+        schema:
+          type: string
+      - name: size
+        in: query
+        description: 페이지 크기
+        required: false
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: "정렬 조건(예: createdAt,desc)"
+        required: false
+        schema:
+          type: string
+      - name: startDate
+        in: query
+        description: 조회 시작 시각 (ISO-8601)
+        required: false
+        schema:
+          type: string
+      - name: endDate
+        in: query
+        description: 조회 종료 시각 (ISO-8601)
+        required: false
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer 액세스 토큰
+        required: true
+        schema:
+          type: string
+        example: Bearer token
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-admin-login-history-262485762'
+              examples:
+                auth-admin-login-history:
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-02-26T15:55:27.366417999\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/admin/login-history\",\n    \
+                    \  \"method\" : \"GET\",\n      \"query\" : \"page=0&size=20\"\
+                    \n    }\n  },\n  \"data\" : {\n    \"content\" : [ {\n      \"\
+                    id\" : 1,\n      \"userId\" : 1,\n      \"userEmail\" : \"user@example.com\"\
+                    ,\n      \"loginType\" : \"LOCAL\",\n      \"status\" : \"SUCCESS\"\
+                    ,\n      \"ipAddress\" : \"127.0.0.1\",\n      \"userAgent\" :\
+                    \ \"Mozilla/5.0\",\n      \"deviceId\" : \"device-001\",\n   \
+                    \   \"failureReason\" : null,\n      \"createdAt\" : \"2025-01-01T12:00:00\"\
+                    \n    } ],\n    \"pageable\" : {\n      \"pageNumber\" : 0,\n\
+                    \      \"pageSize\" : 20,\n      \"sort\" : {\n        \"empty\"\
+                    \ : true,\n        \"sorted\" : false,\n        \"unsorted\" :\
+                    \ true\n      },\n      \"offset\" : 0,\n      \"paged\" : true,\n\
+                    \      \"unpaged\" : false\n    },\n    \"totalPages\" : 1,\n\
+                    \    \"totalElements\" : 1,\n    \"last\" : true,\n    \"size\"\
+                    \ : 20,\n    \"number\" : 0,\n    \"sort\" : {\n      \"empty\"\
+                    \ : true,\n      \"sorted\" : false,\n      \"unsorted\" : true\n\
+                    \    },\n    \"numberOfElements\" : 1,\n    \"first\" : true,\n\
+                    \    \"empty\" : false\n  }\n}"
+  /api/v1/auth/local/login:
+    post:
+      tags:
+      - Auth
+      summary: 로컬 로그인
+      description: "이메일/비밀번호로 로그인하고 토큰을 발급합니다.\n\n### 인증\n- 인증 불필요\n\n### 헤더\n- `X-Device-Id`:\
+        \ 디바이스 식별자 (선택)\n\n### 요청 바디 필드\n- `email`: 이메일\n- `password`: 비밀번호\n\n###\
+        \ 응답 바디 필드\n- `result`: 결과\n- `meta`: 메타 정보\n- `meta.timestamp`: 응답 생성 시각\n\
+        - `meta.request`: 요청 정보\n- `meta.request.path`: 요청 경로\n- `meta.request.method`:\
+        \ HTTP 메서드\n- `meta.request.query`: 쿼리 스트링(있으면 문자열, 없으면 null)\n- `data`: 토\
+        큰 정보\n- `data.accessToken`: 액세스 토큰\n- `data.accessExpiresInSec`: 액세스 토큰 만료\
+        (초)\n- `data.refreshToken`: 리프레시 토큰\n- `data.refreshExpiresInSec`: 리프레시 토큰\
+        \ 만료(초)\n\n### 공통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n\
+        - **400** validation 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples**\
+        \ 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-local-login
+      parameters:
+      - name: X-Device-Id
+        in: header
+        description: 디바이스 식별자 (선택)
+        required: false
+        schema:
+          type: string
+        example: device-001
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-local-login-788118888'
+            examples:
+              auth-local-login:
+                value: "{\n  \"email\" : \"user@example.com\",\n  \"password\" : \"\
+                  P@ssw0rd!\"\n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-local-login1560895474'
+              examples:
+                auth-local-login:
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-02-26T15:55:28.421708663\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/local/login\",\n      \"method\"\
+                    \ : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"accessToken\"\
+                    \ : \"access-token\",\n    \"accessExpiresInSec\" : 3600,\n  \
+                    \  \"refreshToken\" : \"refresh-token\",\n    \"refreshExpiresInSec\"\
+                    \ : 1209600\n  }\n}"
+  /api/v1/auth/local/logout:
+    post:
+      tags:
+      - Auth
+      summary: 로그아웃
+      description: "로그아웃을 수행합니다(단건/전체 옵션).\n\n### 인증\n- `Authorization: Bearer {accessToken}`\
+        \ 필요\n\n### 헤더\n- `Authorization`: Bearer 액세스 토큰\n- `X-Device-Id`: 디바이스 식별\
+        자\n\n### 요청 바디 필드\n- `refreshToken`: 리프레시 토큰 (단건 로그아웃)\n- `logoutAll`: 전체\
+        \ 로그아웃 여부\n\n### 응답 바디 필드\n- `result`: 요청 처리 결과 (SUCCESS/ERROR)\n- `meta.timestamp`:\
+        \ 응답 생성 시각 (서버 로컬 시간)\n- `meta.requestId`: 요청 추적 ID (있을 때만 반환)\n- `meta.durationMs`:\
+        \ 처리 시간(ms)\n- `meta.request.path`: 요청 경로\n- `meta.request.method`: HTTP 메\
+        서드\n- `meta.request.query`: 쿼리 문자열 (없으면 null)\n- `meta.paging`: 페이징 메타 정보\
+        \ (있을 때만 반환)\n- `meta.locale`: 응답 로케일 (있을 때만 반환)\n- `error`: 오류 정보 (에러 응답에\
+        서만 포함)\n- `data`: 결과\n- `data.result`: OK\n\n### 공통 에러\n- **401** 인증 실패/만료\
+        /위조\n- **403** 권한 없음(권한 필요한 API)\n- **400** validation 실패(필드 형식/필수 누락)\n\n\
+        > 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-local-logout
+      parameters:
+      - name: Authorization
+        in: header
+        description: Bearer 액세스 토큰
+        required: true
+        schema:
+          type: string
+        example: Bearer token
+      - name: X-Device-Id
+        in: header
+        description: 디바이스 식별자
+        required: true
+        schema:
+          type: string
+        example: device-001
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-local-logout1868317452'
+            examples:
+              auth-local-logout:
+                value: "{\n  \"refreshToken\" : \"refresh-token\",\n  \"logoutAll\"\
+                  \ : false\n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-local-logout-2020253012'
+              examples:
+                auth-local-logout:
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-02-26T15:55:28.165631929\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/local/logout\",\n      \"method\"\
+                    \ : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"result\" : \"\
+                    OK\"\n  }\n}"
+  /api/v1/auth/local/signup:
+    post:
+      tags:
+      - Auth
+      summary: 로컬 회원가입
+      description: "이메일/비밀번호 기반 로컬 계정을 생성합니다.\n\n### 인증\n- 인증 불필요\n\n### 요청 바디 필드\n\
+        - `email`: 이메일\n- `password`: 비밀번호\n- `name`: 이름\n- `nickname`: 닉네임\n- `gender`:\
+        \ 성별 (MALE/FEMALE)\n- `phoneNumber`: 휴대폰 번호\n- `locale`: 로케일 (기본값: ko-KR)\n\
+        - `profileImageUrl`: 프로필 이미지 URL\n- `thumbnailImageUrl`: 썸네일 이미지 URL\n- `birthyear`:\
+        \ 출생연도 (yyyy)\n- `birthday`: 생일 (MM-DD)\n\n### 공통 에러\n- **401** 인증 실패/만료/위\
+        조\n- **403** 권한 없음(권한 필요한 API)\n- **400** validation 실패(필드 형식/필수 누락)\n\n>\
+        \ 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-local-signup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-local-signup-255962728'
+            examples:
+              auth-local-signup:
+                value: "{\n  \"email\" : \"user@example.com\",\n  \"password\" : \"\
+                  P@ssw0rd!\",\n  \"name\" : \"홍길동\",\n  \"nickname\" : \"gildong\"\
+                  ,\n  \"gender\" : \"MALE\",\n  \"phoneNumber\" : \"+82 10-1234-5678\"\
+                  ,\n  \"locale\" : \"ko-KR\",\n  \"profileImageUrl\" : \"http://dev.soo.io/profile.png\"\
+                  ,\n  \"thumbnailImageUrl\" : \"http://dev.soo.io/thumbnail.png\"\
+                  ,\n  \"birthyear\" : \"1990\",\n  \"birthday\" : \"01-31\"\n}"
+      responses:
+        "200":
+          description: "200"
+  /api/v1/auth/local/token/refresh:
+    post:
+      tags:
+      - Auth
+      summary: 토큰 재발급(Refresh)
+      description: "Refresh Token으로 Access Token을 재발급합니다.\n\n### 인증\n- 인증 불필요(일반적으\
+        로 refreshToken 자체가 인증 수단)\n\n### 헤더\n- `X-Device-Id`: 디바이스 식별자\n\n### 요청 바\
+        디 필드\n- `refreshToken`: 리프레시 토큰\n\n### 응답 바디 필드\n- `result`: 요청 처리 결과 (SUCCESS/ERROR)\n\
+        - `meta.timestamp`: 응답 생성 시각 (서버 로컬 시간)\n- `meta.requestId`: 요청 추적 ID (있을\
+        \ 때만 반환)\n- `meta.durationMs`: 처리 시간(ms)\n- `meta.request.path`: 요청 경로\n-\
+        \ `meta.request.method`: HTTP 메서드\n- `meta.request.query`: 쿼리 문자열 (없으면 null)\n\
+        - `meta.paging`: 페이징 메타 정보 (있을 때만 반환)\n- `meta.locale`: 응답 로케일 (있을 때만 반환)\n\
+        - `error`: 오류 정보 (에러 응답에서만 포함)\n- `data`: 토큰 정보\n- `data.accessToken`: 액세스\
+        \ 토큰\n- `data.accessExpiresInSec`: 액세스 토큰 만료(초)\n- `data.refreshToken`: 리프\
+        레시 토큰\n- `data.refreshExpiresInSec`: 리프레시 토큰 만료(초)\n\n### 공통 에러\n- **401**\
+        \ 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400** validation 실패(필드 형식\
+        /필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다\
+        ."
+      operationId: auth-local-refresh
+      parameters:
+      - name: X-Device-Id
+        in: header
+        description: 디바이스 식별자
+        required: true
+        schema:
+          type: string
+        example: device-001
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-local-token-refresh1056639717'
+            examples:
+              auth-local-refresh:
+                value: "{\n  \"refreshToken\" : \"refresh-token\"\n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-local-token-refresh-1150988368'
+              examples:
+                auth-local-refresh:
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-02-26T15:55:28.347355165\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/local/token/refresh\",\n    \
+                    \  \"method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"\
+                    accessToken\" : \"access-token\",\n    \"accessExpiresInSec\"\
+                    \ : 3600,\n    \"refreshToken\" : \"refresh-token\",\n    \"refreshExpiresInSec\"\
+                    \ : 1209600\n  }\n}"
+  /api/v1/auth/oauth2/{provider}/authorize-url:
+    get:
+      tags:
+      - OAuth2
+      summary: OAuth2 인가 URL 조회
+      description: "OAuth2 인가 URL 경로를 반환합니다.\n\n### 인증\n- 인증 불필요\n\n### 헤더\n- `X-Device-Id`:\
+        \ 디바이스 식별자 (선택)\n\n### Path 파라미터\n- `provider`: OAuth2 공급자 (예: kakao, naver,\
+        \ google)\n\n### Query 파라미터\n- `returnUrl`: 로그인 완료 후 리다이렉트할 상대 경로\n\n### 응\
+        답 바디 필드\n- `result`: 요청 처리 결과 (SUCCESS/ERROR)\n- `meta.timestamp`: 응답 생성 시\
+        각 (서버 로컬 시간)\n- `meta.requestId`: 요청 추적 ID (있을 때만 반환)\n- `meta.durationMs`:\
+        \ 처리 시간(ms)\n- `meta.request.path`: 요청 경로\n- `meta.request.method`: HTTP 메\
+        서드\n- `meta.request.query`: 쿼리 문자열 (없으면 null)\n- `meta.paging`: 페이징 메타 정보\
+        \ (있을 때만 반환)\n- `meta.locale`: 응답 로케일 (있을 때만 반환)\n- `error`: 오류 정보 (에러 응답에\
+        서만 포함)\n- `data`: OAuth2 인가 URL 경로 (예: /oauth2/authorization/{provider})\n\
+        \n### 공통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400**\
+        \ validation 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션\
+        에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-oauth2-authorize-url
+      parameters:
+      - name: provider
+        in: path
+        description: "OAuth2 공급자 (예: kakao, naver, google)"
+        required: true
+        schema:
+          type: string
+      - name: returnUrl
+        in: query
+        description: 로그인 완료 후 리다이렉트할 상대 경로
+        required: false
+        schema:
+          type: string
+      - name: X-Device-Id
+        in: header
+        description: 디바이스 식별자 (선택)
+        required: false
+        schema:
+          type: string
+        example: device-001
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-oauth2-provider-authorize-url1616597692'
+              examples:
+                auth-oauth2-authorize-url:
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-02-26T15:55:28.454820144\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/oauth2/kakao/authorize-url\"\
+                    ,\n      \"method\" : \"GET\",\n      \"query\" : \"returnUrl=/app/callback\"\
+                    \n    }\n  },\n  \"data\" : \"/oauth2/authorization/kakao\"\n}"
+  /health:
+    get:
+      tags:
+      - Health
+      summary: 헬스 체크
+      description: |-
+        서비스 상태 확인용 엔드포인트입니다.
+
+        ### 인증
+        - 인증 불필요
+
+        ### 공통 에러
+        - **401** 인증 실패/만료/위조
+        - **403** 권한 없음(권한 필요한 API)
+        - **400** validation 실패(필드 형식/필수 누락)
+
+        > 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다.
+      operationId: health
+      responses:
+        "200":
+          description: "200"
+components:
+  schemas:
+    api-v1-auth-local-logout1868317452:
+      type: object
+      properties:
+        logoutAll:
+          type: boolean
+          description: 전체 로그아웃 여부
+          nullable: true
+        refreshToken:
+          type: string
+          description: 리프레시 토큰 (단건 로그아웃)
+          nullable: true
+    api-v1-auth-admin-login-history-262485762:
+      required:
+      - data
+      - meta
+      - result
+      type: object
+      properties:
+        result:
+          type: string
+          description: 결과
+        data:
+          required:
+          - content
+          - empty
+          - first
+          - last
+          - number
+          - numberOfElements
+          - size
+          - totalElements
+          - totalPages
+          type: object
+          properties:
+            number:
+              type: number
+              description: 현재 페이지 번호
+            last:
+              type: boolean
+              description: 마지막 페이지 여부
+            numberOfElements:
+              type: number
+              description: 현재 페이지 요소 수
+            size:
+              type: number
+              description: 페이지 크기
+            totalPages:
+              type: number
+              description: 전체 페이지 수
+            first:
+              type: boolean
+              description: 첫 페이지 여부
+            content:
+              type: array
+              description: 로그인 이력 목록(Page.content)
+              items:
+                required:
+                - createdAt
+                - id
+                - loginType
+                - status
+                - userEmail
+                - userId
+                type: object
+                properties:
+                  createdAt:
+                    type: string
+                    description: 로그인 시각
+                  loginType:
+                    type: string
+                    description: 로그인 유형
+                  failureReason:
+                    type: object
+                    description: 실패 사유(없으면 null)
+                    nullable: true
+                  ipAddress:
+                    type: object
+                    description: IP 주소(없으면 null)
+                    nullable: true
+                  userAgent:
+                    type: object
+                    description: User-Agent(없으면 null)
+                    nullable: true
+                  userEmail:
+                    type: string
+                    description: 사용자 이메일
+                  id:
+                    type: number
+                    description: 이력 ID
+                  deviceId:
+                    type: object
+                    description: 디바이스 ID(없으면 null)
+                    nullable: true
+                  userId:
+                    type: number
+                    description: 사용자 ID
+                  status:
+                    type: string
+                    description: 로그인 상태
+            empty:
+              type: boolean
+              description: 비어있는 페이지 여부
+            totalElements:
+              type: number
+              description: 전체 건수
+          description: 로그인 이력 페이지(Page)
+        meta:
+          required:
+          - request
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: object
+                  description: "쿼리 스트링(있으면 문자열, 없으면 null)"
+                  nullable: true
+              description: 요청 정보
+            requestId:
+              type: object
+              description: 요청 ID(있으면 문자열)
+              nullable: true
+            paging:
+              type: object
+              description: 페이징 메타(있는 경우)
+              nullable: true
+            locale:
+              type: object
+              description: 로케일
+              nullable: true
+            durationMs:
+              type: object
+              description: 처리 시간(ms)
+              nullable: true
+            timestamp:
+              type: string
+              description: 응답 생성 시각
+          description: 메타 정보
+        error:
+          type: object
+          description: 에러 정보(실패 시에만 존재)
+          nullable: true
+    api-v1-auth-local-token-refresh-1150988368:
+      required:
+      - data
+      - result
+      type: object
+      properties:
+        result:
+          type: string
+          description: 요청 처리 결과 (SUCCESS/ERROR)
+        data:
+          required:
+          - accessExpiresInSec
+          - accessToken
+          - refreshExpiresInSec
+          - refreshToken
+          type: object
+          properties:
+            refreshExpiresInSec:
+              type: number
+              description: 리프레시 토큰 만료(초)
+            accessExpiresInSec:
+              type: number
+              description: 액세스 토큰 만료(초)
+            accessToken:
+              type: string
+              description: 액세스 토큰
+            refreshToken:
+              type: string
+              description: 리프레시 토큰
+          description: 토큰 정보
+        meta:
+          required:
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: string
+                  description: 쿼리 문자열 (없으면 null)
+                  nullable: true
+            requestId:
+              type: string
+              description: 요청 추적 ID (있을 때만 반환)
+              nullable: true
+            paging:
+              type: object
+              description: 페이징 메타 정보 (있을 때만 반환)
+              nullable: true
+            locale:
+              type: string
+              description: 응답 로케일 (있을 때만 반환)
+              nullable: true
+            durationMs:
+              type: number
+              description: 처리 시간(ms)
+              nullable: true
+            timestamp:
+              type: string
+              description: 응답 생성 시각 (서버 로컬 시간)
+        error:
+          type: object
+          description: 오류 정보 (에러 응답에서만 포함)
+          nullable: true
+    api-v1-auth-local-signup-255962728:
+      required:
+      - email
+      - gender
+      - password
+      - phoneNumber
+      type: object
+      properties:
+        birthday:
+          type: string
+          description: 생일 (MM-DD)
+          nullable: true
+        thumbnailImageUrl:
+          type: string
+          description: 썸네일 이미지 URL
+          nullable: true
+        password:
+          type: string
+          description: 비밀번호
+        phoneNumber:
+          type: string
+          description: 휴대폰 번호
+        birthyear:
+          type: string
+          description: 출생연도 (yyyy)
+          nullable: true
+        gender:
+          type: string
+          description: 성별 (MALE/FEMALE)
+        nickname:
+          type: string
+          description: 닉네임
+          nullable: true
+        name:
+          type: string
+          description: 이름
+          nullable: true
+        locale:
+          type: string
+          description: "로케일 (기본값: ko-KR)"
+          nullable: true
+        profileImageUrl:
+          type: string
+          description: 프로필 이미지 URL
+          nullable: true
+        email:
+          type: string
+          description: 이메일
+    api-v1-auth-oauth2-provider-authorize-url1616597692:
+      required:
+      - data
+      - result
+      type: object
+      properties:
+        result:
+          type: string
+          description: 요청 처리 결과 (SUCCESS/ERROR)
+        data:
+          type: string
+          description: "OAuth2 인가 URL 경로 (예: /oauth2/authorization/{provider})"
+        meta:
+          required:
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: string
+                  description: 쿼리 문자열 (없으면 null)
+                  nullable: true
+            requestId:
+              type: string
+              description: 요청 추적 ID (있을 때만 반환)
+              nullable: true
+            paging:
+              type: object
+              description: 페이징 메타 정보 (있을 때만 반환)
+              nullable: true
+            locale:
+              type: string
+              description: 응답 로케일 (있을 때만 반환)
+              nullable: true
+            durationMs:
+              type: number
+              description: 처리 시간(ms)
+              nullable: true
+            timestamp:
+              type: string
+              description: 응답 생성 시각 (서버 로컬 시간)
+        error:
+          type: object
+          description: 오류 정보 (에러 응답에서만 포함)
+          nullable: true
+    api-v1-auth-local-logout-2020253012:
+      required:
+      - data
+      - result
+      type: object
+      properties:
+        result:
+          type: string
+          description: 요청 처리 결과 (SUCCESS/ERROR)
+        data:
+          required:
+          - result
+          type: object
+          properties:
+            result:
+              type: string
+              description: OK
+          description: 결과
+        meta:
+          required:
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: string
+                  description: 쿼리 문자열 (없으면 null)
+                  nullable: true
+            requestId:
+              type: string
+              description: 요청 추적 ID (있을 때만 반환)
+              nullable: true
+            paging:
+              type: object
+              description: 페이징 메타 정보 (있을 때만 반환)
+              nullable: true
+            locale:
+              type: string
+              description: 응답 로케일 (있을 때만 반환)
+              nullable: true
+            durationMs:
+              type: number
+              description: 처리 시간(ms)
+              nullable: true
+            timestamp:
+              type: string
+              description: 응답 생성 시각 (서버 로컬 시간)
+        error:
+          type: object
+          description: 오류 정보 (에러 응답에서만 포함)
+          nullable: true
+    api-v1-auth-local-login1560895474:
+      required:
+      - data
+      - meta
+      - result
+      type: object
+      properties:
+        result:
+          type: string
+          description: 결과
+        data:
+          required:
+          - accessExpiresInSec
+          - accessToken
+          - refreshExpiresInSec
+          - refreshToken
+          type: object
+          properties:
+            refreshExpiresInSec:
+              type: number
+              description: 리프레시 토큰 만료(초)
+            accessExpiresInSec:
+              type: number
+              description: 액세스 토큰 만료(초)
+            accessToken:
+              type: string
+              description: 액세스 토큰
+            refreshToken:
+              type: string
+              description: 리프레시 토큰
+          description: 토큰 정보
+        meta:
+          required:
+          - request
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: object
+                  description: "쿼리 스트링(있으면 문자열, 없으면 null)"
+                  nullable: true
+              description: 요청 정보
+            timestamp:
+              type: string
+              description: 응답 생성 시각
+          description: 메타 정보
+    api-v1-auth-local-token-refresh1056639717:
+      required:
+      - refreshToken
+      type: object
+      properties:
+        refreshToken:
+          type: string
+          description: 리프레시 토큰
+    api-v1-auth-local-login-788118888:
+      required:
+      - email
+      - password
+      type: object
+      properties:
+        password:
+          type: string
+          description: 비밀번호
+        email:
+          type: string
+          description: 이메일

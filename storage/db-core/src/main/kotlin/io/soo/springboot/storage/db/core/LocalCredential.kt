@@ -17,7 +17,7 @@ data class LocalCredential(
         return now.isBefore(until)
     }
 
-    fun recordLoginSuccess(now: LocalDateTime = LocalDateTime.now()) {
+    fun recordLoginSuccess() {
         failedLoginCount = 0
         lastFailedAt = null
         lockUntil = null

@@ -12,8 +12,10 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
+import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import jakarta.servlet.Filter
 import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder
 
 @Tag("restdocs")
@@ -31,17 +33,23 @@ abstract class RestDocsTest {
         return mockMvc
     }
 
-    protected fun mockController(controller: Any): MockMvcRequestSpecification {
-        val mockMvc = createMockMvc(controller)
+    protected fun mockController(controller: Any, vararg filters: Filter): MockMvcRequestSpecification {
+        val mockMvc = createMockMvc(controller, *filters)
         return RestAssuredMockMvc.given()
             .mockMvc(mockMvc)
     }
 
-    private fun createMockMvc(controller: Any): MockMvc {
+    private fun createMockMvc(controller: Any, vararg filters: Filter): MockMvc {
         val converter = MappingJackson2HttpMessageConverter(objectMapper())
-
-        return MockMvcBuilders.standaloneSetup(controller)
-            .apply<StandaloneMockMvcBuilder>(MockMvcRestDocumentation.documentationConfiguration(restDocumentation))
+        val base: StandaloneMockMvcBuilder =
+            MockMvcBuilders.standaloneSetup(controller)
+        val builder1: StandaloneMockMvcBuilder =
+            base.apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation))
+        val builder2: StandaloneMockMvcBuilder =
+            builder1.setCustomArgumentResolvers(AuthenticationPrincipalArgumentResolver())
+        val builder3: StandaloneMockMvcBuilder =
+            if (filters.isNotEmpty()) builder2.addFilters(*filters) else builder2
+        return builder3
             .setMessageConverters(converter)
             .build()
     }

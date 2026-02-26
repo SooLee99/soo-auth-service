@@ -17,7 +17,7 @@ data class LoginHistory(
     companion object {
         fun from(entity: LoginHistoryEntity): LoginHistory {
             return LoginHistory(
-                id = entity.id!!,
+                id = entity.id,
                 userId = entity.userId,
                 userEmail = entity.userEmail,
                 loginType = entity.loginType,

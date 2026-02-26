@@ -8,7 +8,6 @@ import io.soo.springboot.core.api.security.userdetails.UserPrincipal
 import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.core.support.response.ApiResponse
 import io.soo.springboot.storage.db.core.LoginHistoryEntity
-import io.soo.springboot.storage.db.core.LoginHistoryRepository
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.core.Authentication

@@ -11,6 +11,10 @@ include(
 )
 
 pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
     val kotlinVersion: String by settings
     val springBootVersion: String by settings
     val springDependencyManagementVersion: String by settings
@@ -30,5 +34,11 @@ pluginManagement {
                 "org.jlleitschuh.gradle.ktlint" -> useVersion(ktlintVersion)
             }
         }
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
     }
 }
