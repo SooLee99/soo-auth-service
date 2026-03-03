@@ -1,0 +1,98 @@
+name: soo-auth
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  mariadb_data:
+
+services:
+  mariadb:
+    image: mariadb:11.2
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Seoul
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+    # 운영에서는 보통 DB 포트를 외부에 열지 않습니다.
+    # 필요하면 아래처럼 로컬호스트로만 바인딩 권장:
+    # ports:
+    #   - "127.0.0.1:3306:3306"
+
+    networks:
+      backend:
+        aliases:
+          - mariadb
+
+    # DB 준비 완료 대기(중요)
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -uroot -p$$MARIADB_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 10s
+
+
+  # 운영에서는 보통 제외(필요할 때만 profile로 띄우기)
+  phpmyadmin:
+    image: phpmyadmin:latest
+    restart: unless-stopped
+    profiles: ["debug"]
+    environment:
+      TZ: Asia/Seoul
+      PMA_HOST: mariadb
+      PMA_ARBITRARY: 1
+    ports:
+      - "8081:80"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      - backend
+
+
+  app:
+    # 이미 레지스트리 이미지가 있으면 image만 쓰고 build는 제거해도 됩니다.
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${DOCKER_HUB_USERNAME}/soo-auth-service:latest
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Seoul
+
+      # 운영에서 사용할 프로파일로 지정
+      SPRING_PROFILES_ACTIVE: dev
+
+      # Spring의 ${storage.database.core-db.*} 와 매핑되는 ENV (Relaxed binding)
+      # (기존 설정 유지하되, 호스트를 "mariadb"로 고정)
+      STORAGE_DATABASE_CORE_DB_URL: mariadb:3306/${MARIADB_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true
+      STORAGE_DATABASE_CORE_DB_USERNAME: ${MARIADB_USER}
+      STORAGE_DATABASE_CORE_DB_PASSWORD: ${MARIADB_PASSWORD}
+
+      JWT_KEYSTORE_PASSWORD: ${JWT_KEYSTORE_PASSWORD}
+      JWT_KEY_ALIAS: ${JWT_KEY_ALIAS}
+      JWT_KEY_PASSWORD: ${JWT_KEY_PASSWORD}
+
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID}
+      KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET}
+      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
+      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
+
+    ports:
+      - "8080:8080"
+
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+    networks:
+      - backend
