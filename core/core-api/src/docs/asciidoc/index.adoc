@@ -11,6 +11,10 @@
 
 This is the Core API documentation.
 
+[swagger] (http://localhost:8080/docs/swagger/index.html)
+[docs] (http://localhost:8080/docs/index.html)
+
+
 == Health
 
 === Health Check
