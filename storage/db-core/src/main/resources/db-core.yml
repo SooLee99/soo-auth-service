@@ -1,14 +1,16 @@
 spring:
   jpa:
     open-in-view: false
-    hibernate:
-      ddl-auto: create
     properties:
       hibernate.default_batch_fetch_size: 100
 
+    # 운영 기준
+    hibernate:
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.MariaDBDialect
+
 ---
 spring.config.activate.on-profile: local
-
 spring:
   jpa:
     hibernate:
@@ -34,9 +36,10 @@ storage:
 
 ---
 spring.config.activate.on-profile: local-dev
-
 spring:
   jpa:
+    hibernate:
+      ddl-auto: create   # 로컬 개발용이면 create OK
     properties:
       hibernate:
         format_sql: true
@@ -45,8 +48,8 @@ spring:
 storage:
   datasource:
     core:
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      jdbc-url: jdbc:mysql://${storage.database.core-db.url}
+      driver-class-name: org.mariadb.jdbc.Driver
+      jdbc-url: jdbc:mariadb://${storage.database.core-db.url}
       username: ${storage.database.core-db.username}
       password: ${storage.database.core-db.password}
       maximum-pool-size: 5
@@ -70,12 +73,15 @@ storage:
 
 ---
 spring.config.activate.on-profile: dev
-
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update   # dev는 update 정도가 보통 무난(원하면 validate로)
 storage:
   datasource:
     core:
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      jdbc-url: jdbc:mysql://${storage.database.core-db.url}
+      driver-class-name: org.mariadb.jdbc.Driver
+      jdbc-url: jdbc:mariadb://${storage.database.core-db.url}
       username: ${storage.database.core-db.username}
       password: ${storage.database.core-db.password}
       maximum-pool-size: 5
@@ -99,12 +105,15 @@ storage:
 
 ---
 spring.config.activate.on-profile: staging
-
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
 storage:
   datasource:
     core:
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      jdbc-url: jdbc:mysql://${storage.database.core-db.url}
+      driver-class-name: org.mariadb.jdbc.Driver
+      jdbc-url: jdbc:mariadb://${storage.database.core-db.url}
       username: ${storage.database.core-db.username}
       password: ${storage.database.core-db.password}
       maximum-pool-size: 5
@@ -128,12 +137,15 @@ storage:
 
 ---
 spring.config.activate.on-profile: live
-
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate  # ✅ 운영은 validate/none 추천
 storage:
   datasource:
     core:
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      jdbc-url: jdbc:mysql://${storage.database.core-db.url}
+      driver-class-name: org.mariadb.jdbc.Driver
+      jdbc-url: jdbc:mariadb://${storage.database.core-db.url}
       username: ${storage.database.core-db.username}
       password: ${storage.database.core-db.password}
       maximum-pool-size: 25
