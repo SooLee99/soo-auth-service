@@ -13,6 +13,7 @@ import io.soo.springboot.storage.db.core.UserRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import java.time.Instant
 
 class UserDetailsServiceImplTest {
@@ -23,8 +24,8 @@ class UserDetailsServiceImplTest {
 
     @Test
     fun `정상 사용자 로그인 principal 로딩 성공`() {
-        every { localCredentialRepository.findByUserEmail("user@example.com") } returns credential()
-        every { userRepository.findByIdIncludingDeleted(1L) } returns user(status = UserStatus.ACTIVE)
+        every { userRepository.findByEmail("user@example.com") } returns user(status = UserStatus.ACTIVE)
+        every { localCredentialRepository.findByUserId(1L) } returns credential()
 
         val principal = service.loadUserByUsername("user@example.com") as UserPrincipal
         assertEquals(1L, principal.userId)
@@ -33,8 +34,7 @@ class UserDetailsServiceImplTest {
 
     @Test
     fun `차단 사용자 로그인 거부`() {
-        every { localCredentialRepository.findByUserEmail("user@example.com") } returns credential()
-        every { userRepository.findByIdIncludingDeleted(1L) } returns user(
+        every { userRepository.findByEmail("user@example.com") } returns user(
             status = UserStatus.BLOCKED,
             blocked = true,
             blockedAt = Instant.now(),
@@ -48,14 +48,24 @@ class UserDetailsServiceImplTest {
 
     @Test
     fun `소프트 탈퇴 사용자 로그인 거부`() {
-        every { localCredentialRepository.findByUserEmail("user@example.com") } returns credential()
-        every { userRepository.findByIdIncludingDeleted(1L) } returns user(
+        every { userRepository.findByEmail("user@example.com") } returns null
+        every { userRepository.findByEmailIncludingDeleted("user@example.com") } returns user(
             status = UserStatus.SOFT_DELETED,
             deletedAt = Instant.now(),
             deletionReason = "user_request",
         )
 
         assertThrows(AccountStatusDeniedException::class.java) {
+            service.loadUserByUsername("user@example.com")
+        }
+    }
+
+    @Test
+    fun `활성 사용자 없으면 로그인 실패`() {
+        every { userRepository.findByEmail("user@example.com") } returns null
+        every { userRepository.findByEmailIncludingDeleted("user@example.com") } returns null
+
+        assertThrows(UsernameNotFoundException::class.java) {
             service.loadUserByUsername("user@example.com")
         }
     }

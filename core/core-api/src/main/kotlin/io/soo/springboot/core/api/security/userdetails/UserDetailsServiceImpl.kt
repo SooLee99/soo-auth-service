@@ -18,23 +18,31 @@ class UserDetailsServiceImpl(
     override fun loadUserByUsername(username: String): UserDetails {
         val email = username.trim().lowercase()
 
-        // 1) 로컬 자격증명 조회 (이메일로 로그인)
-        val cred = localCredentialRepository.findByUserEmail(email)
+        // 1) ACTIVE 사용자 우선 조회 (탈퇴 계정은 로그인 식별 대상에서 제외)
+        val activeUser = userRepository.findByEmail(email)
+
+        if (activeUser != null) {
+            userStatusPolicy.validateLoginAllowed(activeUser)
+
+            // 2) 자격증명은 userId 기준으로 조회해 탈퇴 후 재가입 충돌을 방지
+            val cred = localCredentialRepository.findByUserId(activeUser.id)
+                ?: throw UsernameNotFoundException("Credential not found by userId: ${activeUser.id}")
+
+            // 3) UserDetails 반환
+            return UserPrincipal(
+                userId = activeUser.id,
+                email = email,
+                passwordHash = cred.passwordHash,
+                role = activeUser.role,
+                provider = activeUser.authProvider,
+            )
+        }
+
+        // 탈퇴 계정이면 상태 기반 거부를 유지
+        val maybeDeletedUser = userRepository.findByEmailIncludingDeleted(email)
             ?: throw UsernameNotFoundException("User not found by email: $email")
+        userStatusPolicy.validateLoginAllowed(maybeDeletedUser)
 
-        // 2)  user 상태/권한 확인이 필요하면 UserEntity도 조회
-        val user = userRepository.findByIdIncludingDeleted(cred.userId)
-            ?: throw UsernameNotFoundException("User not found by id: ${cred.userId}")
-
-        userStatusPolicy.validateLoginAllowed(user)
-
-        // 3) UserDetails 반환
-        return UserPrincipal(
-            userId = user.id,
-            email = email,
-            passwordHash = cred.passwordHash,
-            role = user.role,
-            provider = user.authProvider,
-        )
+        throw UsernameNotFoundException("Active user not found by email: $email")
     }
 }

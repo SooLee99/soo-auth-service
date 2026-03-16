@@ -54,11 +54,11 @@ class UserRepositoryImpl(
     }
 
     override fun existsByEmail(email: String): Boolean {
-        return jpaRepository.existsByEmail(email)
+        return jpaRepository.existsByEmailAndUserStatusNot(email, UserStatus.SOFT_DELETED)
     }
 
     override fun existsByPhoneNumber(phoneNumber: String): Boolean {
-        return jpaRepository.existsByPhoneNumber(phoneNumber)
+        return jpaRepository.existsByPhoneNumberAndUserStatusNot(phoneNumber, UserStatus.SOFT_DELETED)
     }
 
     override fun findBlockedUsers(pageable: Pageable): Page<User> {

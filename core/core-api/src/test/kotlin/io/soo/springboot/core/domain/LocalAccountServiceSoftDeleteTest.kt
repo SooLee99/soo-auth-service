@@ -39,6 +39,7 @@ class LocalAccountServiceSoftDeleteTest {
         every { userRepository.findByIdIncludingDeleted(1L) } returns activeUser()
         val saveSlot = slot<User>()
         every { userRepository.save(capture(saveSlot)) } answers { saveSlot.captured }
+        every { localCredentialRepository.deleteByUserId(1L) } returns 1
         every {
             auditRepository.save(1L, 1L, AdminUserActionType.SOFT_DELETE, any())
         } returns UserStatusAuditLog(1L, 1L, 1L, AdminUserActionType.SOFT_DELETE, "privacy", Instant.now())
@@ -50,6 +51,7 @@ class LocalAccountServiceSoftDeleteTest {
         assertNotNull(saved.deletedAt)
         assertEquals("privacy", saved.deletionReason)
         assertNotNull(saved.retentionUntil)
+        verify(exactly = 1) { localCredentialRepository.deleteByUserId(1L) }
         verify(exactly = 1) { authTokenManager.revokeAll(1L) }
     }
 

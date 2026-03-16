@@ -128,6 +128,7 @@ class LocalAccountService(
             )
         )
 
+        localAccountRepository.deleteByUserId(userId)
         authTokenManager.revokeAll(userId)
         userStatusAuditLogRepository.save(
             targetUserId = userId,
