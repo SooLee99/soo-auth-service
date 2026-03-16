@@ -5,6 +5,7 @@ import io.mockk.mockk
 import io.soo.springboot.core.api.controller.v1.LocalAccountController
 import io.soo.springboot.core.api.controller.v1.request.RefreshRequest
 import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
+import io.soo.springboot.core.api.controller.v1.request.WithdrawRequest
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.api.security.token.IssuedTokens
@@ -167,6 +168,50 @@ class LocalAccountControllerDocsTest : RestDocsTest() {
                             fieldWithPath("refreshToken").type(JsonFieldType.STRING).optional()
                                 .description("리프레시 토큰 (단건 로그아웃)"),
                             fieldWithPath("logoutAll").type(JsonFieldType.BOOLEAN).optional().description("전체 로그아웃 여부"),
+                        ),
+                        responseFields(*responseDescriptors.toTypedArray()),
+                    )
+                )
+        } finally {
+            SecurityContextHolder.clearContext()
+        }
+    }
+
+    @Test
+    fun withdraw() {
+        val jwt = Jwt.withTokenValue("token")
+            .header("alg", "none")
+            .claim("uid", 1L)
+            .issuedAt(Instant.now())
+            .expiresAt(Instant.now().plusSeconds(3600))
+            .build()
+        SecurityContextHolder.getContext().authentication = JwtAuthenticationToken(jwt)
+
+        val responseDescriptors =
+            ApiResponseFieldDescriptors.successCommon() + listOf(
+                fieldWithPath("data").type(JsonFieldType.OBJECT).description("결과"),
+                fieldWithPath("data.result").type(JsonFieldType.STRING).description("OK"),
+            )
+
+        try {
+            given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header("Authorization", "Bearer token")
+                .body(WithdrawRequest(reason = "privacy"))
+                .`when`()
+                .post("/api/v1/auth/local/withdraw")
+                .then()
+                .statusCode(200)
+                .apply(
+                    mockMvcDocument(
+                        "auth-local-withdraw",
+                        RestDocsUtils.requestPreprocessor(),
+                        RestDocsUtils.responsePreprocessor(),
+                        requestHeaders(
+                            headerWithName("Authorization").description("Bearer 액세스 토큰"),
+                        ),
+                        requestFields(
+                            fieldWithPath("reason").type(JsonFieldType.STRING).optional().description("탈퇴 사유"),
                         ),
                         responseFields(*responseDescriptors.toTypedArray()),
                     )

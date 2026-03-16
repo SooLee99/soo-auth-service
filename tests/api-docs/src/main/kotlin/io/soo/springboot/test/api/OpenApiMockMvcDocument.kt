@@ -100,6 +100,36 @@ private object ApiDocCatalog {
             description = "관리자 권한으로 로그인 이력을 페이징 조회합니다.",
             authMarkdown = "- `Authorization: Bearer {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요",
         ),
+        "auth-admin-user-block" to ApiMeta(
+            tag = "Admin",
+            summary = "관리자 사용자 차단",
+            description = "관리자 권한으로 특정 사용자를 차단합니다.",
+            authMarkdown = "- `Authorization: Bearer {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요",
+        ),
+        "auth-admin-user-unblock" to ApiMeta(
+            tag = "Admin",
+            summary = "관리자 사용자 차단 해제",
+            description = "관리자 권한으로 특정 사용자의 차단을 해제합니다.",
+            authMarkdown = "- `Authorization: Bearer {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요",
+        ),
+        "auth-admin-blocked-users" to ApiMeta(
+            tag = "Admin",
+            summary = "관리자 차단 사용자 목록 조회",
+            description = "차단된 사용자 목록을 페이징 조회합니다.",
+            authMarkdown = "- `Authorization: Bearer {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요",
+        ),
+        "auth-admin-deleted-users" to ApiMeta(
+            tag = "Admin",
+            summary = "관리자 소프트 탈퇴 사용자 목록 조회",
+            description = "소프트 탈퇴된 사용자 목록을 페이징 조회합니다.",
+            authMarkdown = "- `Authorization: Bearer {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요",
+        ),
+        "auth-admin-user-status-audits" to ApiMeta(
+            tag = "Admin",
+            summary = "관리자 사용자 상태 변경 이력 조회",
+            description = "특정 사용자에 대한 차단/해제/탈퇴 상태 변경 이력을 조회합니다.",
+            authMarkdown = "- `Authorization: Bearer {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요",
+        ),
         "auth-local-signup" to ApiMeta(
             tag = "Auth",
             summary = "로컬 회원가입",
@@ -122,6 +152,12 @@ private object ApiDocCatalog {
             tag = "Auth",
             summary = "로그아웃",
             description = "로그아웃을 수행합니다(단건/전체 옵션).",
+            authMarkdown = "- `Authorization: Bearer {accessToken}` 필요",
+        ),
+        "auth-local-withdraw" to ApiMeta(
+            tag = "Auth",
+            summary = "회원 탈퇴(소프트 삭제)",
+            description = "회원 탈퇴를 소프트 삭제로 처리하고 보관 만료일을 기록합니다.",
             authMarkdown = "- `Authorization: Bearer {accessToken}` 필요",
         ),
         "auth-oauth2-authorize-url" to ApiMeta(
