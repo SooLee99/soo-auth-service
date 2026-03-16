@@ -19,7 +19,7 @@ import io.soo.springboot.storage.db.core.User
 import io.soo.springboot.storage.db.core.UserRepository
 import io.soo.springboot.storage.db.core.UserStatusAuditLogRepository
 import java.time.Instant
-import java.time.temporal.ChronoUnit
+import java.time.ZoneOffset
 
 
 data class LocalSignUpCommand(
@@ -110,7 +110,7 @@ class LocalAccountService(
         if (user.userStatus == UserStatus.SOFT_DELETED) return
 
         val now = Instant.now()
-        val retentionUntil = now.plus(5, ChronoUnit.YEARS)
+        val retentionUntil = now.atOffset(ZoneOffset.UTC).plusYears(5).toInstant()
         val trimmedReason = reason?.trim()?.takeIf { it.isNotBlank() }
 
         userRepository.save(
