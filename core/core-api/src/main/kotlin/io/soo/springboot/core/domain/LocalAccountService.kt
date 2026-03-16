@@ -112,9 +112,29 @@ class LocalAccountService(
         val now = Instant.now()
         val retentionUntil = now.atOffset(ZoneOffset.UTC).plusYears(5).toInstant()
         val trimmedReason = reason?.trim()?.takeIf { it.isNotBlank() }
+        val anonymizedEmail = buildAnonymizedEmail(userId, now)
+        val anonymizedPhone = buildAnonymizedPhone(userId, now)
 
         userRepository.save(
             user.copy(
+                email = anonymizedEmail,
+                emailVerified = false,
+                phoneNumber = anonymizedPhone,
+                phoneNumberE164 = null,
+                phoneVerified = false,
+                name = null,
+                nickname = null,
+                gender = Gender.UNKNOWN,
+                locale = null,
+                birthyear = null,
+                birthday = null,
+                ageRange = null,
+                profileImageUrl = null,
+                thumbnailImageUrl = null,
+                oauthProviderUserId = null,
+                oauthConnectedAt = null,
+                oauthExtraJson = null,
+                oauthRawJson = null,
                 userStatus = UserStatus.SOFT_DELETED,
                 blocked = false,
                 blockedReason = null,
@@ -136,5 +156,13 @@ class LocalAccountService(
             actionType = AdminUserActionType.SOFT_DELETE,
             reason = trimmedReason,
         )
+    }
+
+    private fun buildAnonymizedEmail(userId: Long, at: Instant): String {
+        return "deleted+${userId}.${at.epochSecond}@deleted.local"
+    }
+
+    private fun buildAnonymizedPhone(userId: Long, at: Instant): String {
+        return "deleted-${userId}-${at.epochSecond}"
     }
 }
