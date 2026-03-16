@@ -1,7 +1,7 @@
 package io.soo.springboot.core.api.security.token
 
 import io.soo.springboot.core.api.security.userdetails.UserPrincipalLoader
-import io.soo.springboot.core.domain.denylist.JwtDenylistStore
+import io.soo.springboot.core.domain.JwtDenylistStore
 import io.soo.springboot.core.enums.AuthProvider
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication

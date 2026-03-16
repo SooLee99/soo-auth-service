@@ -1,4 +1,4 @@
-package io.soo.springboot.core.domain.denylist
+package io.soo.springboot.core.domain
 
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service

@@ -3,10 +3,14 @@ package io.soo.springboot.core.api.security.oauth2
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.soo.springboot.core.api.controller.v1.response.LoginSuccessResponse
 import io.soo.springboot.core.api.security.auth.UserIdResolver
+import io.soo.springboot.core.api.security.response.SecurityErrorResponseWriter
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.api.security.userdetails.UserPrincipalLoader
+import io.soo.springboot.core.domain.AccountStatusDeniedException
 import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.core.enums.AuthProvider
+import io.soo.springboot.core.support.error.CoreException
+import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.response.ApiResponse
 import io.soo.springboot.storage.db.core.LoginHistoryEntity
 import jakarta.servlet.http.HttpServletRequest
@@ -22,6 +26,7 @@ class OAuth2LoginSuccessHandler(
     private val objectMapper: ObjectMapper,
     private val userIdResolver: UserIdResolver,
     private val userPrincipalLoader: UserPrincipalLoader,
+    private val errorWriter: SecurityErrorResponseWriter,
 
     private val jwtService: AuthTokenManager,
     private val loginHistoryService: LoginHistoryService,
@@ -35,8 +40,21 @@ class OAuth2LoginSuccessHandler(
         val ip = request.remoteAddr
         val ua = request.getHeader("User-Agent")
         val deviceId = request.getHeader("X-Device-Id")?.trim().orEmpty()
-        val userId = userIdResolver.resolve(authentication)
-        val principal = userPrincipalLoader.loadByUserId(userId)
+        val userId = try {
+            userIdResolver.resolve(authentication)
+        } catch (_: AccountStatusDeniedException) {
+            errorWriter.writeError(response, request, ErrorType.LOGIN_DENIED)
+            return
+        } catch (e: CoreException) {
+            errorWriter.writeError(response, request, e.errorType, fields = e.data)
+            return
+        }
+        val principal = try {
+            userPrincipalLoader.loadByUserId(userId)
+        } catch (e: CoreException) {
+            errorWriter.writeError(response, request, e.errorType, fields = e.data)
+            return
+        }
         val provider: AuthProvider = principal.provider
         val appAuth = UsernamePasswordAuthenticationToken(principal.username, null, principal.authorities)
         val issued = jwtService.issue(appAuth, userId, "", provider)

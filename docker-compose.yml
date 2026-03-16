@@ -30,7 +30,7 @@ services:
         aliases:
           - mariadb
 
-    # DB 준비 완료 대기(중요)
+    # DB 준비 완료 대기
     healthcheck:
       test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -uroot -p$$MARIADB_ROOT_PASSWORD --silent"]
       interval: 5s

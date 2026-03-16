@@ -5,8 +5,10 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.security.crypto.password.PasswordEncoder
 
+import io.soo.springboot.core.enums.AdminUserActionType
 import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.core.enums.AuthProvider
+import io.soo.springboot.core.enums.UserStatus
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.error.CoreException
 
@@ -15,6 +17,9 @@ import io.soo.springboot.storage.db.core.LocalCredential
 import io.soo.springboot.storage.db.core.LocalCredentialRepository
 import io.soo.springboot.storage.db.core.User
 import io.soo.springboot.storage.db.core.UserRepository
+import io.soo.springboot.storage.db.core.UserStatusAuditLogRepository
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 
 data class LocalSignUpCommand(
@@ -37,6 +42,7 @@ class LocalAccountService(
     private val localAccountRepository: LocalCredentialRepository,
     private val passwordEncoder: PasswordEncoder,
     private val authTokenManager: AuthTokenManager,
+    private val userStatusAuditLogRepository: UserStatusAuditLogRepository,
 ) {
     @Transactional
     fun signUp(cmd: LocalSignUpCommand): User {
@@ -88,6 +94,46 @@ class LocalAccountService(
             deviceId = deviceId,
             refreshToken = refreshToken,
             logoutAll = logoutAll,
+        )
+    }
+
+    /**
+     * 소프트 회원 탈퇴:
+     * - 물리 삭제 없이 상태를 SOFT_DELETED로 변경
+     * - retentionUntil = 탈퇴 시각 + 5년
+     * - 탈퇴 즉시 로그인 불가
+     */
+    @Transactional
+    fun softDelete(userId: Long, reason: String?) {
+        val user = userRepository.findByIdIncludingDeleted(userId)
+            ?: throw CoreException(ErrorType.NOT_FOUND, mapOf("userId" to userId))
+        if (user.userStatus == UserStatus.SOFT_DELETED) return
+
+        val now = Instant.now()
+        val retentionUntil = now.plus(5, ChronoUnit.YEARS)
+        val trimmedReason = reason?.trim()?.takeIf { it.isNotBlank() }
+
+        userRepository.save(
+            user.copy(
+                userStatus = UserStatus.SOFT_DELETED,
+                blocked = false,
+                blockedReason = null,
+                blockedAt = null,
+                blockedByAdminId = null,
+                unblockedAt = null,
+                unblockedByAdminId = null,
+                deletedAt = now,
+                deletionReason = trimmedReason,
+                retentionUntil = retentionUntil,
+            )
+        )
+
+        authTokenManager.revokeAll(userId)
+        userStatusAuditLogRepository.save(
+            targetUserId = userId,
+            actorUserId = userId,
+            actionType = AdminUserActionType.SOFT_DELETE,
+            reason = trimmedReason,
         )
     }
 }

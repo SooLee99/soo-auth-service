@@ -3,6 +3,7 @@ package io.soo.springboot.storage.db.core
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.core.enums.Role
+import io.soo.springboot.core.enums.UserStatus
 import java.time.Instant
 
 data class User(
@@ -24,7 +25,17 @@ data class User(
     val authProvider: AuthProvider,
     val oauthProviderUserId: String? = null,
     val role: Role = Role.USER,
+    val userStatus: UserStatus = UserStatus.ACTIVE,
     val oauthConnectedAt: Instant? = null,
     val oauthExtraJson: String? = null,
     val oauthRawJson: String? = null,
+    val blocked: Boolean = false,
+    val blockedReason: String? = null,
+    val blockedAt: Instant? = null,
+    val blockedByAdminId: Long? = null,
+    val unblockedAt: Instant? = null,
+    val unblockedByAdminId: Long? = null,
+    val deletedAt: Instant? = null,
+    val deletionReason: String? = null,
+    val retentionUntil: Instant? = null,
 )

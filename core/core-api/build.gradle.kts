@@ -14,7 +14,7 @@ dependencies {
     testImplementation(project(":tests:api-docs"))
 
     testImplementation("com.epages:restdocs-api-spec-mockmvc")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-security")
@@ -27,12 +27,11 @@ dependencies {
 }
 
 openapi3 {
+    format = "yaml"
     title = "soo-auth-service API"
     description = "인증 서비스 API 가이드 (REST API Docs)."
     version = project.version.toString()
-    format = "yaml"
     tagDescriptionsPropertiesFile = "src/test/resources/tags.yaml"
-
     snippetsDirectory = layout.buildDirectory.dir("generated-snippets").get().asFile.absolutePath
     outputDirectory = layout.buildDirectory.dir("api-spec").get().asFile.absolutePath
 }

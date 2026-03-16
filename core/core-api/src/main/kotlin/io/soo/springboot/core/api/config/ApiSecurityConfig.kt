@@ -50,7 +50,7 @@ class ApiSecurityConfig(
         )
 
         private const val H2_CONSOLE = "/h2-console/**"
-        private const val ADMIN_API = "/api/v1/admin/**"
+        private const val ADMIN_API = "/api/v1/auth/admin/**"
     }
 
     @Bean
@@ -114,7 +114,7 @@ class ApiSecurityConfig(
 
         http.authorizeHttpRequests { auth ->
             auth.requestMatchers(*PUBLIC_ENDPOINTS).permitAll()
-            auth.requestMatchers(ADMIN_API).permitAll()
+            auth.requestMatchers(ADMIN_API).hasRole("ADMIN")
             auth.requestMatchers("/docs/**").permitAll()
             auth.requestMatchers("/swagger-ui/**").permitAll()
             auth.requestMatchers("/swagger/**").permitAll()

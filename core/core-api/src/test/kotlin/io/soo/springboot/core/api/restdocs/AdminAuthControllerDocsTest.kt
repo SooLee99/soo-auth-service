@@ -4,6 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.soo.springboot.core.api.controller.v1.AdminAuthController
 import io.soo.springboot.core.api.security.auth.UserIdResolver
+import io.soo.springboot.core.domain.AdminUserBlockService
 import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.storage.db.core.LoginHistory
 import io.soo.springboot.storage.db.core.LoginHistoryEntity
@@ -29,11 +30,12 @@ class AdminAuthControllerDocsTest : RestDocsTest() {
 
     private val loginHistoryService = mockk<LoginHistoryService>()
     private val userIdResolver = mockk<UserIdResolver>()
+    private val adminUserBlockService = mockk<AdminUserBlockService>()
     private lateinit var controller: AdminAuthController
 
     @BeforeEach
     fun init() {
-        controller = AdminAuthController(loginHistoryService, userIdResolver)
+        controller = AdminAuthController(loginHistoryService, userIdResolver, adminUserBlockService)
         mockMvc = mockController(controller)
     }
 

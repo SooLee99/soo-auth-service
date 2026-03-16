@@ -1,4 +1,4 @@
-package io.soo.springboot.core.domain.denylist
+package io.soo.springboot.core.domain
 
 import java.time.Duration
 import java.time.Instant

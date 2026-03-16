@@ -27,6 +27,7 @@ enum class ErrorType(
     // 로컬 로그인 정책 전용 인증 실패 (외부 메시지는 동일하게 유지)
     LOGIN_BAD_CREDENTIALS(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "이메일 또는 비밀번호가 올바르지 않습니다.", LogLevel.WARN),
     LOGIN_ACCOUNT_NOT_FOUND(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "이메일 또는 비밀번호가 올바르지 않습니다.", LogLevel.WARN),
+    LOGIN_DENIED(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "이메일 또는 비밀번호가 올바르지 않습니다.", LogLevel.WARN),
 
     // Access Token
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "유효하지 않은 액세스 토큰입니다.", LogLevel.WARN),
@@ -42,6 +43,8 @@ enum class ErrorType(
     // 403
     FORBIDDEN(HttpStatus.FORBIDDEN, ErrorCode.E403, "접근 권한이 없습니다.", LogLevel.WARN),
     ACCOUNT_DISABLED(HttpStatus.FORBIDDEN, ErrorCode.E403, "비활성화된 계정입니다.", LogLevel.WARN),
+    ACCOUNT_BLOCKED(HttpStatus.FORBIDDEN, ErrorCode.E403, "차단된 계정입니다.", LogLevel.WARN),
+    ACCOUNT_SOFT_DELETED(HttpStatus.FORBIDDEN, ErrorCode.E403, "탈퇴 처리된 계정입니다.", LogLevel.WARN),
 
     // 404
     NOT_FOUND(HttpStatus.NOT_FOUND, ErrorCode.E404, "요청한 리소스를 찾을 수 없습니다.", LogLevel.WARN),

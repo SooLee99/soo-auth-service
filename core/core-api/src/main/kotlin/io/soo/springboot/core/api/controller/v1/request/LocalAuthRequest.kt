@@ -84,3 +84,8 @@ data class SignUpRequest(
 )
 
 data class RefreshRequest(val refreshToken: String)
+
+data class WithdrawRequest(
+    @field:Size(max = 500, message = "탈퇴 사유는 500자 이하여야 합니다.")
+    val reason: String? = null,
+)

@@ -53,13 +53,15 @@ data class OAuth2UserInfo(
 class OAuth2AccountService(
     private val userRepository: UserRepository,
     private val objectMapper: ObjectMapper,
+    private val userStatusPolicy: UserStatusPolicy,
 ) {
 
     @Transactional
     fun upsertAndGetUserId(info: OAuth2UserInfo): Long {
-        val existing = userRepository.findByOAuth(info.provider, info.providerUserId)
+        val existing = userRepository.findByOAuthIncludingDeleted(info.provider, info.providerUserId)
 
         if (existing != null) {
+            userStatusPolicy.validateLoginAllowed(existing)
             val updated = existing.applyOAuth2(info, objectMapper)
             userRepository.save(updated)
             return existing.id

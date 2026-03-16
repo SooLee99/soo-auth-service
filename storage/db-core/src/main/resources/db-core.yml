@@ -1,18 +1,19 @@
 spring:
+  profiles:
+    default: local
   jpa:
     open-in-view: false
     properties:
-      hibernate.default_batch_fetch_size: 100
-
-    # 운영 기준
-    hibernate:
-      ddl-auto: validate
-    database-platform: org.hibernate.dialect.MariaDBDialect
+      hibernate:
+        default_batch_fetch_size: 100
 
 ---
-spring.config.activate.on-profile: local
 spring:
+  config:
+    activate:
+      on-profile: local
   jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: create-drop
     properties:
@@ -35,134 +36,80 @@ storage:
         rewriteBatchedStatements: true
 
 ---
-spring.config.activate.on-profile: local-dev
 spring:
+  config:
+    activate:
+      on-profile: "local-dev | dev | staging | live"
+  jpa:
+    database-platform: org.hibernate.dialect.MariaDBDialect
+
+storage:
+  datasource:
+    core:
+      driver-class-name: org.mariadb.jdbc.Driver
+      jdbc-url: jdbc:mariadb://${storage.database.core-db.url}
+      username: ${storage.database.core-db.username}
+      password: ${storage.database.core-db.password}
+      maximum-pool-size: 5
+      connection-timeout: 1100
+      keepalive-time: 30000
+      validation-timeout: 1000
+      max-lifetime: 600000
+      pool-name: core-db-pool
+      data-source-properties:
+        socketTimeout: 3000
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+        useServerPrepStmts: true
+        useLocalSessionState: true
+        rewriteBatchedStatements: true
+        cacheResultSetMetadata: true
+        cacheServerConfiguration: true
+        elideSetAutoCommits: true
+        maintainTimeStats: false
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local-dev
   jpa:
     hibernate:
-      ddl-auto: create   # 로컬 개발용이면 create OK
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
         show_sql: true
 
-storage:
-  datasource:
-    core:
-      driver-class-name: org.mariadb.jdbc.Driver
-      jdbc-url: jdbc:mariadb://${storage.database.core-db.url}
-      username: ${storage.database.core-db.username}
-      password: ${storage.database.core-db.password}
-      maximum-pool-size: 5
-      connection-timeout: 1100
-      keepalive-time: 30000
-      validation-timeout: 1000
-      max-lifetime: 600000
-      pool-name: core-db-pool
-      data-source-properties:
-        socketTimeout: 3000
-        cachePrepStmts: true
-        prepStmtCacheSize: 250
-        prepStmtCacheSqlLimit: 2048
-        useServerPrepStmts: true
-        useLocalSessionState: true
-        rewriteBatchedStatements: true
-        cacheResultSetMetadata: true
-        cacheServerConfiguration: true
-        elideSetAutoCommits: true
-        maintainTimeStats: false
-
 ---
-spring.config.activate.on-profile: dev
 spring:
+  config:
+    activate:
+      on-profile: dev
   jpa:
     hibernate:
-      ddl-auto: update   # dev는 update 정도가 보통 무난(원하면 validate로)
-storage:
-  datasource:
-    core:
-      driver-class-name: org.mariadb.jdbc.Driver
-      jdbc-url: jdbc:mariadb://${storage.database.core-db.url}
-      username: ${storage.database.core-db.username}
-      password: ${storage.database.core-db.password}
-      maximum-pool-size: 5
-      connection-timeout: 1100
-      keepalive-time: 30000
-      validation-timeout: 1000
-      max-lifetime: 600000
-      pool-name: core-db-pool
-      data-source-properties:
-        socketTimeout: 3000
-        cachePrepStmts: true
-        prepStmtCacheSize: 250
-        prepStmtCacheSqlLimit: 2048
-        useServerPrepStmts: true
-        useLocalSessionState: true
-        rewriteBatchedStatements: true
-        cacheResultSetMetadata: true
-        cacheServerConfiguration: true
-        elideSetAutoCommits: true
-        maintainTimeStats: false
+      ddl-auto: update
 
 ---
-spring.config.activate.on-profile: staging
 spring:
+  config:
+    activate:
+      on-profile: staging
   jpa:
     hibernate:
       ddl-auto: validate
-storage:
-  datasource:
-    core:
-      driver-class-name: org.mariadb.jdbc.Driver
-      jdbc-url: jdbc:mariadb://${storage.database.core-db.url}
-      username: ${storage.database.core-db.username}
-      password: ${storage.database.core-db.password}
-      maximum-pool-size: 5
-      connection-timeout: 1100
-      keepalive-time: 30000
-      validation-timeout: 1000
-      max-lifetime: 600000
-      pool-name: core-db-pool
-      data-source-properties:
-        socketTimeout: 3000
-        cachePrepStmts: true
-        prepStmtCacheSize: 250
-        prepStmtCacheSqlLimit: 2048
-        useServerPrepStmts: true
-        useLocalSessionState: true
-        rewriteBatchedStatements: true
-        cacheResultSetMetadata: true
-        cacheServerConfiguration: true
-        elideSetAutoCommits: true
-        maintainTimeStats: false
 
 ---
-spring.config.activate.on-profile: live
 spring:
+  config:
+    activate:
+      on-profile: live
   jpa:
     hibernate:
-      ddl-auto: validate  # ✅ 운영은 validate/none 추천
+      ddl-auto: validate
+
 storage:
   datasource:
     core:
-      driver-class-name: org.mariadb.jdbc.Driver
-      jdbc-url: jdbc:mariadb://${storage.database.core-db.url}
-      username: ${storage.database.core-db.username}
-      password: ${storage.database.core-db.password}
       maximum-pool-size: 25
-      connection-timeout: 1100
-      keepalive-time: 30000
-      validation-timeout: 1000
-      max-lifetime: 600000
-      pool-name: core-db-pool
-      data-source-properties:
-        socketTimeout: 3000
-        cachePrepStmts: true
-        prepStmtCacheSize: 250
-        prepStmtCacheSqlLimit: 2048
-        useServerPrepStmts: true
-        useLocalSessionState: true
-        rewriteBatchedStatements: true
-        cacheResultSetMetadata: true
-        cacheServerConfiguration: true
-        elideSetAutoCommits: true
-        maintainTimeStats: false

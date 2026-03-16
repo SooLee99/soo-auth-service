@@ -1,7 +1,11 @@
 package io.soo.springboot.storage.db.core
 
 import io.soo.springboot.core.enums.AuthProvider
+import io.soo.springboot.core.enums.UserStatus
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
+import java.time.Instant
 
 @Repository
 class UserRepositoryImpl(
@@ -16,15 +20,35 @@ class UserRepositoryImpl(
 
     override fun findById(id: Long): User? {
         return jpaRepository.findById(id)
+            .filter { it.userStatus != UserStatus.SOFT_DELETED }
+            .map { it.toModel() }
+            .orElse(null)
+    }
+
+    override fun findByIdIncludingDeleted(id: Long): User? {
+        return jpaRepository.findById(id)
             .map { it.toModel() }
             .orElse(null)
     }
 
     override fun findByEmail(email: String): User? {
+        return jpaRepository.findByEmailAndUserStatusNot(email, UserStatus.SOFT_DELETED)?.toModel()
+    }
+
+    override fun findByEmailIncludingDeleted(email: String): User? {
         return jpaRepository.findByEmail(email)?.toModel()
     }
 
     override fun findByOAuth(provider: AuthProvider, providerId: String): User? {
+        return jpaRepository.findByAuthProviderAndOauthProviderUserIdAndUserStatusNot(
+            provider,
+            providerId,
+            UserStatus.SOFT_DELETED,
+        )
+            ?.toModel()
+    }
+
+    override fun findByOAuthIncludingDeleted(provider: AuthProvider, providerId: String): User? {
         return jpaRepository.findByAuthProviderAndOauthProviderUserId(provider, providerId)
             ?.toModel()
     }
@@ -35,6 +59,18 @@ class UserRepositoryImpl(
 
     override fun existsByPhoneNumber(phoneNumber: String): Boolean {
         return jpaRepository.existsByPhoneNumber(phoneNumber)
+    }
+
+    override fun findBlockedUsers(pageable: Pageable): Page<User> {
+        return jpaRepository.findAllByUserStatus(UserStatus.BLOCKED, pageable).map { it.toModel() }
+    }
+
+    override fun findSoftDeletedUsers(pageable: Pageable): Page<User> {
+        return jpaRepository.findAllByUserStatus(UserStatus.SOFT_DELETED, pageable).map { it.toModel() }
+    }
+
+    override fun purgeSoftDeletedUsers(now: Instant): Int {
+        return jpaRepository.purgeSoftDeletedUsers(UserStatus.SOFT_DELETED, now)
     }
 
     // ===== Mapper (내부에서만 사용) =====
@@ -56,6 +92,16 @@ class UserRepositoryImpl(
             authProvider = authProvider,
             oauthProviderUserId = oauthProviderUserId,
             role = role,
+            userStatus = userStatus,
+            blocked = blocked,
+            blockedReason = blockedReason,
+            blockedAt = blockedAt,
+            blockedByAdminId = blockedByAdminId,
+            unblockedAt = unblockedAt,
+            unblockedByAdminId = unblockedByAdminId,
+            deletedAt = deletedAt,
+            deletionReason = deletionReason,
+            retentionUntil = retentionUntil,
         ).also {
             if (id > 0) it.id = id
         }
@@ -79,6 +125,16 @@ class UserRepositoryImpl(
             authProvider = authProvider,
             oauthProviderUserId = oauthProviderUserId,
             role = role,
+            userStatus = userStatus,
+            blocked = blocked,
+            blockedReason = blockedReason,
+            blockedAt = blockedAt,
+            blockedByAdminId = blockedByAdminId,
+            unblockedAt = unblockedAt,
+            unblockedByAdminId = unblockedByAdminId,
+            deletedAt = deletedAt,
+            deletionReason = deletionReason,
+            retentionUntil = retentionUntil,
         )
     }
 }

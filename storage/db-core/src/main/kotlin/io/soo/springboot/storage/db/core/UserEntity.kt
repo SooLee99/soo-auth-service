@@ -3,6 +3,7 @@ package io.soo.springboot.storage.db.core
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.core.enums.Role
+import io.soo.springboot.core.enums.UserStatus
 import jakarta.persistence.*
 import java.time.Instant
 
@@ -85,5 +86,36 @@ class UserEntity(
 
     @Column(nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
-    var role: Role = Role.USER
+    var role: Role = Role.USER,
+
+    @Column(nullable = false, length = 30)
+    @Enumerated(EnumType.STRING)
+    var userStatus: UserStatus = UserStatus.ACTIVE,
+
+    @Column(nullable = false)
+    var blocked: Boolean = false,
+
+    @Column(length = 500)
+    var blockedReason: String? = null,
+
+    @Column
+    var blockedAt: Instant? = null,
+
+    @Column
+    var blockedByAdminId: Long? = null,
+
+    @Column
+    var unblockedAt: Instant? = null,
+
+    @Column
+    var unblockedByAdminId: Long? = null,
+
+    @Column
+    var deletedAt: Instant? = null,
+
+    @Column(length = 500)
+    var deletionReason: String? = null,
+
+    @Column
+    var retentionUntil: Instant? = null,
 ) : BaseEntity()

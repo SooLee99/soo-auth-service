@@ -1,4 +1,4 @@
-package io.soo.springboot.core.domain.denylist
+package io.soo.springboot.core.domain
 
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component

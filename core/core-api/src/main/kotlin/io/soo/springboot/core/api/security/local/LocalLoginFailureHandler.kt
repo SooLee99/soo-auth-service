@@ -2,11 +2,12 @@ package io.soo.springboot.core.api.security.local
 
 import io.soo.springboot.core.api.security.response.SecurityErrorFields
 import io.soo.springboot.core.api.security.response.SecurityErrorResponseWriter
+import io.soo.springboot.core.domain.AccountStatusDeniedException
+import io.soo.springboot.core.domain.LoginDenyReason
 import io.soo.springboot.core.domain.LocalLoginPolicyService
 import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.storage.db.core.LoginHistoryEntity
-import io.soo.springboot.storage.db.core.LoginHistoryRepository
 import io.soo.springboot.storage.db.core.UserRepository
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -39,18 +40,29 @@ class LocalLoginFailureHandler(
         val normalizedEmail =
             request.getAttribute(LocalJsonLoginFilter.ATTR_NORMALIZED_EMAIL) as? String ?: "unknown"
 
-        val result = localLoginPolicyService.recordFailureByEmail(
-            normalizedEmail = normalizedEmail,
-            now = LocalDateTime.now(),
-        )
+        val statusDenied = exception as? AccountStatusDeniedException
+        val isStatusDenied = statusDenied != null
+        val result = if (isStatusDenied) {
+            null
+        } else {
+            localLoginPolicyService.recordFailureByEmail(
+                normalizedEmail = normalizedEmail,
+                now = LocalDateTime.now(),
+            )
+        }
 
         // 로그인 실패 기록 (userId는 조회 가능할 때만)
-        val user = userRepository.findByEmail(normalizedEmail)
+        val user = userRepository.findByEmailIncludingDeleted(normalizedEmail)
         if (user != null) {
             val failureReason = when (result) {
                 LocalLoginPolicyService.FailureResult.LOCKED -> "LOGIN_ATTEMPTS_EXCEEDED"
                 LocalLoginPolicyService.FailureResult.BAD_CREDENTIALS -> "BAD_CREDENTIALS"
                 LocalLoginPolicyService.FailureResult.NOT_FOUND -> "ACCOUNT_NOT_FOUND"
+                null -> when (statusDenied?.reason) {
+                    LoginDenyReason.SOFT_DELETED -> "ACCOUNT_SOFT_DELETED"
+                    LoginDenyReason.BLOCKED -> "ACCOUNT_BLOCKED"
+                    else -> if (isStatusDenied) "ACCOUNT_STATUS_DENIED" else "AUTHENTICATION_FAILED"
+                }
             }
 
             loginHistoryService.recordLoginFailure(
@@ -75,6 +87,10 @@ class LocalLoginFailureHandler(
 
             exception is DisabledException -> {
                 ErrorType.ACCOUNT_DISABLED to SecurityErrorFields.accountDisabled()
+            }
+
+            isStatusDenied -> {
+                ErrorType.LOGIN_DENIED to SecurityErrorFields.loginDenied()
             }
 
             // 로컬 로그인 실패 정책 결과 반영 (잠금/계정없음/비밀번호오류)

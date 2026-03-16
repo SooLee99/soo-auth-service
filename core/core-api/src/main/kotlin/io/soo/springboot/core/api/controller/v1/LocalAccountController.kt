@@ -2,6 +2,7 @@ package io.soo.springboot.core.api.controller.v1
 
 import io.soo.springboot.core.api.controller.v1.request.RefreshRequest
 import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
+import io.soo.springboot.core.api.controller.v1.request.WithdrawRequest
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
 import io.soo.springboot.core.domain.LocalAccountService
 import io.soo.springboot.core.domain.LocalSignUpCommand
@@ -67,6 +68,20 @@ class LocalAccountController(
             logoutAll = body?.logoutAll ?: false,
         )
 
+        return ApiResponse.success(req = req, data = mapOf("result" to "OK"))
+    }
+
+    @PostMapping("/withdraw", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun withdraw(
+        @AuthenticationPrincipal jwt: Jwt?,
+        @RequestBody(required = false) @Valid body: WithdrawRequest?,
+        req: HttpServletRequest,
+    ): ApiResponse<Any?> {
+        val principalJwt = jwt ?: throw CoreException(ErrorType.UNAUTHORIZED, "authenticated jwt is required")
+        val userId = (principalJwt.claims["uid"] as? Number)?.toLong()
+            ?: throw CoreException(ErrorType.UNAUTHORIZED, "uid claim is required")
+
+        localAccountService.softDelete(userId = userId, reason = body?.reason)
         return ApiResponse.success(req = req, data = mapOf("result" to "OK"))
     }
 }
