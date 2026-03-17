@@ -28,6 +28,10 @@ class ServiceRepositoryImpl(
         return jpaRepository.findByServiceCodeAndServiceStatus(serviceCode, ServiceStatus.ACTIVE)?.toModel()
     }
 
+    override fun findAll(pageable: Pageable): Page<Service> {
+        return jpaRepository.findAll(pageable).map { it.toModel() }
+    }
+
     override fun findActive(pageable: Pageable): Page<Service> {
         return jpaRepository.findAllByServiceStatus(ServiceStatus.ACTIVE, pageable).map { it.toModel() }
     }
@@ -51,4 +55,3 @@ class ServiceRepositoryImpl(
         )
     }
 }
-

@@ -28,6 +28,10 @@ class ServiceMembershipRepositoryImpl(
         ) != null
     }
 
+    override fun countActiveMemberships(serviceId: Long): Long {
+        return jpaRepository.countByServiceIdAndMembershipStatus(serviceId, ServiceMembershipStatus.ACTIVE)
+    }
+
     override fun findByUserId(userId: Long, pageable: Pageable): Page<ServiceMembership> {
         return jpaRepository.findAllByUserId(userId, pageable).map { it.toModel() }
     }
@@ -63,4 +67,3 @@ class ServiceMembershipRepositoryImpl(
         )
     }
 }
-

@@ -12,9 +12,303 @@ tags:
   description: 소셜 로그인
 - name: Admin
   description: 관리자 전용 API
+- name: Service Local
+  description: 멀티서비스 로컬 인증 API (프론트 권장)
+- name: Service Admin
+  description: 관리자 서비스 관리 API
 - name: Health
   description: 헬스체크/모니터링
 paths:
+  /api/v1/services/{serviceCode}/auth/local/signup:
+    post:
+      tags:
+      - Service Local
+      summary: 멀티서비스 회원가입
+      description: "신규 프론트엔드 권장 회원가입 경로입니다. serviceCode 형식/등록/활성 상태를 서버에서 검증합니다."
+      operationId: service-local-signup
+      parameters:
+      - name: serviceCode
+        in: path
+        required: true
+        schema:
+          type: string
+        example: DEFAULT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              - password
+              - gender
+              - phoneNumber
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                name:
+                  type: string
+                nickname:
+                  type: string
+                gender:
+                  type: string
+                  enum:
+                  - MALE
+                  - FEMALE
+                  - OTHER
+                  - UNKNOWN
+                phoneNumber:
+                  type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Invalid request
+        "404":
+          description: Service not found
+        "409":
+          description: Service inactive or duplicate user input
+  /api/v1/services/{serviceCode}/auth/local/token/refresh:
+    post:
+      tags:
+      - Service Local
+      summary: 멀티서비스 토큰 갱신
+      operationId: service-local-refresh
+      parameters:
+      - name: serviceCode
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: X-Device-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - refreshToken
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Invalid/expired refresh token
+        "404":
+          description: Service not found
+        "409":
+          description: Service inactive
+  /api/v1/services/{serviceCode}/auth/local/logout:
+    post:
+      tags:
+      - Service Local
+      summary: 멀티서비스 로그아웃
+      operationId: service-local-logout
+      parameters:
+      - name: serviceCode
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: X-Device-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+        "404":
+          description: Service not found
+        "409":
+          description: Service inactive
+  /api/v1/services/{serviceCode}/auth/local/withdraw:
+    post:
+      tags:
+      - Service Local
+      summary: 멀티서비스 회원 탈퇴
+      operationId: service-local-withdraw
+      parameters:
+      - name: serviceCode
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+        "404":
+          description: Service not found
+        "409":
+          description: Service inactive
+  /api/v1/services/{serviceCode}/auth/oauth2/{provider}/authorize-url:
+    get:
+      tags:
+      - Service Local
+      summary: 멀티서비스 OAuth2 인가 URL 조회
+      operationId: service-oauth2-authorize-url
+      parameters:
+      - name: serviceCode
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: provider
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - kakao
+          - naver
+          - google
+      - name: returnUrl
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: X-Device-Id
+        in: header
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Invalid returnUrl
+        "404":
+          description: Service not found
+        "409":
+          description: Service inactive
+  /api/v1/auth/admin/services:
+    post:
+      tags:
+      - Service Admin
+      summary: 서비스 등록
+      operationId: admin-service-register
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - serviceCode
+              - serviceName
+              properties:
+                serviceCode:
+                  type: string
+                  example: SHOP
+                serviceName:
+                  type: string
+                  example: Shopping Service
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+        "403":
+          description: Admin only
+        "409":
+          description: DUPLICATE_SERVICE_CODE
+    get:
+      tags:
+      - Service Admin
+      summary: 서비스 목록 조회
+      operationId: admin-service-list
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 20
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+        "403":
+          description: Admin only
+  /api/v1/auth/admin/services/{serviceCode}/deactivate:
+    post:
+      tags:
+      - Service Admin
+      summary: 서비스 비활성화 (삭제 아님)
+      operationId: admin-service-deactivate
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: serviceCode
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+        "403":
+          description: Admin only
+        "404":
+          description: Service not found
+        "409":
+          description: DEFAULT_SERVICE_PROTECTED or SERVICE_HAS_ACTIVE_MEMBERSHIPS
   /api/v1/auth/admin/login-history:
     get:
       tags:

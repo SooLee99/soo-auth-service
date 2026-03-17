@@ -15,5 +15,5 @@ interface ServiceMembershipJpaRepository : JpaRepository<ServiceMembershipEntity
 
     fun findAllByUserId(userId: Long, pageable: Pageable): Page<ServiceMembershipEntity>
     fun findAllByServiceId(serviceId: Long, pageable: Pageable): Page<ServiceMembershipEntity>
+    fun countByServiceIdAndMembershipStatus(serviceId: Long, membershipStatus: ServiceMembershipStatus): Long
 }
-

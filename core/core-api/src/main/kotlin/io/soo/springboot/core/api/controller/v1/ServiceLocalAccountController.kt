@@ -5,6 +5,7 @@ import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
 import io.soo.springboot.core.api.controller.v1.request.WithdrawRequest
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
 import io.soo.springboot.core.api.security.token.AuthTokenManager
+import io.soo.springboot.core.domain.ServiceContextResolver
 import io.soo.springboot.core.domain.LocalAccountService
 import io.soo.springboot.core.domain.LocalSignUpCommand
 import io.soo.springboot.core.support.error.CoreException
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController
 class ServiceLocalAccountController(
     private val localAccountService: LocalAccountService,
     private val authTokenManager: AuthTokenManager,
+    private val serviceContextResolver: ServiceContextResolver,
 ) {
     @PostMapping("/signup", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun signUp(
@@ -34,7 +36,8 @@ class ServiceLocalAccountController(
         @RequestBody @Valid request: SignUpRequest,
         req: HttpServletRequest,
     ): ApiResponse<Any?> {
-        // TODO(multi-service): serviceCode -> serviceId resolve + membership create
+        val resolvedService = serviceContextResolver.resolveActive(serviceCode)
+        // TODO(multi-service): membership create
         localAccountService.signUp(
             LocalSignUpCommand(
                 email = request.email,
@@ -51,7 +54,7 @@ class ServiceLocalAccountController(
             )
         )
 
-        return ApiResponse.success(req = req, data = mapOf("result" to "OK", "serviceCode" to serviceCode))
+        return ApiResponse.success(req = req, data = mapOf("result" to "OK", "serviceCode" to resolvedService.serviceCode))
     }
 
     @PostMapping("/token/refresh", produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -61,9 +64,10 @@ class ServiceLocalAccountController(
         @RequestBody request: RefreshRequest,
         req: HttpServletRequest,
     ): ApiResponse<Any?> {
+        val resolvedService = serviceContextResolver.resolveActive(serviceCode)
         // TODO(multi-service): refresh token service scope check
         val issued = authTokenManager.refresh(request.refreshToken, deviceId)
-        return ApiResponse.success(req = req, data = issued)
+        return ApiResponse.success(req = req, data = mapOf("serviceCode" to resolvedService.serviceCode, "tokens" to issued))
     }
 
     @PostMapping("/logout", produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -74,6 +78,7 @@ class ServiceLocalAccountController(
         @RequestBody(required = false) body: LogoutRequest?,
         req: HttpServletRequest,
     ): ApiResponse<Any?> {
+        val resolvedService = serviceContextResolver.resolveActive(serviceCode)
         val principalJwt = jwt ?: throw CoreException(ErrorType.UNAUTHORIZED, "authenticated jwt is required")
 
         // TODO(multi-service): logout by service scope
@@ -84,7 +89,7 @@ class ServiceLocalAccountController(
             logoutAll = body?.logoutAll ?: false,
         )
 
-        return ApiResponse.success(req = req, data = mapOf("result" to "OK", "serviceCode" to serviceCode))
+        return ApiResponse.success(req = req, data = mapOf("result" to "OK", "serviceCode" to resolvedService.serviceCode))
     }
 
     @PostMapping("/withdraw", produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -94,13 +99,13 @@ class ServiceLocalAccountController(
         @RequestBody(required = false) @Valid body: WithdrawRequest?,
         req: HttpServletRequest,
     ): ApiResponse<Any?> {
+        val resolvedService = serviceContextResolver.resolveActive(serviceCode)
         val principalJwt = jwt ?: throw CoreException(ErrorType.UNAUTHORIZED, "authenticated jwt is required")
         val userId = (principalJwt.claims["uid"] as? Number)?.toLong()
             ?: throw CoreException(ErrorType.UNAUTHORIZED, "uid claim is required")
 
         // TODO(multi-service): split service-withdraw and global-withdraw
         localAccountService.softDelete(userId = userId, reason = body?.reason)
-        return ApiResponse.success(req = req, data = mapOf("result" to "OK", "serviceCode" to serviceCode))
+        return ApiResponse.success(req = req, data = mapOf("result" to "OK", "serviceCode" to resolvedService.serviceCode))
     }
 }
-

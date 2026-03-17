@@ -8,6 +8,6 @@ interface ServiceRepository {
     fun findById(id: Long): Service?
     fun findByServiceCode(serviceCode: String): Service?
     fun findActiveByServiceCode(serviceCode: String): Service?
+    fun findAll(pageable: Pageable): Page<Service>
     fun findActive(pageable: Pageable): Page<Service>
 }
-

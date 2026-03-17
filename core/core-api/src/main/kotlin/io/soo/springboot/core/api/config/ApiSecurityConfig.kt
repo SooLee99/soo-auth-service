@@ -36,6 +36,8 @@ class ApiSecurityConfig(
             "/api/v1/auth/local/login",
             "/api/v1/auth/local/signup",
             "/api/v1/auth/local/token/refresh",
+            "/api/v1/services/*/auth/local/signup",
+            "/api/v1/services/*/auth/local/token/refresh",
 
             // ✅ OAuth2 시작/콜백
             "/oauth2/authorization/**",
@@ -120,6 +122,7 @@ class ApiSecurityConfig(
             auth.requestMatchers("/swagger/**").permitAll()
 
             auth.requestMatchers(HttpMethod.GET, "/api/v1/auth/oauth2/*/authorize-url").permitAll()
+            auth.requestMatchers(HttpMethod.GET, "/api/v1/services/*/auth/oauth2/*/authorize-url").permitAll()
             auth.requestMatchers("/api/v1/auth/local/logout").authenticated()
             auth.requestMatchers("/api/**").authenticated()
             auth.anyRequest().authenticated()

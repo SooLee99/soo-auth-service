@@ -10,4 +10,3 @@ interface ServiceJpaRepository : JpaRepository<ServiceEntity, Long> {
     fun findByServiceCodeAndServiceStatus(serviceCode: String, serviceStatus: ServiceStatus): ServiceEntity?
     fun findAllByServiceStatus(serviceStatus: ServiceStatus, pageable: Pageable): Page<ServiceEntity>
 }
-

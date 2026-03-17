@@ -1,5 +1,6 @@
 package io.soo.springboot.core.api.controller.v1
 
+import io.soo.springboot.core.domain.ServiceContextResolver
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.response.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
@@ -13,7 +14,9 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/services/{serviceCode}/auth/oauth2")
-class ServiceOAuth2AccountController {
+class ServiceOAuth2AccountController(
+    private val serviceContextResolver: ServiceContextResolver,
+) {
 
     @GetMapping("/{provider}/authorize-url")
     fun authorizeUrl(
@@ -24,6 +27,7 @@ class ServiceOAuth2AccountController {
         session: HttpSession,
         req: HttpServletRequest,
     ): ApiResponse<out String> {
+        val resolvedService = serviceContextResolver.resolveActive(serviceCode)
         if (returnUrl != null && !returnUrl.startsWith("/")) {
             return ApiResponse.error(
                 type = ErrorType.INVALID_REQUEST,
@@ -32,8 +36,8 @@ class ServiceOAuth2AccountController {
             )
         }
 
-        // TODO(multi-service): serviceCode validation + OAuth2 state binding
-        session.setAttribute("SERVICE_CODE", serviceCode)
+        // TODO(multi-service): OAuth2 state binding
+        session.setAttribute("SERVICE_CODE", resolvedService.serviceCode)
         session.setAttribute("RETURN_URL", returnUrl)
         session.setAttribute("DEVICE_ID", deviceId)
 
@@ -41,4 +45,3 @@ class ServiceOAuth2AccountController {
         return ApiResponse.success(req = req, data = authorizePath)
     }
 }
-
