@@ -136,6 +136,12 @@ private object ApiDocCatalog {
             description = "이메일/비밀번호 기반 로컬 계정을 생성합니다.",
             authMarkdown = "- 인증 불필요",
         ),
+        "auth-service-local-signup" to ApiMeta(
+            tag = "Auth",
+            summary = "서비스별 로컬 회원가입",
+            description = "serviceCode 기준으로 로컬 계정을 생성합니다.",
+            authMarkdown = "- 인증 불필요\n- `serviceCode` 유효성/활성 상태 검증",
+        ),
         "auth-local-login" to ApiMeta(
             tag = "Auth",
             summary = "로컬 로그인",
@@ -148,11 +154,23 @@ private object ApiDocCatalog {
             description = "Refresh Token으로 Access Token을 재발급합니다.",
             authMarkdown = "- 인증 불필요(일반적으로 refreshToken 자체가 인증 수단)",
         ),
+        "auth-service-local-refresh" to ApiMeta(
+            tag = "Auth",
+            summary = "서비스별 토큰 재발급(Refresh)",
+            description = "serviceCode 기준 경로에서 Refresh Token으로 Access Token을 재발급합니다.",
+            authMarkdown = "- 인증 불필요(일반적으로 refreshToken 자체가 인증 수단)\n- `serviceCode` 유효성/활성 상태 검증",
+        ),
         "auth-local-logout" to ApiMeta(
             tag = "Auth",
             summary = "로그아웃",
             description = "로그아웃을 수행합니다(단건/전체 옵션).",
             authMarkdown = "- `Authorization: Bearer {accessToken}` 필요",
+        ),
+        "auth-service-local-logout" to ApiMeta(
+            tag = "Auth",
+            summary = "서비스별 로그아웃",
+            description = "serviceCode 기준 경로에서 로그아웃을 수행합니다(단건/전체 옵션).",
+            authMarkdown = "- `Authorization: Bearer {accessToken}` 필요\n- `serviceCode` 유효성/활성 상태 검증",
         ),
         "auth-local-withdraw" to ApiMeta(
             tag = "Auth",
@@ -160,11 +178,41 @@ private object ApiDocCatalog {
             description = "회원 탈퇴를 소프트 삭제로 처리하고 보관 만료일을 기록합니다.",
             authMarkdown = "- `Authorization: Bearer {accessToken}` 필요",
         ),
+        "auth-service-local-withdraw" to ApiMeta(
+            tag = "Auth",
+            summary = "서비스별 회원 탈퇴(소프트 삭제)",
+            description = "serviceCode 기준 경로에서 회원 탈퇴(소프트 삭제)를 처리합니다.",
+            authMarkdown = "- `Authorization: Bearer {accessToken}` 필요\n- `serviceCode` 유효성/활성 상태 검증",
+        ),
         "auth-oauth2-authorize-url" to ApiMeta(
             tag = "OAuth2",
             summary = "OAuth2 인가 URL 조회",
             description = "OAuth2 인가 URL 경로를 반환합니다.",
             authMarkdown = "- 인증 불필요",
+        ),
+        "auth-service-oauth2-authorize-url" to ApiMeta(
+            tag = "OAuth2",
+            summary = "서비스별 OAuth2 인가 URL 조회",
+            description = "serviceCode 기준 OAuth2 인가 URL 경로를 반환합니다.",
+            authMarkdown = "- 인증 불필요\n- `serviceCode` 유효성/활성 상태 검증",
+        ),
+        "auth-admin-service-register" to ApiMeta(
+            tag = "Admin",
+            summary = "관리자 서비스 등록",
+            description = "새 서비스 코드를 등록합니다.",
+            authMarkdown = "- `Authorization: Bearer {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요",
+        ),
+        "auth-admin-service-list" to ApiMeta(
+            tag = "Admin",
+            summary = "관리자 서비스 목록 조회",
+            description = "등록된 서비스 목록을 페이징 조회합니다.",
+            authMarkdown = "- `Authorization: Bearer {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요",
+        ),
+        "auth-admin-service-deactivate" to ApiMeta(
+            tag = "Admin",
+            summary = "관리자 서비스 비활성화",
+            description = "서비스를 물리 삭제하지 않고 INACTIVE 상태로 전환합니다.",
+            authMarkdown = "- `Authorization: Bearer {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요",
         ),
         "health" to ApiMeta(
             tag = "Health",

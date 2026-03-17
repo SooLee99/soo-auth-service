@@ -12,6 +12,7 @@ import io.soo.springboot.core.api.security.local.LocalLoginSuccessHandler
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.api.security.token.IssuedTokens
 import io.soo.springboot.core.api.security.userdetails.UserPrincipal
+import io.soo.springboot.core.domain.HealthSnapshotService
 import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.test.api.RestDocsTest
@@ -39,10 +40,16 @@ class LocalLoginDocsTest : RestDocsTest() {
     private val authTokenManager = mockk<AuthTokenManager>()
     private val userIdResolver = mockk<UserIdResolver>()
     private val loginHistoryService = mockk<LoginHistoryService>(relaxed = true)
+    private val healthSnapshotService = mockk<HealthSnapshotService>()
 
     @BeforeEach
     fun init() {
         every { userIdResolver.resolve(any()) } returns 1L
+        every { healthSnapshotService.publicSummary() } returns mapOf(
+            "status" to "UP",
+            "application" to "core-api",
+            "uptimeSec" to 10L,
+        )
         every { authTokenManager.issue(any(), any(), any(), any()) } returns IssuedTokens(
             accessToken = "access-token",
             accessExpiresInSec = 3600,
@@ -75,7 +82,7 @@ class LocalLoginDocsTest : RestDocsTest() {
             setAuthenticationSuccessHandler(successHandler)
         }
 
-        mockMvc = mockController(HealthController(), loginFilter)
+        mockMvc = mockController(HealthController(healthSnapshotService), loginFilter)
     }
 
     @Test

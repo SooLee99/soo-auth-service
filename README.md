@@ -9,6 +9,11 @@
 
 소프트웨어가 성장함에 따라, 구조 또한 확장되어야 함을 기억하세요.
 
+## 개발 가이드
+
+- API 개발 규칙/동작 과정: [docs/README_API_RULES.md](docs/README_API_RULES.md)
+- 로컬 로그 모니터링: [docs/README_LOG_MONITORING.md](docs/README_LOG_MONITORING.md)
+
 # **모듈**
 
 ## Core

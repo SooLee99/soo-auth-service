@@ -1,4 +1,11 @@
 app:
+  bootstrap:
+    admin:
+      enabled: ${ADMIN_BOOTSTRAP_ENABLED:false}
+      username: ${ADMIN_BOOTSTRAP_USERNAME:}
+      password: ${ADMIN_BOOTSTRAP_PASSWORD:}
+      allowed-profiles: ${ADMIN_BOOTSTRAP_ALLOWED_PROFILES:local,local-dev}
+      allow-weak-password: ${ADMIN_BOOTSTRAP_ALLOW_WEAK_PASSWORD:false}
   security:
     jwt:
       issuer: "soo-auth-service"
@@ -20,6 +27,7 @@ spring:
     import:
       - monitoring.yml
       - logging.yml
+      - redis.yml
       - db-core.yml
       - client-example.yml
       - optional:file:.env[.properties]
@@ -89,12 +97,26 @@ spring:
   config:
     activate:
       on-profile: local
+app:
+  bootstrap:
+    admin:
+      enabled: ${ADMIN_BOOTSTRAP_ENABLED:true}
+      username: ${ADMIN_BOOTSTRAP_USERNAME}
+      password: ${ADMIN_BOOTSTRAP_PASSWORD}
+      allow-weak-password: ${ADMIN_BOOTSTRAP_ALLOW_WEAK_PASSWORD:true}
 
 ---
 spring:
   config:
     activate:
       on-profile: local-dev
+app:
+  bootstrap:
+    admin:
+      enabled: ${ADMIN_BOOTSTRAP_ENABLED:true}
+      username: ${ADMIN_BOOTSTRAP_USERNAME}
+      password: ${ADMIN_BOOTSTRAP_PASSWORD}
+      allow-weak-password: ${ADMIN_BOOTSTRAP_ALLOW_WEAK_PASSWORD:true}
 
 ---
 spring:

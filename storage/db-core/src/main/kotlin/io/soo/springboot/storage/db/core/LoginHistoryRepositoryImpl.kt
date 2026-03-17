@@ -24,7 +24,7 @@ class LoginHistoryRepositoryImpl(
             userId = userId,
             userEmail = userEmail,
             loginType = loginType,
-            status = status,
+            loginStatus = status,
             ipAddress = ipAddress,
             userAgent = userAgent,
             deviceId = deviceId,

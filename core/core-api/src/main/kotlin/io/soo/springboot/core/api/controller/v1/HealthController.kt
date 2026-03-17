@@ -1,14 +1,22 @@
 package io.soo.springboot.core.api.controller.v1
 
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import io.soo.springboot.core.domain.HealthSnapshotService
+import io.soo.springboot.core.support.response.ApiResponse
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
-@RestController
-class HealthController {
+@RestController("/api/v1")
+class HealthController(
+    private val healthSnapshotService: HealthSnapshotService,
+) {
     @GetMapping("/health")
-    fun health(): ResponseEntity<*> {
-        return ResponseEntity.status(HttpStatus.OK).build<Any>()
+    fun health(req: HttpServletRequest): ApiResponse<Map<String, Any>> {
+        return ApiResponse.success(req = req, data = healthSnapshotService.publicSummary())
+    }
+
+    @GetMapping("/auth/admin/health")
+    fun adminHealth(req: HttpServletRequest): ApiResponse<Map<String, Any>> {
+        return ApiResponse.success(req = req, data = healthSnapshotService.adminDetails())
     }
 }

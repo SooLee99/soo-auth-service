@@ -20,8 +20,8 @@ class LoginHistoryEntity(
     var loginType: LoginType,
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    var status: LoginStatus,
+    @Column(name = "login_status", nullable = false, length = 20)
+    var loginStatus: LoginStatus,
 
     @Column(length = 50)
     var ipAddress: String? = null,

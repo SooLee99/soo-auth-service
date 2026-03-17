@@ -1,9 +1,11 @@
 package io.soo.springboot.storage.db.core
 
 import org.springframework.stereotype.Repository
+import org.springframework.context.annotation.Profile
 import java.time.Instant
 
 @Repository
+@Profile("local", "test")
 class RefreshTokenRepositoryImpl(
     private val jpaRepository: RefreshTokenJpaRepository
 ) : RefreshTokenRepository {

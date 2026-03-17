@@ -1,3 +1,4 @@
+Auth: "인증 API"
 Local: "로컬 로그인"
 OAuth2: "소셜 로그인"
 Admin: "관리자 전용 API"

@@ -6,6 +6,7 @@ networks:
 
 volumes:
   mariadb_data:
+  redis_data:
 
 services:
   mariadb:
@@ -38,6 +39,22 @@ services:
       retries: 30
       start_period: 10s
 
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    networks:
+      backend:
+        aliases:
+          - redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
 
   # 운영에서는 보통 제외(필요할 때만 profile로 띄우기)
   phpmyadmin:
@@ -56,9 +73,37 @@ services:
     networks:
       - backend
 
+  loki:
+    image: grafana/loki:2.9.8
+    command: -config.file=/etc/loki/config.yml
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./monitoring/loki/config.yml:/etc/loki/config.yml:ro
+
+  promtail:
+    image: grafana/promtail:2.9.8
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+    volumes:
+      - ./monitoring/promtail/config.yml:/etc/promtail/config.yml:ro
+      - ./logs:/workspace/logs:ro
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    depends_on:
+      - loki
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
 
   app:
-    # 이미 레지스트리 이미지가 있으면 image만 쓰고 build는 제거해도 됩니다.
     build:
       context: .
       dockerfile: Dockerfile
@@ -68,17 +113,25 @@ services:
       TZ: Asia/Seoul
 
       # 운영에서 사용할 프로파일로 지정
-      SPRING_PROFILES_ACTIVE: dev
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
 
       # Spring의 ${storage.database.core-db.*} 와 매핑되는 ENV (Relaxed binding)
       # (기존 설정 유지하되, 호스트를 "mariadb"로 고정)
       STORAGE_DATABASE_CORE_DB_URL: mariadb:3306/${MARIADB_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true
       STORAGE_DATABASE_CORE_DB_USERNAME: ${MARIADB_USER}
       STORAGE_DATABASE_CORE_DB_PASSWORD: ${MARIADB_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
 
       JWT_KEYSTORE_PASSWORD: ${JWT_KEYSTORE_PASSWORD}
       JWT_KEY_ALIAS: ${JWT_KEY_ALIAS}
       JWT_KEY_PASSWORD: ${JWT_KEY_PASSWORD}
+      ADMIN_BOOTSTRAP_ENABLED: ${ADMIN_BOOTSTRAP_ENABLED:-false}
+      ADMIN_BOOTSTRAP_USERNAME: ${ADMIN_BOOTSTRAP_USERNAME:-}
+      ADMIN_BOOTSTRAP_PASSWORD: ${ADMIN_BOOTSTRAP_PASSWORD:-}
+      ADMIN_BOOTSTRAP_ALLOWED_PROFILES: ${ADMIN_BOOTSTRAP_ALLOWED_PROFILES:-local,local-dev}
+      ADMIN_BOOTSTRAP_ALLOW_WEAK_PASSWORD: ${ADMIN_BOOTSTRAP_ALLOW_WEAK_PASSWORD:-false}
 
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
@@ -92,6 +145,8 @@ services:
 
     depends_on:
       mariadb:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
     networks:

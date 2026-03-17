@@ -11,6 +11,10 @@ import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.oauth2.jwt.Jwt
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.context.SecurityContextRepository
@@ -110,7 +114,11 @@ class ApiSecurityConfig(
 
         oAuth2LoginConfig.configure(http)
 
-        http.oauth2ResourceServer { it.jwt { } }
+        http.oauth2ResourceServer { resourceServer ->
+            resourceServer.jwt { jwt ->
+                jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())
+            }
+        }
 
         http.sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) }
 
@@ -130,5 +138,21 @@ class ApiSecurityConfig(
         http.addFilterAt(localJsonLoginFilter, UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
+    }
+
+    private fun jwtAuthenticationConverter(): JwtAuthenticationConverter {
+        val converter = JwtAuthenticationConverter()
+        converter.setJwtGrantedAuthoritiesConverter { jwt ->
+            extractRoleAuthorities(jwt)
+        }
+        return converter
+    }
+
+    private fun extractRoleAuthorities(jwt: Jwt): Collection<GrantedAuthority> {
+        val rawRoles = jwt.getClaimAsStringList("roles").orEmpty()
+        return rawRoles
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .map { SimpleGrantedAuthority(it) }
     }
 }

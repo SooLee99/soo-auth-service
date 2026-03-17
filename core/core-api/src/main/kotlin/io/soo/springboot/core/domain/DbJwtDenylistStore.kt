@@ -1,6 +1,7 @@
 package io.soo.springboot.core.domain
 
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
@@ -11,6 +12,7 @@ import io.soo.springboot.storage.db.core.JwtDenylistRepository
 
 
 @Service
+@Profile("local", "test")
 class DbJwtDenylistStore(
     private val repo: JwtDenylistRepository,
     private val clock: Clock = Clock.systemUTC(),

@@ -21,7 +21,7 @@ data class LoginHistory(
                 userId = entity.userId,
                 userEmail = entity.userEmail,
                 loginType = entity.loginType,
-                status = entity.status,
+                status = entity.loginStatus,
                 ipAddress = entity.ipAddress,
                 userAgent = entity.userAgent,
                 deviceId = entity.deviceId,

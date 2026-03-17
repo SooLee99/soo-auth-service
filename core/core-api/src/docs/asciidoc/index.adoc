@@ -173,6 +173,92 @@ include::{snippets}/auth-oauth2-authorize-url/response-fields.adoc[]
 
 '''
 
+== Service Auth (Recommended)
+
+신규 프론트엔드는 아래 멀티서비스 경로를 우선 사용하세요.
+
+=== 서비스 로컬 회원가입
+==== Curl Request
+include::{snippets}/auth-service-local-signup/curl-request.adoc[]
+==== Path Parameters
+include::{snippets}/auth-service-local-signup/path-parameters.adoc[]
+==== Request Fields
+include::{snippets}/auth-service-local-signup/request-fields.adoc[]
+==== Http Response
+include::{snippets}/auth-service-local-signup/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-service-local-signup/response-fields.adoc[]
+
+'''
+
+=== 서비스 토큰 갱신
+* `X-Device-Id`는 필수 헤더입니다.
+==== Curl Request
+include::{snippets}/auth-service-local-refresh/curl-request.adoc[]
+==== Request Headers
+include::{snippets}/auth-service-local-refresh/request-headers.adoc[]
+==== Path Parameters
+include::{snippets}/auth-service-local-refresh/path-parameters.adoc[]
+==== Request Fields
+include::{snippets}/auth-service-local-refresh/request-fields.adoc[]
+==== Http Response
+include::{snippets}/auth-service-local-refresh/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-service-local-refresh/response-fields.adoc[]
+
+'''
+
+=== 서비스 로그아웃
+* `Authorization`과 `X-Device-Id`는 필수 헤더입니다.
+==== Curl Request
+include::{snippets}/auth-service-local-logout/curl-request.adoc[]
+==== Request Headers
+include::{snippets}/auth-service-local-logout/request-headers.adoc[]
+==== Path Parameters
+include::{snippets}/auth-service-local-logout/path-parameters.adoc[]
+==== Request Fields
+include::{snippets}/auth-service-local-logout/request-fields.adoc[]
+==== Http Response
+include::{snippets}/auth-service-local-logout/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-service-local-logout/response-fields.adoc[]
+
+'''
+
+=== 서비스 회원 탈퇴(소프트 삭제)
+* `Authorization` 헤더는 필수입니다.
+==== Curl Request
+include::{snippets}/auth-service-local-withdraw/curl-request.adoc[]
+==== Request Headers
+include::{snippets}/auth-service-local-withdraw/request-headers.adoc[]
+==== Path Parameters
+include::{snippets}/auth-service-local-withdraw/path-parameters.adoc[]
+==== Request Fields
+include::{snippets}/auth-service-local-withdraw/request-fields.adoc[]
+==== Http Response
+include::{snippets}/auth-service-local-withdraw/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-service-local-withdraw/response-fields.adoc[]
+
+'''
+
+=== 서비스 OAuth2 인가 URL 조회
+* `returnUrl`은 상대 경로만 허용됩니다. (예: `/app/callback`)
+==== Curl Request
+include::{snippets}/auth-service-oauth2-authorize-url/curl-request.adoc[]
+==== Request Headers
+include::{snippets}/auth-service-oauth2-authorize-url/request-headers.adoc[]
+==== Path Parameters
+include::{snippets}/auth-service-oauth2-authorize-url/path-parameters.adoc[]
+==== Query Parameters
+include::{snippets}/auth-service-oauth2-authorize-url/query-parameters.adoc[]
+==== Http Response
+include::{snippets}/auth-service-oauth2-authorize-url/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-service-oauth2-authorize-url/response-fields.adoc[]
+
+'''
+
 == Admin
 
 === 로그인 이력 조회
@@ -273,29 +359,31 @@ include::{snippets}/auth-admin-user-status-audits/response-fields.adoc[]
 * 관리자 권한이 필요합니다.
 * 같은 `serviceCode`가 이미 있으면 `409 DUPLICATE_SERVICE_CODE`
 * `serviceCode` 규칙: `^[A-Z0-9][A-Z0-9_-]{1,63}$`
-
-[source,http]
-----
-POST /api/v1/auth/admin/services
-Authorization: Bearer {adminAccessToken}
-Content-Type: application/json
-
-{
-  "serviceCode": "SHOP",
-  "serviceName": "Shopping Service"
-}
-----
+==== Curl Request
+include::{snippets}/auth-admin-service-register/curl-request.adoc[]
+==== Request Headers
+include::{snippets}/auth-admin-service-register/request-headers.adoc[]
+==== Request Fields
+include::{snippets}/auth-admin-service-register/request-fields.adoc[]
+==== Http Response
+include::{snippets}/auth-admin-service-register/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-admin-service-register/response-fields.adoc[]
 
 '''
 
 === 서비스 목록 조회
 * 관리자 권한이 필요합니다.
-
-[source,http]
-----
-GET /api/v1/auth/admin/services?page=0&size=20
-Authorization: Bearer {adminAccessToken}
-----
+==== Curl Request
+include::{snippets}/auth-admin-service-list/curl-request.adoc[]
+==== Request Headers
+include::{snippets}/auth-admin-service-list/request-headers.adoc[]
+==== Query Parameters
+include::{snippets}/auth-admin-service-list/query-parameters.adoc[]
+==== Http Response
+include::{snippets}/auth-admin-service-list/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-admin-service-list/response-fields.adoc[]
 
 '''
 
@@ -304,9 +392,13 @@ Authorization: Bearer {adminAccessToken}
 * 물리 삭제가 아니라 `INACTIVE` 상태 전환입니다.
 * `DEFAULT` 서비스는 비활성화할 수 없습니다.
 * 활성 멤버십이 있으면 비활성화할 수 없습니다. (`409 SERVICE_HAS_ACTIVE_MEMBERSHIPS`)
-
-[source,http]
-----
-POST /api/v1/auth/admin/services/SHOP/deactivate
-Authorization: Bearer {adminAccessToken}
-----
+==== Curl Request
+include::{snippets}/auth-admin-service-deactivate/curl-request.adoc[]
+==== Request Headers
+include::{snippets}/auth-admin-service-deactivate/request-headers.adoc[]
+==== Path Parameters
+include::{snippets}/auth-admin-service-deactivate/path-parameters.adoc[]
+==== Http Response
+include::{snippets}/auth-admin-service-deactivate/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-admin-service-deactivate/response-fields.adoc[]
