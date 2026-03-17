@@ -130,6 +130,42 @@ private object ApiDocCatalog {
             description = "특정 사용자에 대한 차단/해제/탈퇴 상태 변경 이력을 조회합니다.",
             authMarkdown = "- `Authorization: Bearer {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요",
         ),
+        "auth-admin-user-detail" to ApiMeta(
+            tag = "Admin",
+            summary = "관리자 사용자 상세 조회",
+            description = "관리자 권한으로 특정 사용자의 상세 정보를 조회합니다.",
+            authMarkdown = "- `Authorization: Bearer {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요",
+        ),
+        "auth-admin-user-update" to ApiMeta(
+            tag = "Admin",
+            summary = "관리자 사용자 정보 수정",
+            description = "관리자 권한으로 특정 사용자의 프로필/권한/상태를 수정합니다.",
+            authMarkdown = "- `Authorization: Bearer {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요",
+        ),
+        "auth-admin-user-delete" to ApiMeta(
+            tag = "Admin",
+            summary = "관리자 사용자 삭제(소프트 삭제)",
+            description = "관리자 권한으로 특정 사용자를 소프트 삭제 처리합니다.",
+            authMarkdown = "- `Authorization: Bearer {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요",
+        ),
+        "auth-admin-users-list" to ApiMeta(
+            tag = "Admin",
+            summary = "관리자 사용자 목록 조회",
+            description = "관리자 권한으로 사용자 목록을 검색/필터 조건으로 페이징 조회합니다.",
+            authMarkdown = "- `Authorization: Bearer {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요",
+        ),
+        "auth-admin-user-password-reset" to ApiMeta(
+            tag = "Admin",
+            summary = "관리자 사용자 비밀번호 재설정",
+            description = "관리자 권한으로 사용자 비밀번호를 재설정하고 기존 토큰을 무효화합니다.",
+            authMarkdown = "- `Authorization: Bearer {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요",
+        ),
+        "auth-admin-user-tokens-revoke" to ApiMeta(
+            tag = "Admin",
+            summary = "관리자 사용자 토큰 강제 만료",
+            description = "관리자 권한으로 특정 사용자의 모든 토큰을 강제 만료시킵니다.",
+            authMarkdown = "- `Authorization: Bearer {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요",
+        ),
         "auth-local-signup" to ApiMeta(
             tag = "Auth",
             summary = "로컬 회원가입",
@@ -219,6 +255,12 @@ private object ApiDocCatalog {
             summary = "헬스 체크",
             description = "서비스 상태 확인용 엔드포인트입니다.",
             authMarkdown = "- 인증 불필요",
+        ),
+        "auth-admin-health" to ApiMeta(
+            tag = "Health",
+            summary = "관리자 상세 헬스 체크",
+            description = "관리자 권한으로 상세 상태(DB/Redis/System/링크)를 조회합니다.",
+            authMarkdown = "- `Authorization: Bearer {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요",
         ),
     )
 

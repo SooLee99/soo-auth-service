@@ -104,7 +104,7 @@ class LocalAccountService(
      * - 탈퇴 즉시 로그인 불가
      */
     @Transactional
-    fun softDelete(userId: Long, reason: String?) {
+    fun softDelete(userId: Long, reason: String?, actorUserId: Long? = null) {
         val user = userRepository.findByIdIncludingDeleted(userId)
             ?: throw CoreException(ErrorType.NOT_FOUND, mapOf("userId" to userId))
         if (user.userStatus == UserStatus.SOFT_DELETED) return
@@ -152,7 +152,7 @@ class LocalAccountService(
         authTokenManager.revokeAll(userId)
         userStatusAuditLogRepository.save(
             targetUserId = userId,
-            actorUserId = userId,
+            actorUserId = actorUserId ?: userId,
             actionType = AdminUserActionType.SOFT_DELETE,
             reason = trimmedReason,
         )

@@ -1,11 +1,20 @@
 package io.soo.springboot.core.api.controller.v1
 
 import io.soo.springboot.core.api.controller.v1.request.AdminUserBlockRequest
+import io.soo.springboot.core.api.controller.v1.request.AdminUserDeleteRequest
+import io.soo.springboot.core.api.controller.v1.request.AdminUserPasswordResetRequest
+import io.soo.springboot.core.api.controller.v1.request.AdminUserUpdateRequest
+import io.soo.springboot.core.api.controller.v1.response.AdminUserDetailResponse
 import io.soo.springboot.core.api.controller.v1.response.AdminUserBlockResponse
+import io.soo.springboot.core.api.controller.v1.response.AdminUserSummaryResponse
 import io.soo.springboot.core.api.controller.v1.response.UserStatusAuditLogResponse
 import io.soo.springboot.core.api.security.auth.UserIdResolver
+import io.soo.springboot.core.domain.AdminUserManagementService
 import io.soo.springboot.core.domain.AdminUserBlockService
 import io.soo.springboot.core.domain.LoginHistoryService
+import io.soo.springboot.core.enums.AuthProvider
+import io.soo.springboot.core.enums.Role
+import io.soo.springboot.core.enums.UserStatus
 import io.soo.springboot.core.support.response.ApiResponse
 import io.soo.springboot.storage.db.core.LoginHistory
 import jakarta.servlet.http.HttpServletRequest
@@ -25,6 +34,7 @@ class AdminAuthController(
     private val loginHistoryService: LoginHistoryService,
     private val userIdResolver: UserIdResolver,
     private val adminUserBlockService: AdminUserBlockService,
+    private val adminUserManagementService: AdminUserManagementService,
 ) {
 
     @GetMapping("/login-history",produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -78,6 +88,87 @@ class AdminAuthController(
         )
 
         return ApiResponse.success(req = req, data = AdminUserBlockResponse.from(unblocked))
+    }
+
+    @GetMapping("/users/{userId}", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getUserDetail(
+        @PathVariable userId: Long,
+        req: HttpServletRequest,
+    ): ApiResponse<AdminUserDetailResponse> {
+        val found = adminUserManagementService.getUserDetail(userId)
+        return ApiResponse.success(req = req, data = AdminUserDetailResponse.from(found))
+    }
+
+    @GetMapping("/users", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun listUsers(
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "20") size: Int,
+        @RequestParam(required = false) keyword: String?,
+        @RequestParam(required = false) userStatus: UserStatus?,
+        @RequestParam(required = false) role: Role?,
+        @RequestParam(required = false) authProvider: AuthProvider?,
+        req: HttpServletRequest,
+    ): ApiResponse<Page<AdminUserSummaryResponse>> {
+        val pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"))
+        val result = adminUserManagementService.listUsers(
+            keyword = keyword,
+            userStatus = userStatus,
+            role = role,
+            authProvider = authProvider,
+            pageable = pageable,
+        ).map { AdminUserSummaryResponse.from(it) }
+        return ApiResponse.success(req = req, data = result)
+    }
+
+    @PatchMapping("/users/{userId}", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateUser(
+        authentication: Authentication,
+        @PathVariable userId: Long,
+        @RequestBody @Valid body: AdminUserUpdateRequest,
+        req: HttpServletRequest,
+    ): ApiResponse<AdminUserDetailResponse> {
+        val adminUserId = userIdResolver.resolve(authentication)
+        val updated = adminUserManagementService.updateUser(
+            userId = userId,
+            request = body,
+            adminUserId = adminUserId,
+        )
+        return ApiResponse.success(req = req, data = AdminUserDetailResponse.from(updated))
+    }
+
+    @PostMapping("/users/{userId}/delete", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun deleteUser(
+        authentication: Authentication,
+        @PathVariable userId: Long,
+        @RequestBody(required = false) @Valid body: AdminUserDeleteRequest?,
+        req: HttpServletRequest,
+    ): ApiResponse<AdminUserBlockResponse> {
+        val adminUserId = userIdResolver.resolve(authentication)
+        val deleted = adminUserManagementService.deleteUser(
+            userId = userId,
+            reason = body?.reason,
+            adminUserId = adminUserId,
+        )
+        return ApiResponse.success(req = req, data = AdminUserBlockResponse.from(deleted))
+    }
+
+    @PostMapping("/users/{userId}/password/reset", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun resetUserPassword(
+        @PathVariable userId: Long,
+        @RequestBody @Valid body: AdminUserPasswordResetRequest,
+        req: HttpServletRequest,
+    ): ApiResponse<AdminUserDetailResponse> {
+        val user = adminUserManagementService.resetPassword(userId = userId, newPassword = body.newPassword)
+        return ApiResponse.success(req = req, data = AdminUserDetailResponse.from(user))
+    }
+
+    @PostMapping("/users/{userId}/tokens/revoke", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun revokeUserTokens(
+        @PathVariable userId: Long,
+        req: HttpServletRequest,
+    ): ApiResponse<AdminUserDetailResponse> {
+        val user = adminUserManagementService.revokeUserTokens(userId = userId)
+        return ApiResponse.success(req = req, data = AdminUserDetailResponse.from(user))
     }
 
     @GetMapping("/users/blocked", produces = [MediaType.APPLICATION_JSON_VALUE])

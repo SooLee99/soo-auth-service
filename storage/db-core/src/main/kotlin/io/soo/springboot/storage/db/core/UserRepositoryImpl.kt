@@ -1,9 +1,11 @@
 package io.soo.springboot.storage.db.core
 
 import io.soo.springboot.core.enums.AuthProvider
+import io.soo.springboot.core.enums.Role
 import io.soo.springboot.core.enums.UserStatus
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Repository
 import java.time.Instant
 
@@ -59,6 +61,35 @@ class UserRepositoryImpl(
 
     override fun existsByPhoneNumber(phoneNumber: String): Boolean {
         return jpaRepository.existsByPhoneNumberAndUserStatusNot(phoneNumber, UserStatus.SOFT_DELETED)
+    }
+
+    override fun searchUsers(
+        keyword: String?,
+        userStatus: UserStatus?,
+        role: Role?,
+        authProvider: AuthProvider?,
+        pageable: Pageable,
+    ): Page<User> {
+        val spec = Specification<UserEntity> { root, _, cb ->
+            val predicates = mutableListOf<jakarta.persistence.criteria.Predicate>()
+
+            if (!keyword.isNullOrBlank()) {
+                val value = "%${keyword.trim().lowercase()}%"
+                predicates += cb.or(
+                    cb.like(cb.lower(root.get("email")), value),
+                    cb.like(cb.lower(root.get("name")), value),
+                    cb.like(cb.lower(root.get("nickname")), value),
+                    cb.like(cb.lower(root.get("phoneNumber")), value),
+                )
+            }
+            if (userStatus != null) predicates += cb.equal(root.get<UserStatus>("userStatus"), userStatus)
+            if (role != null) predicates += cb.equal(root.get<Role>("role"), role)
+            if (authProvider != null) predicates += cb.equal(root.get<AuthProvider>("authProvider"), authProvider)
+
+            cb.and(*predicates.toTypedArray())
+        }
+
+        return jpaRepository.findAll(spec, pageable).map { it.toModel() }
     }
 
     override fun findBlockedUsers(pageable: Pageable): Page<User> {
