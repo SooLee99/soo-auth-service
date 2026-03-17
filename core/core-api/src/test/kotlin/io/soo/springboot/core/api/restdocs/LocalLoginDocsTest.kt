@@ -21,6 +21,7 @@ import io.soo.springboot.test.api.mockMvcDocument
 import io.soo.springboot.test.api.requestFields
 import io.soo.springboot.test.api.requestHeaders
 import io.soo.springboot.test.api.relaxedResponseFields
+import jakarta.servlet.http.HttpServletRequest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
@@ -45,7 +46,7 @@ class LocalLoginDocsTest : RestDocsTest() {
     @BeforeEach
     fun init() {
         every { userIdResolver.resolve(any()) } returns 1L
-        every { healthSnapshotService.publicSummary() } returns mapOf(
+        every { healthSnapshotService.publicSummary(any<HttpServletRequest>()) } returns mapOf(
             "status" to "UP",
             "application" to "core-api",
             "uptimeSec" to 10L,

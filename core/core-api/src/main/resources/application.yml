@@ -6,6 +6,18 @@ app:
       password: ${ADMIN_BOOTSTRAP_PASSWORD:}
       allowed-profiles: ${ADMIN_BOOTSTRAP_ALLOWED_PROFILES:local,local-dev}
       allow-weak-password: ${ADMIN_BOOTSTRAP_ALLOW_WEAK_PASSWORD:false}
+  health:
+    links:
+      docs:
+        swagger: ${HEALTH_LINK_SWAGGER:http://localhost:8080/docs/swagger/index.html}
+        docs: ${HEALTH_LINK_DOCS:http://localhost:8080/docs/index.html}
+      monitoring:
+        grafana: ${HEALTH_LINK_GRAFANA:http://localhost:3000}
+        prometheus: ${HEALTH_LINK_PROMETHEUS:http://localhost:8080/actuator/prometheus}
+        loki: ${HEALTH_LINK_LOKI:http://localhost:3100}
+      logs:
+        loki-query: ${HEALTH_LINK_LOKI_QUERY:http://localhost:3100/loki/api/v1/query_range}
+        grafana-explore: ${HEALTH_LINK_GRAFANA_EXPLORE:http://localhost:3000/explore}
   security:
     jwt:
       issuer: "soo-auth-service"

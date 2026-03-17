@@ -6,17 +6,17 @@ import jakarta.servlet.http.HttpServletRequest
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
-@RestController("/api/v1")
+@RestController
 class HealthController(
     private val healthSnapshotService: HealthSnapshotService,
 ) {
     @GetMapping("/health")
     fun health(req: HttpServletRequest): ApiResponse<Map<String, Any>> {
-        return ApiResponse.success(req = req, data = healthSnapshotService.publicSummary())
+        return ApiResponse.success(req = req, data = healthSnapshotService.publicSummary(req))
     }
 
-    @GetMapping("/auth/admin/health")
+    @GetMapping("/api/v1/auth/admin/health")
     fun adminHealth(req: HttpServletRequest): ApiResponse<Map<String, Any>> {
-        return ApiResponse.success(req = req, data = healthSnapshotService.adminDetails())
+        return ApiResponse.success(req = req, data = healthSnapshotService.adminDetails(req))
     }
 }

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.ObjectProvider
 import org.springframework.core.env.Environment
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Service
+import jakarta.servlet.http.HttpServletRequest
 import java.lang.management.ManagementFactory
 import java.nio.file.Files
 import java.nio.file.FileStore
@@ -15,17 +16,19 @@ class HealthSnapshotService(
     private val environment: Environment,
     private val dataSourceProvider: ObjectProvider<DataSource>,
     private val redisTemplateProvider: ObjectProvider<StringRedisTemplate>,
+    private val healthLinksProperties: HealthLinksProperties,
 ) {
-    fun publicSummary(): Map<String, Any> {
+    fun publicSummary(req: HttpServletRequest): Map<String, Any> {
         val overall = evaluateOverallStatus(includeSystem = false)
         return linkedMapOf(
             "status" to overall.overallStatus,
             "application" to appName(),
             "uptimeSec" to uptimeSeconds(),
+            "links" to publicLinks(req),
         )
     }
 
-    fun adminDetails(): Map<String, Any> {
+    fun adminDetails(req: HttpServletRequest): Map<String, Any> {
         val overall = evaluateOverallStatus(includeSystem = true)
         return linkedMapOf(
             "status" to overall.overallStatus,
@@ -34,6 +37,7 @@ class HealthSnapshotService(
             "uptimeSec" to uptimeSeconds(),
             "components" to overall.components,
             "system" to overall.system,
+            "links" to adminLinks(req),
         )
     }
 
@@ -122,6 +126,62 @@ class HealthSnapshotService(
     private fun uptimeSeconds(): Long = ManagementFactory.getRuntimeMXBean().uptime / 1000
 
     private fun elapsedMs(startNano: Long): Long = (System.nanoTime() - startNano) / 1_000_000
+
+    private fun publicLinks(req: HttpServletRequest): Map<String, Any> {
+        return linkedMapOf(
+            "docs" to linkedMapOf(
+                "swagger" to resolveLink(healthLinksProperties.docs.swagger, req),
+                "docs" to resolveLink(healthLinksProperties.docs.docs, req),
+            ),
+        )
+    }
+
+    private fun adminLinks(req: HttpServletRequest): Map<String, Any> {
+        return linkedMapOf(
+            "docs" to linkedMapOf(
+                "swagger" to resolveLink(healthLinksProperties.docs.swagger, req),
+                "docs" to resolveLink(healthLinksProperties.docs.docs, req),
+            ),
+            "monitoring" to linkedMapOf(
+                "grafana" to resolveLink(healthLinksProperties.monitoring.grafana, req),
+                "prometheus" to resolveLink(healthLinksProperties.monitoring.prometheus, req),
+                "loki" to resolveLink(healthLinksProperties.monitoring.loki, req),
+            ),
+            "logs" to linkedMapOf(
+                "lokiQuery" to resolveLink(healthLinksProperties.logs.lokiQuery, req),
+                "grafanaExplore" to resolveLink(healthLinksProperties.logs.grafanaExplore, req),
+            ),
+        )
+    }
+
+    private fun resolveLink(template: String, req: HttpServletRequest): String {
+        if (template.isBlank()) return template
+        if (template.startsWith("http://") || template.startsWith("https://")) return template
+
+        val scheme = forwardedFirst(req.getHeader("X-Forwarded-Proto")) ?: req.scheme
+        val hostHeader = forwardedFirst(req.getHeader("X-Forwarded-Host"))
+            ?: req.getHeader("Host")
+            ?: req.serverName
+
+        val host = hostHeader.substringBefore(":")
+        val baseUrl = buildBaseUrl(req, scheme, hostHeader)
+        return template
+            .replace("{baseUrl}", baseUrl)
+            .replace("{scheme}", scheme)
+            .replace("{host}", host)
+    }
+
+    private fun buildBaseUrl(req: HttpServletRequest, scheme: String, hostHeader: String): String {
+        if (hostHeader.contains(":")) return "$scheme://$hostHeader"
+
+        val forwardedPort = forwardedFirst(req.getHeader("X-Forwarded-Port"))?.toIntOrNull()
+        val port = forwardedPort ?: req.serverPort
+        val includePort = !((scheme == "http" && port == 80) || (scheme == "https" && port == 443))
+        return if (includePort) "$scheme://$hostHeader:$port" else "$scheme://$hostHeader"
+    }
+
+    private fun forwardedFirst(value: String?): String? =
+        value?.split(",")?.firstOrNull()?.trim()?.takeIf { it.isNotBlank() }
 
     private data class HealthAggregate(
         val overallStatus: String,
