@@ -107,6 +107,16 @@ include::{snippets}/auth-local-signup/http-response.adoc[]
 
 '''
 
+=== 전화번호 회원가입
+==== Curl Request
+include::{snippets}/auth-local-signup-phone/curl-request.adoc[]
+==== Request Fields
+include::{snippets}/auth-local-signup-phone/request-fields.adoc[]
+==== Http Response
+include::{snippets}/auth-local-signup-phone/http-response.adoc[]
+
+'''
+
 === 로그인
 * `X-Device-Id`는 선택 헤더입니다. 전달하면 refresh/로그아웃 정책에 활용됩니다.
 ==== Curl Request
@@ -203,6 +213,20 @@ include::{snippets}/auth-service-local-signup/request-fields.adoc[]
 include::{snippets}/auth-service-local-signup/http-response.adoc[]
 ==== Response Fields
 include::{snippets}/auth-service-local-signup/response-fields.adoc[]
+
+'''
+
+=== 서비스 전화번호 회원가입
+==== Curl Request
+include::{snippets}/auth-service-local-signup-phone/curl-request.adoc[]
+==== Path Parameters
+include::{snippets}/auth-service-local-signup-phone/path-parameters.adoc[]
+==== Request Fields
+include::{snippets}/auth-service-local-signup-phone/request-fields.adoc[]
+==== Http Response
+include::{snippets}/auth-service-local-signup-phone/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-service-local-signup-phone/response-fields.adoc[]
 
 '''
 

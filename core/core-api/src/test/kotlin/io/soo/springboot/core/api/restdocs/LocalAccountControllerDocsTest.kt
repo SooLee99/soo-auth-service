@@ -5,6 +5,7 @@ import io.mockk.mockk
 import io.soo.springboot.core.api.controller.v1.LocalAccountController
 import io.soo.springboot.core.api.controller.v1.request.RefreshRequest
 import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
+import io.soo.springboot.core.api.controller.v1.request.PhoneSignUpRequest
 import io.soo.springboot.core.api.controller.v1.request.WithdrawRequest
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
 import io.soo.springboot.core.api.security.token.AuthTokenManager
@@ -80,6 +81,29 @@ class LocalAccountControllerDocsTest : RestDocsTest() {
                         fieldWithPath("thumbnailImageUrl").type(JsonFieldType.STRING).optional().description("썸네일 이미지 URL"),
                         fieldWithPath("birthyear").type(JsonFieldType.STRING).optional().description("출생연도 (yyyy)"),
                         fieldWithPath("birthday").type(JsonFieldType.STRING).optional().description("생일 (MM-DD)"),
+                    )
+                )
+            )
+    }
+
+    @Test
+    fun signUpByPhone() {
+        val request = PhoneSignUpRequest(phoneNumber = "+82 10-1234-5678")
+
+        given()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(request)
+            .`when`()
+            .post("/api/v1/auth/local/signup/phone")
+            .then()
+            .statusCode(200)
+            .apply(
+                mockMvcDocument(
+                    "auth-local-signup-phone",
+                    RestDocsUtils.requestPreprocessor(),
+                    RestDocsUtils.responsePreprocessor(),
+                    requestFields(
+                        fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("휴대폰 번호"),
                     )
                 )
             )

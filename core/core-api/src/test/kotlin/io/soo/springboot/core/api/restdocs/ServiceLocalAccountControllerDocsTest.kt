@@ -5,6 +5,7 @@ import io.mockk.mockk
 import io.soo.springboot.core.api.controller.v1.ServiceLocalAccountController
 import io.soo.springboot.core.api.controller.v1.request.RefreshRequest
 import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
+import io.soo.springboot.core.api.controller.v1.request.PhoneSignUpRequest
 import io.soo.springboot.core.api.controller.v1.request.WithdrawRequest
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
 import io.soo.springboot.core.api.security.token.AuthTokenManager
@@ -97,6 +98,40 @@ class ServiceLocalAccountControllerDocsTest : RestDocsTest() {
                         fieldWithPath("thumbnailImageUrl").type(JsonFieldType.STRING).optional().description("썸네일 이미지 URL"),
                         fieldWithPath("birthyear").type(JsonFieldType.STRING).optional().description("출생연도 (yyyy)"),
                         fieldWithPath("birthday").type(JsonFieldType.STRING).optional().description("생일 (MM-DD)"),
+                    ),
+                    responseFields(*responseDescriptors.toTypedArray()),
+                )
+            )
+    }
+
+    @Test
+    fun signUpByPhone() {
+        val request = PhoneSignUpRequest(phoneNumber = "+82 10-1234-5678")
+
+        val responseDescriptors =
+            ApiResponseFieldDescriptors.successCommon() + listOf(
+                fieldWithPath("data").type(JsonFieldType.OBJECT).description("회원가입 결과"),
+                fieldWithPath("data.result").type(JsonFieldType.STRING).description("처리 결과(OK)"),
+                fieldWithPath("data.serviceCode").type(JsonFieldType.STRING).description("적용 서비스 코드"),
+            )
+
+        given()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(request)
+            .`when`()
+            .post("/api/v1/services/{serviceCode}/auth/local/signup/phone", "SHOP")
+            .then()
+            .statusCode(200)
+            .apply(
+                mockMvcDocument(
+                    "auth-service-local-signup-phone",
+                    RestDocsUtils.requestPreprocessor(),
+                    RestDocsUtils.responsePreprocessor(),
+                    pathParameters(
+                        parameterWithName("serviceCode").description("서비스 코드 (예: SHOP, CRM, DEFAULT)"),
+                    ),
+                    requestFields(
+                        fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("휴대폰 번호"),
                     ),
                     responseFields(*responseDescriptors.toTypedArray()),
                 )

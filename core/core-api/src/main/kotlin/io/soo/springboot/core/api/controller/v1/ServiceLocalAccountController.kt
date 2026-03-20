@@ -2,6 +2,7 @@ package io.soo.springboot.core.api.controller.v1
 
 import io.soo.springboot.core.api.controller.v1.request.RefreshRequest
 import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
+import io.soo.springboot.core.api.controller.v1.request.PhoneSignUpRequest
 import io.soo.springboot.core.api.controller.v1.request.WithdrawRequest
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
 import io.soo.springboot.core.api.security.token.AuthTokenManager
@@ -53,6 +54,19 @@ class ServiceLocalAccountController(
                 birthday = request.birthday,
             )
         )
+
+        return ApiResponse.success(req = req, data = mapOf("result" to "OK", "serviceCode" to resolvedService.serviceCode))
+    }
+
+    @PostMapping("/signup/phone", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun signUpByPhone(
+        @PathVariable serviceCode: String,
+        @RequestBody @Valid request: PhoneSignUpRequest,
+        req: HttpServletRequest,
+    ): ApiResponse<Any?> {
+        val resolvedService = serviceContextResolver.resolveActive(serviceCode)
+        // TODO(multi-service): membership create
+        localAccountService.signUpByPhone(request.phoneNumber)
 
         return ApiResponse.success(req = req, data = mapOf("result" to "OK", "serviceCode" to resolvedService.serviceCode))
     }

@@ -39,8 +39,10 @@ class ApiSecurityConfig(
             "/api/v1/auth/signup",
             "/api/v1/auth/local/login",
             "/api/v1/auth/local/signup",
+            "/api/v1/auth/local/signup/phone",
             "/api/v1/auth/local/token/refresh",
             "/api/v1/services/*/auth/local/signup",
+            "/api/v1/services/*/auth/local/signup/phone",
             "/api/v1/services/*/auth/local/token/refresh",
 
             // ✅ OAuth2 시작/콜백

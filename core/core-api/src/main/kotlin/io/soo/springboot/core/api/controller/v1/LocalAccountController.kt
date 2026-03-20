@@ -2,6 +2,7 @@ package io.soo.springboot.core.api.controller.v1
 
 import io.soo.springboot.core.api.controller.v1.request.RefreshRequest
 import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
+import io.soo.springboot.core.api.controller.v1.request.PhoneSignUpRequest
 import io.soo.springboot.core.api.controller.v1.request.WithdrawRequest
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
 import io.soo.springboot.core.domain.LocalAccountService
@@ -40,6 +41,11 @@ class LocalAccountController(
                 birthday = request.birthday,
             )
         )
+    }
+
+    @PostMapping("/signup/phone")
+    fun signUpByPhone(@RequestBody @Valid request: PhoneSignUpRequest) {
+        localAccountService.signUpByPhone(request.phoneNumber)
     }
 
     @PostMapping("/token/refresh", produces = [MediaType.APPLICATION_JSON_VALUE])

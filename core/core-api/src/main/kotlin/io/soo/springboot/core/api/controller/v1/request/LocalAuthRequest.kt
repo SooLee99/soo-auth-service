@@ -83,6 +83,16 @@ data class SignUpRequest(
     val birthday: String? = null,
 )
 
+data class PhoneSignUpRequest(
+    @field:NotBlank(message = "휴대폰 번호는 필수입니다.")
+    @field:Size(max = 20, message = "휴대폰 번호가 너무 깁니다.")
+    @field:Pattern(
+        regexp = """^\+?\d[\d\s-]{7,18}\d$""",
+        message = "휴대폰 번호 형식이 올바르지 않습니다."
+    )
+    val phoneNumber: String,
+)
+
 data class RefreshRequest(val refreshToken: String)
 
 data class WithdrawRequest(

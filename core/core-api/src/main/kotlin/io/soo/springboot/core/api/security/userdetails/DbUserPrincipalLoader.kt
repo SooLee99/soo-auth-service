@@ -61,7 +61,7 @@ class DbUserPrincipalLoader(
             userId = userId,
             email = email,
             passwordHash = passwordHash,
-            role = role, // 실제 타입에 맞게 수정
+            role = role,
             provider = provider,
         )
     }
