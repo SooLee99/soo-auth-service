@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/services/{serviceCode}/auth/oauth2")
-class ServiceOAuth2AccountController(
+class OAuth2AccountServiceController(
     private val serviceContextResolver: ServiceContextResolver,
 ) {
 

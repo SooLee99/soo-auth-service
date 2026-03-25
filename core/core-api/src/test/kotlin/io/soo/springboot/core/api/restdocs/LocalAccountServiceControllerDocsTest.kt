@@ -2,7 +2,7 @@ package io.soo.springboot.core.api.restdocs
 
 import io.mockk.every
 import io.mockk.mockk
-import io.soo.springboot.core.api.controller.v1.ServiceLocalAccountController
+import io.soo.springboot.core.api.controller.v1.LocalAccountServiceController
 import io.soo.springboot.core.api.controller.v1.request.RefreshRequest
 import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
 import io.soo.springboot.core.api.controller.v1.request.PhoneSignUpRequest
@@ -34,16 +34,16 @@ import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import java.time.Instant
 
-class ServiceLocalAccountControllerDocsTest : RestDocsTest() {
+class LocalAccountServiceControllerDocsTest : RestDocsTest() {
 
     private val localAccountService = mockk<LocalAccountService>(relaxed = true)
     private val authTokenManager = mockk<AuthTokenManager>()
     private val serviceContextResolver = mockk<ServiceContextResolver>()
-    private lateinit var controller: ServiceLocalAccountController
+    private lateinit var controller: LocalAccountServiceController
 
     @BeforeEach
     fun init() {
-        controller = ServiceLocalAccountController(localAccountService, authTokenManager, serviceContextResolver)
+        controller = LocalAccountServiceController(localAccountService, authTokenManager, serviceContextResolver)
         mockMvc = mockController(controller)
         every { serviceContextResolver.resolveActive(any()) } returns sampleService()
     }

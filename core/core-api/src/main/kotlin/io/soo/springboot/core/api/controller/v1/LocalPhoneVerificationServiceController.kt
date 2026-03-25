@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/services/{serviceCode}/auth/local/phone-verifications")
-class ServiceLocalPhoneVerificationController(
+class LocalPhoneVerificationServiceController(
     private val serviceContextResolver: ServiceContextResolver,
     private val phoneVerificationService: PhoneVerificationService,
 ) {

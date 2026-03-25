@@ -2,7 +2,7 @@ package io.soo.springboot.core.api.restdocs
 
 import io.mockk.every
 import io.mockk.mockk
-import io.soo.springboot.core.api.controller.v1.ServiceLocalPhoneVerificationController
+import io.soo.springboot.core.api.controller.v1.LocalPhoneVerificationServiceController
 import io.soo.springboot.core.api.controller.v1.request.PhoneVerificationConfirmRequest
 import io.soo.springboot.core.api.controller.v1.request.PhoneVerificationIssueRequest
 import io.soo.springboot.core.domain.admin.ServiceContextResolver
@@ -24,7 +24,7 @@ import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
 import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
 
-class ServiceLocalPhoneVerificationControllerDocsTest : RestDocsTest() {
+class LocalPhoneVerificationServiceControllerDocsTest : RestDocsTest() {
 
     private val phoneVerificationService = mockk<PhoneVerificationService>()
     private val serviceContextResolver = mockk<ServiceContextResolver>()
@@ -32,7 +32,7 @@ class ServiceLocalPhoneVerificationControllerDocsTest : RestDocsTest() {
     @BeforeEach
     fun init() {
         every { serviceContextResolver.resolveActive(any()) } returns sampleService()
-        mockMvc = mockController(ServiceLocalPhoneVerificationController(serviceContextResolver, phoneVerificationService))
+        mockMvc = mockController(LocalPhoneVerificationServiceController(serviceContextResolver, phoneVerificationService))
     }
 
     @Test
