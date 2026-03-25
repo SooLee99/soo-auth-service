@@ -50,6 +50,7 @@ class LocalAccountControllerDocsTest : RestDocsTest() {
             nickname = "gildong",
             gender = Gender.MALE,
             phoneNumber = "+82 10-1234-5678",
+            phoneVerificationToken = "verified-phone-token",
             locale = "ko-KR",
             profileImageUrl = "https://cdn.example.com/profile.png",
             thumbnailImageUrl = "https://cdn.example.com/thumbnail.png",
@@ -76,6 +77,7 @@ class LocalAccountControllerDocsTest : RestDocsTest() {
                         fieldWithPath("nickname").type(JsonFieldType.STRING).optional().description("닉네임"),
                         fieldWithPath("gender").type(JsonFieldType.STRING).description("성별 (MALE/FEMALE)"),
                         fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("휴대폰 번호"),
+                        fieldWithPath("phoneVerificationToken").type(JsonFieldType.STRING).description("휴대폰 인증 완료 토큰"),
                         fieldWithPath("locale").type(JsonFieldType.STRING).optional().description("로케일 (기본값: ko-KR)"),
                         fieldWithPath("profileImageUrl").type(JsonFieldType.STRING).optional().description("프로필 이미지 URL"),
                         fieldWithPath("thumbnailImageUrl").type(JsonFieldType.STRING).optional().description("썸네일 이미지 URL"),
@@ -88,7 +90,10 @@ class LocalAccountControllerDocsTest : RestDocsTest() {
 
     @Test
     fun signUpByPhone() {
-        val request = PhoneSignUpRequest(phoneNumber = "+82 10-1234-5678")
+        val request = PhoneSignUpRequest(
+            phoneNumber = "+82 10-1234-5678",
+            phoneVerificationToken = "verified-phone-token",
+        )
 
         given()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -104,6 +109,7 @@ class LocalAccountControllerDocsTest : RestDocsTest() {
                     RestDocsUtils.responsePreprocessor(),
                     requestFields(
                         fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("휴대폰 번호"),
+                        fieldWithPath("phoneVerificationToken").type(JsonFieldType.STRING).description("휴대폰 인증 완료 토큰"),
                     )
                 )
             )

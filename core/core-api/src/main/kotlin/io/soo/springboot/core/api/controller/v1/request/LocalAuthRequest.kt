@@ -61,6 +61,9 @@ data class SignUpRequest(
     )
     val phoneNumber: String,
 
+    @field:NotBlank(message = "휴대폰 인증 토큰은 필수입니다.")
+    val phoneVerificationToken: String,
+
     @field:Pattern(
         regexp = """^[a-zA-Z]{2,3}(-[a-zA-Z]{4})?(-[a-zA-Z]{2}|\d{3})?$""",
         message = "locale 형식이 올바르지 않습니다. (예: ko-KR, en-US)"
@@ -91,6 +94,36 @@ data class PhoneSignUpRequest(
         message = "휴대폰 번호 형식이 올바르지 않습니다."
     )
     val phoneNumber: String,
+
+    @field:NotBlank(message = "휴대폰 인증 토큰은 필수입니다.")
+    val phoneVerificationToken: String,
+)
+
+data class PhoneVerificationIssueRequest(
+    @field:NotBlank(message = "휴대폰 번호는 필수입니다.")
+    @field:Size(max = 20, message = "휴대폰 번호가 너무 깁니다.")
+    @field:Pattern(
+        regexp = """^\+?\d[\d\s-]{7,18}\d$""",
+        message = "휴대폰 번호 형식이 올바르지 않습니다."
+    )
+    val phoneNumber: String,
+)
+
+data class PhoneVerificationConfirmRequest(
+    @field:NotBlank(message = "휴대폰 번호는 필수입니다.")
+    @field:Size(max = 20, message = "휴대폰 번호가 너무 깁니다.")
+    @field:Pattern(
+        regexp = """^\+?\d[\d\s-]{7,18}\d$""",
+        message = "휴대폰 번호 형식이 올바르지 않습니다."
+    )
+    val phoneNumber: String,
+
+    @field:NotBlank(message = "verificationId는 필수입니다.")
+    val verificationId: String,
+
+    @field:NotBlank(message = "인증번호는 필수입니다.")
+    @field:Pattern(regexp = """^\d{6}$""", message = "인증번호는 6자리 숫자여야 합니다.")
+    val code: String,
 )
 
 data class RefreshRequest(val refreshToken: String)

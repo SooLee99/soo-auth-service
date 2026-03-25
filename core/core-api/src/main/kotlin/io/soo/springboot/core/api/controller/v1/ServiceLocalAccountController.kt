@@ -44,6 +44,7 @@ class ServiceLocalAccountController(
                 email = request.email,
                 password = request.password,
                 phoneNumber = request.phoneNumber,
+                phoneVerificationToken = request.phoneVerificationToken,
                 gender = request.gender,
                 locale = request.locale,
                 nickname = request.nickname,
@@ -66,7 +67,10 @@ class ServiceLocalAccountController(
     ): ApiResponse<Any?> {
         val resolvedService = serviceContextResolver.resolveActive(serviceCode)
         // TODO(multi-service): membership create
-        localAccountService.signUpByPhone(request.phoneNumber)
+        localAccountService.signUpByPhone(
+            phoneNumber = request.phoneNumber,
+            phoneVerificationToken = request.phoneVerificationToken,
+        )
 
         return ApiResponse.success(req = req, data = mapOf("result" to "OK", "serviceCode" to resolvedService.serviceCode))
     }

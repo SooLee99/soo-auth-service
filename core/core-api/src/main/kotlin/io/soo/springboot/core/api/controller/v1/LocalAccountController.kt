@@ -31,6 +31,7 @@ class LocalAccountController(
                 email = request.email,
                 password = request.password,
                 phoneNumber = request.phoneNumber,
+                phoneVerificationToken = request.phoneVerificationToken,
                 gender = request.gender,
                 locale = request.locale,
                 nickname = request.nickname,
@@ -45,7 +46,10 @@ class LocalAccountController(
 
     @PostMapping("/signup/phone")
     fun signUpByPhone(@RequestBody @Valid request: PhoneSignUpRequest) {
-        localAccountService.signUpByPhone(request.phoneNumber)
+        localAccountService.signUpByPhone(
+            phoneNumber = request.phoneNumber,
+            phoneVerificationToken = request.phoneVerificationToken,
+        )
     }
 
     @PostMapping("/token/refresh", produces = [MediaType.APPLICATION_JSON_VALUE])

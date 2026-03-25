@@ -14,6 +14,10 @@ enum class ErrorType(
     INVALID_REQUEST_BODY(HttpStatus.BAD_REQUEST, ErrorCode.E400, "요청 본문이 올바른 형식이 아닙니다.", LogLevel.WARN),
     INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, ErrorCode.E400, "입력값이 올바르지 않습니다.", LogLevel.WARN),
     INVALID_PARAMETER(HttpStatus.BAD_REQUEST, ErrorCode.E400, "요청 파라미터가 올바르지 않습니다.", LogLevel.WARN),
+    PHONE_VERIFICATION_REQUIRED(HttpStatus.BAD_REQUEST, ErrorCode.E400, "휴대폰 인증이 필요합니다.", LogLevel.WARN),
+    INVALID_PHONE_VERIFICATION(HttpStatus.BAD_REQUEST, ErrorCode.E400, "유효하지 않은 휴대폰 인증 요청입니다.", LogLevel.WARN),
+    INVALID_PHONE_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, ErrorCode.E400, "휴대폰 인증번호가 올바르지 않습니다.", LogLevel.WARN),
+    EXPIRED_PHONE_VERIFICATION(HttpStatus.BAD_REQUEST, ErrorCode.E400, "휴대폰 인증이 만료되었습니다.", LogLevel.WARN),
 
     // 토큰 요청값 누락/형식 문제 (400)
     REFRESH_TOKEN_REQUIRED(HttpStatus.BAD_REQUEST, ErrorCode.E400, "리프레시 토큰이 필요합니다.", LogLevel.WARN),

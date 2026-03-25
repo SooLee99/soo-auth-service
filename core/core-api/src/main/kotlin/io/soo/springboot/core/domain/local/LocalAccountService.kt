@@ -13,6 +13,7 @@ import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.error.CoreException
 
 import io.soo.springboot.core.domain.token.TokenRevocationService
+import io.soo.springboot.core.domain.local.phone.PhoneVerificationService
 import io.soo.springboot.storage.db.core.LocalCredential
 import io.soo.springboot.storage.db.core.LocalCredentialRepository
 import io.soo.springboot.storage.db.core.User
@@ -28,6 +29,7 @@ data class LocalSignUpCommand(
     val email: String,
     val password: String,
     val phoneNumber: String,
+    val phoneVerificationToken: String,
     val gender: Gender,
     val locale: String = "ko-KR",
     val nickname: String? = null,
@@ -44,12 +46,14 @@ class LocalAccountService(
     private val localAccountRepository: LocalCredentialRepository,
     private val passwordEncoder: PasswordEncoder,
     private val tokenRevocationService: TokenRevocationService,
+    private val phoneVerificationService: PhoneVerificationService,
     private val userStatusAuditLogRepository: UserStatusAuditLogRepository,
 ) {
     private val secureRandom = SecureRandom()
 
     @Transactional
     fun signUp(cmd: LocalSignUpCommand): User {
+        phoneVerificationService.consumeVerified(cmd.phoneNumber, cmd.phoneVerificationToken)
         val normalizedPhone = normalizePhoneNumber(cmd.phoneNumber)
 
         // 1) 중복 이메일/전화번호 검사
@@ -88,7 +92,8 @@ class LocalAccountService(
     }
 
     @Transactional
-    fun signUpByPhone(phoneNumber: String): User {
+    fun signUpByPhone(phoneNumber: String, phoneVerificationToken: String): User {
+        phoneVerificationService.consumeVerified(phoneNumber, phoneVerificationToken)
         val normalizedPhone = normalizePhoneNumber(phoneNumber)
         validatePhoneDuplicated(phoneNumber, normalizedPhone)
 

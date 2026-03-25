@@ -5,6 +5,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import io.soo.springboot.core.domain.local.LocalAccountService
+import io.soo.springboot.core.domain.local.phone.PhoneVerificationService
 import io.soo.springboot.core.domain.token.TokenRevocationService
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.Gender
@@ -25,6 +26,7 @@ class LocalAccountServicePhoneSignUpTest {
     private val localCredentialRepository = mockk<LocalCredentialRepository>()
     private val passwordEncoder = mockk<PasswordEncoder>()
     private val tokenRevocationService = mockk<TokenRevocationService>(relaxed = true)
+    private val phoneVerificationService = mockk<PhoneVerificationService>(relaxed = true)
     private val auditRepository = mockk<UserStatusAuditLogRepository>(relaxed = true)
 
     private val service = LocalAccountService(
@@ -32,6 +34,7 @@ class LocalAccountServicePhoneSignUpTest {
         localAccountRepository = localCredentialRepository,
         passwordEncoder = passwordEncoder,
         tokenRevocationService = tokenRevocationService,
+        phoneVerificationService = phoneVerificationService,
         userStatusAuditLogRepository = auditRepository,
     )
 
@@ -47,7 +50,7 @@ class LocalAccountServicePhoneSignUpTest {
         val savedCredential = slot<LocalCredential>()
         every { localCredentialRepository.save(capture(savedCredential)) } answers { savedCredential.captured.copy(id = 10L) }
 
-        val user = service.signUpByPhone("+82 10-1234-5678")
+        val user = service.signUpByPhone("+82 10-1234-5678", "verified-phone-token")
 
         assertEquals(1L, user.id)
         assertEquals("+821012345678", savedUser.captured.phoneNumber)
@@ -68,7 +71,7 @@ class LocalAccountServicePhoneSignUpTest {
         every { userRepository.existsByPhoneNumber(any()) } returns true
 
         val ex = org.junit.jupiter.api.Assertions.assertThrows(CoreException::class.java) {
-            service.signUpByPhone("010-1234-5678")
+            service.signUpByPhone("010-1234-5678", "verified-phone-token")
         }
         assertEquals(ErrorType.DUPLICATE_PHONE_NUMBER, ex.errorType)
     }
