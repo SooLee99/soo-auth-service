@@ -2,12 +2,12 @@ package io.soo.springboot.core.api.security.oauth2
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.soo.springboot.core.api.controller.v1.response.LoginSuccessResponse
-import io.soo.springboot.core.api.security.auth.UserIdResolver
 import io.soo.springboot.core.api.security.response.SecurityErrorResponseWriter
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.api.security.userdetails.UserPrincipalLoader
 import io.soo.springboot.core.domain.AccountStatusDeniedException
 import io.soo.springboot.core.domain.LoginHistoryService
+import io.soo.springboot.core.domain.OAuth2LoginUseCase
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.LoginType
 import io.soo.springboot.core.support.error.CoreException
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component
 @Component
 class OAuth2LoginSuccessHandler(
     private val objectMapper: ObjectMapper,
-    private val userIdResolver: UserIdResolver,
+    private val oAuth2LoginUseCase: OAuth2LoginUseCase,
     private val userPrincipalLoader: UserPrincipalLoader,
     private val errorWriter: SecurityErrorResponseWriter,
 
@@ -41,7 +41,7 @@ class OAuth2LoginSuccessHandler(
         val ua = request.getHeader("User-Agent")
         val deviceId = request.getHeader("X-Device-Id")?.trim().orEmpty()
         val userId = try {
-            userIdResolver.resolve(authentication)
+            oAuth2LoginUseCase.resolveOrCreateUserId(authentication)
         } catch (_: AccountStatusDeniedException) {
             errorWriter.writeError(response, request, ErrorType.LOGIN_DENIED)
             return
@@ -83,7 +83,7 @@ class OAuth2LoginSuccessHandler(
         loginHistoryService.recordLoginSuccess(
             userId = userId,
             userEmail = principal.email,
-            loginType = LoginType.LOCAL,
+            loginType = LoginType.OAUTH2,
             ipAddress = ip,
             userAgent = ua,
             deviceId = deviceId,

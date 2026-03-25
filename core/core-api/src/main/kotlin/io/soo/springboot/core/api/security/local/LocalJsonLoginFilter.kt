@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
-import io.soo.springboot.core.api.controller.v1.request.LoginRequest
 import io.soo.springboot.core.support.error.ErrorType
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -77,9 +76,9 @@ class LocalJsonLoginFilter(
     }
 
     // Step 3) JSON 파싱
-    private fun parseLoginRequest(request: HttpServletRequest, body: String): LoginRequest {
+    private fun parseLoginRequest(request: HttpServletRequest, body: String): LocalLoginPayload {
         return try {
-            objectMapper.readValue(body, LoginRequest::class.java)
+            objectMapper.readValue(body, LocalLoginPayload::class.java)
         } catch (e: JsonParseException) {
             fail(
                 request = request,
@@ -117,7 +116,7 @@ class LocalJsonLoginFilter(
     }
 
     // Step 4) 필수값 검증 + 정규화
-    private fun validateAndNormalize(req: LoginRequest, request: HttpServletRequest): Pair<String, String> {
+    private fun validateAndNormalize(req: LocalLoginPayload, request: HttpServletRequest): Pair<String, String> {
         val email = req.email.trim()
         val password = req.password.trim()
 
