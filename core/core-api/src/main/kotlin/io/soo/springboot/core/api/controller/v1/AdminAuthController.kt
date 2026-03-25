@@ -9,9 +9,9 @@ import io.soo.springboot.core.api.controller.v1.response.AdminUserBlockResponse
 import io.soo.springboot.core.api.controller.v1.response.AdminUserSummaryResponse
 import io.soo.springboot.core.api.controller.v1.response.UserStatusAuditLogResponse
 import io.soo.springboot.core.api.security.auth.UserIdResolver
-import io.soo.springboot.core.domain.AdminUserUpdateCommand
-import io.soo.springboot.core.domain.AdminUserManagementService
-import io.soo.springboot.core.domain.AdminUserBlockService
+import io.soo.springboot.core.domain.admin.AdminUserUpdateCommand
+import io.soo.springboot.core.domain.admin.AdminUserManagementService
+import io.soo.springboot.core.domain.admin.AdminUserBlockService
 import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.Role

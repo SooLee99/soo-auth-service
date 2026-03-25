@@ -1,5 +1,6 @@
-package io.soo.springboot.core.domain
+package io.soo.springboot.core.domain.token
 
+import io.soo.springboot.core.domain.JwtDenylistStore
 import org.springframework.context.annotation.Profile
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Service

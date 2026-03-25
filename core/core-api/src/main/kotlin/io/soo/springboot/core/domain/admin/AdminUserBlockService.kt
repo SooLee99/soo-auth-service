@@ -1,4 +1,4 @@
-package io.soo.springboot.core.domain
+package io.soo.springboot.core.domain.admin
 
 import io.soo.springboot.core.enums.AdminUserActionType
 import io.soo.springboot.core.enums.UserStatus

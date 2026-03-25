@@ -11,7 +11,7 @@ import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.api.security.token.IssuedTokens
 import io.soo.springboot.core.domain.LocalAccountService
-import io.soo.springboot.core.domain.ServiceContextResolver
+import io.soo.springboot.core.domain.admin.ServiceContextResolver
 import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.core.enums.ServiceStatus
 import io.soo.springboot.storage.db.core.Service

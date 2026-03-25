@@ -1,6 +1,6 @@
 package io.soo.springboot.core.api.controller.v1
 
-import io.soo.springboot.core.domain.ServiceContextResolver
+import io.soo.springboot.core.domain.admin.ServiceContextResolver
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.response.ApiResponse
 import jakarta.servlet.http.HttpServletRequest

@@ -8,16 +8,17 @@ import io.soo.springboot.core.api.controller.v1.request.AdminUserDeleteRequest
 import io.soo.springboot.core.api.controller.v1.request.AdminUserPasswordResetRequest
 import io.soo.springboot.core.api.controller.v1.request.AdminUserUpdateRequest
 import io.soo.springboot.core.api.security.auth.UserIdResolver
-import io.soo.springboot.core.domain.AdminUserManagementService
-import io.soo.springboot.core.domain.AdminUserBlockService
+import io.soo.springboot.core.domain.admin.AdminUserManagementService
+import io.soo.springboot.core.domain.admin.AdminUserBlockService
 import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.core.enums.AdminUserActionType
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.Gender
+import io.soo.springboot.core.enums.LoginStatus
+import io.soo.springboot.core.enums.LoginType
 import io.soo.springboot.core.enums.Role
 import io.soo.springboot.core.enums.UserStatus
 import io.soo.springboot.storage.db.core.LoginHistory
-import io.soo.springboot.storage.db.core.LoginHistoryEntity
 import io.soo.springboot.storage.db.core.User
 import io.soo.springboot.storage.db.core.UserStatusAuditLog
 import io.soo.springboot.test.api.RestDocsTest
@@ -61,8 +62,8 @@ class AdminAuthControllerDocsTest : RestDocsTest() {
             id = 1L,
             userId = 1L,
             userEmail = "user@example.com",
-            loginType = LoginHistoryEntity.LoginType.LOCAL,
-            status = LoginHistoryEntity.LoginStatus.SUCCESS,
+            loginType = LoginType.LOCAL,
+            status = LoginStatus.SUCCESS,
             ipAddress = "127.0.0.1",
             userAgent = "Mozilla/5.0",
             deviceId = "device-001",

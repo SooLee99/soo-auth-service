@@ -4,7 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import io.soo.springboot.core.api.security.token.AuthTokenManager
+import io.soo.springboot.core.domain.auth.TokenRevocationService
 import io.soo.springboot.core.enums.AdminUserActionType
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.UserStatus
@@ -25,14 +25,14 @@ class LocalAccountServiceSoftDeleteTest {
     private val userRepository = mockk<UserRepository>()
     private val localCredentialRepository = mockk<LocalCredentialRepository>()
     private val passwordEncoder = mockk<PasswordEncoder>()
-    private val authTokenManager = mockk<AuthTokenManager>(relaxed = true)
+    private val tokenRevocationService = mockk<TokenRevocationService>(relaxed = true)
     private val auditRepository = mockk<UserStatusAuditLogRepository>()
 
     private val service = LocalAccountService(
         userRepository = userRepository,
         localAccountRepository = localCredentialRepository,
         passwordEncoder = passwordEncoder,
-        authTokenManager = authTokenManager,
+        tokenRevocationService = tokenRevocationService,
         userStatusAuditLogRepository = auditRepository,
     )
 
@@ -54,7 +54,7 @@ class LocalAccountServiceSoftDeleteTest {
         assertEquals("privacy", saved.deletionReason)
         assertNotNull(saved.retentionUntil)
         verify(exactly = 1) { localCredentialRepository.deleteByUserId(1L) }
-        verify(exactly = 1) { authTokenManager.revokeAll(1L) }
+        verify(exactly = 1) { tokenRevocationService.revokeAll(1L) }
     }
 
     @Test

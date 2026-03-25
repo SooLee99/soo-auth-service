@@ -3,6 +3,7 @@ package io.soo.springboot.core.domain
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
+import io.soo.springboot.core.domain.admin.AdminUserBlockService
 import io.soo.springboot.core.enums.AdminUserActionType
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.UserStatus

@@ -1,4 +1,4 @@
-package io.soo.springboot.core.domain
+package io.soo.springboot.core.domain.admin
 
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType
@@ -38,4 +38,3 @@ class ServiceContextResolver(
         return normalized
     }
 }
-

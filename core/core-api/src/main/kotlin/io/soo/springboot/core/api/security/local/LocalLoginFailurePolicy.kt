@@ -2,7 +2,7 @@ package io.soo.springboot.core.api.security.local
 
 import io.soo.springboot.core.api.security.response.SecurityErrorFields
 import io.soo.springboot.core.support.error.AccountStatusDeniedException
-import io.soo.springboot.core.domain.LocalLoginPolicyService
+import io.soo.springboot.core.domain.local.LocalLoginPolicyService
 import io.soo.springboot.core.support.error.ErrorType
 import org.springframework.core.annotation.Order
 import org.springframework.security.authentication.BadCredentialsException

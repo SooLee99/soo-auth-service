@@ -5,7 +5,7 @@ import io.soo.springboot.core.api.security.response.SecurityErrorResponseWriter
 import io.soo.springboot.core.support.error.AccountStatusDeniedException
 import io.soo.springboot.core.enums.LoginType
 import io.soo.springboot.core.enums.LoginDenyReason
-import io.soo.springboot.core.domain.LocalLoginPolicyService
+import io.soo.springboot.core.domain.local.LocalLoginPolicyService
 import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.storage.db.core.UserRepository

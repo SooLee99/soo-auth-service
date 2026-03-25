@@ -3,7 +3,7 @@ package io.soo.springboot.core.api.restdocs
 import io.mockk.every
 import io.mockk.mockk
 import io.soo.springboot.core.api.controller.v1.ServiceOAuth2AccountController
-import io.soo.springboot.core.domain.ServiceContextResolver
+import io.soo.springboot.core.domain.admin.ServiceContextResolver
 import io.soo.springboot.core.enums.ServiceStatus
 import io.soo.springboot.storage.db.core.Service
 import io.soo.springboot.test.api.RestDocsTest

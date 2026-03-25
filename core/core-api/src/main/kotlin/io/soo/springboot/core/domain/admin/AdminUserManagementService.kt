@@ -1,9 +1,10 @@
-package io.soo.springboot.core.domain
+package io.soo.springboot.core.domain.admin
 
 import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.Role
 import io.soo.springboot.core.enums.UserStatus
+import io.soo.springboot.core.domain.LocalAccountService
 import io.soo.springboot.core.domain.auth.TokenRevocationService
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType

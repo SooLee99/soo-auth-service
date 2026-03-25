@@ -1,4 +1,4 @@
-package io.soo.springboot.core.domain
+package io.soo.springboot.core.domain.admin
 
 import io.soo.springboot.core.enums.ServiceStatus
 import io.soo.springboot.core.support.error.CoreException
@@ -53,7 +53,10 @@ class AdminServiceManagementService(
             ?: throw CoreException(ErrorType.NOT_FOUND, data = mapOf("serviceCode" to normalizedCode))
 
         if (current.serviceCode == DEFAULT_SERVICE_CODE) {
-            throw CoreException(ErrorType.CONFLICT, data = mapOf("serviceCode" to normalizedCode, "reason" to "DEFAULT_SERVICE_PROTECTED"))
+            throw CoreException(
+                ErrorType.CONFLICT,
+                data = mapOf("serviceCode" to normalizedCode, "reason" to "DEFAULT_SERVICE_PROTECTED")
+            )
         }
 
         if (current.serviceStatus == ServiceStatus.INACTIVE) return current

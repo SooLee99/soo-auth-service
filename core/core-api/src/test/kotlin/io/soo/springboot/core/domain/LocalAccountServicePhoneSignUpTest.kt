@@ -4,7 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import io.soo.springboot.core.api.security.token.AuthTokenManager
+import io.soo.springboot.core.domain.auth.TokenRevocationService
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.core.support.error.CoreException
@@ -23,14 +23,14 @@ class LocalAccountServicePhoneSignUpTest {
     private val userRepository = mockk<UserRepository>()
     private val localCredentialRepository = mockk<LocalCredentialRepository>()
     private val passwordEncoder = mockk<PasswordEncoder>()
-    private val authTokenManager = mockk<AuthTokenManager>(relaxed = true)
+    private val tokenRevocationService = mockk<TokenRevocationService>(relaxed = true)
     private val auditRepository = mockk<UserStatusAuditLogRepository>(relaxed = true)
 
     private val service = LocalAccountService(
         userRepository = userRepository,
         localAccountRepository = localCredentialRepository,
         passwordEncoder = passwordEncoder,
-        authTokenManager = authTokenManager,
+        tokenRevocationService = tokenRevocationService,
         userStatusAuditLogRepository = auditRepository,
     )
 

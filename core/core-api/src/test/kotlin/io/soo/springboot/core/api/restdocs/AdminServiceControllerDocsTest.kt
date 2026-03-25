@@ -4,7 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.soo.springboot.core.api.controller.v1.AdminServiceController
 import io.soo.springboot.core.api.controller.v1.request.AdminServiceCreateRequest
-import io.soo.springboot.core.domain.AdminServiceManagementService
+import io.soo.springboot.core.domain.admin.AdminServiceManagementService
 import io.soo.springboot.core.enums.ServiceStatus
 import io.soo.springboot.storage.db.core.Service
 import io.soo.springboot.test.api.RestDocsTest

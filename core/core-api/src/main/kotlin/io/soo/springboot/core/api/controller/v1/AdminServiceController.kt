@@ -2,7 +2,7 @@ package io.soo.springboot.core.api.controller.v1
 
 import io.soo.springboot.core.api.controller.v1.request.AdminServiceCreateRequest
 import io.soo.springboot.core.api.controller.v1.response.AdminServiceResponse
-import io.soo.springboot.core.domain.AdminServiceManagementService
+import io.soo.springboot.core.domain.admin.AdminServiceManagementService
 import io.soo.springboot.core.support.response.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
