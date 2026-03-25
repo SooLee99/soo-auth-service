@@ -114,6 +114,32 @@ include::{snippets}/auth-local-signup-phone/curl-request.adoc[]
 include::{snippets}/auth-local-signup-phone/request-fields.adoc[]
 ==== Http Response
 include::{snippets}/auth-local-signup-phone/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-local-signup-phone/response-fields.adoc[]
+
+'''
+
+=== 휴대폰 인증번호 발급
+==== Curl Request
+include::{snippets}/auth-local-phone-verification-request/curl-request.adoc[]
+==== Request Fields
+include::{snippets}/auth-local-phone-verification-request/request-fields.adoc[]
+==== Http Response
+include::{snippets}/auth-local-phone-verification-request/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-local-phone-verification-request/response-fields.adoc[]
+
+'''
+
+=== 휴대폰 인증번호 확인
+==== Curl Request
+include::{snippets}/auth-local-phone-verification-confirm/curl-request.adoc[]
+==== Request Fields
+include::{snippets}/auth-local-phone-verification-confirm/request-fields.adoc[]
+==== Http Response
+include::{snippets}/auth-local-phone-verification-confirm/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-local-phone-verification-confirm/response-fields.adoc[]
 
 '''
 
@@ -227,6 +253,34 @@ include::{snippets}/auth-service-local-signup-phone/request-fields.adoc[]
 include::{snippets}/auth-service-local-signup-phone/http-response.adoc[]
 ==== Response Fields
 include::{snippets}/auth-service-local-signup-phone/response-fields.adoc[]
+
+'''
+
+=== 서비스 휴대폰 인증번호 발급
+==== Curl Request
+include::{snippets}/auth-service-local-phone-verification-request/curl-request.adoc[]
+==== Path Parameters
+include::{snippets}/auth-service-local-phone-verification-request/path-parameters.adoc[]
+==== Request Fields
+include::{snippets}/auth-service-local-phone-verification-request/request-fields.adoc[]
+==== Http Response
+include::{snippets}/auth-service-local-phone-verification-request/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-service-local-phone-verification-request/response-fields.adoc[]
+
+'''
+
+=== 서비스 휴대폰 인증번호 확인
+==== Curl Request
+include::{snippets}/auth-service-local-phone-verification-confirm/curl-request.adoc[]
+==== Path Parameters
+include::{snippets}/auth-service-local-phone-verification-confirm/path-parameters.adoc[]
+==== Request Fields
+include::{snippets}/auth-service-local-phone-verification-confirm/request-fields.adoc[]
+==== Http Response
+include::{snippets}/auth-service-local-phone-verification-confirm/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-service-local-phone-verification-confirm/response-fields.adoc[]
 
 '''
 

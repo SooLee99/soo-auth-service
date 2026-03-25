@@ -1,56 +1,102 @@
-### 공통 변수
+﻿### 공통 변수
 @baseUrl = http://localhost:8080
 @deviceId = dev-123
-@logoutAll = false
+
+### 휴대폰 인증번호 발급
+# @name local_phone_verification_request
+POST {{baseUrl}}/api/v1/auth/local/phone-verifications/request
+Content-Type: application/json
+Accept: application/json
+
+{
+  "phoneNumber": "+82 10-1234-5678"
+}
+
+> {%
+    const verificationId = response.body?.data?.verificationId;
+    if (!verificationId) {
+        throw new Error("verificationId 파싱 실패: " + JSON.stringify(response.body));
+    }
+    client.global.set("localVerificationId", verificationId);
+%}
+
+### 휴대폰 인증번호 확인
+# @name local_phone_verification_confirm
+POST {{baseUrl}}/api/v1/auth/local/phone-verifications/confirm
+Content-Type: application/json
+Accept: application/json
+
+{
+  "phoneNumber": "+82 10-1234-5678",
+  "verificationId": "{{localVerificationId}}",
+  "code": "123456"
+}
+
+> {%
+    const token = response.body?.data?.phoneVerificationToken;
+    if (!token) {
+        throw new Error("phoneVerificationToken 파싱 실패: " + JSON.stringify(response.body));
+    }
+    client.global.set("localPhoneVerificationToken", token);
+%}
 
 ### 회원가입
-# @name signup
+# @name local_signup
 POST {{baseUrl}}/api/v1/auth/local/signup
 X-Device-Id: {{deviceId}}
 Content-Type: application/json
 Accept: application/json
 
 {
-  "email": "admin123@gmail.com",
-  "password": "admin123@",
-  "phoneNumber": "010-1234-5679",
-  "gender": "MALE",
-  "locale": "ko-KR",
-  "nickname": "soo_01",
+  "email": "user@example.com",
+  "password": "P@ssw0rd!",
   "name": "홍길동",
+  "nickname": "gildong",
+  "gender": "MALE",
+  "phoneNumber": "+82 10-1234-5678",
+  "phoneVerificationToken": "{{localPhoneVerificationToken}}",
+  "locale": "ko-KR",
   "profileImageUrl": "https://example.com/profile.png",
   "thumbnailImageUrl": "https://example.com/thumb.png",
   "birthyear": "1998",
   "birthday": "02-07"
 }
 
+### 전화번호 회원가입
+# @name local_signup_phone
+POST {{baseUrl}}/api/v1/auth/local/signup/phone
+X-Device-Id: {{deviceId}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "phoneNumber": "+82 10-1234-5678",
+  "phoneVerificationToken": "{{localPhoneVerificationToken}}"
+}
+
 ### 로그인 (토큰 변수 저장)
-# @name login
+# @name local_login
 POST {{baseUrl}}/api/v1/auth/local/login
 X-Device-Id: {{deviceId}}
 Content-Type: application/json
 Accept: application/json
 
 {
-  "email": "a1@a.com",
-  "password": "password123@"
+  "email": "user@example.com",
+  "password": "P@ssw0rd!"
 }
 
 > {%
-
-    const payload = response.body.data;
-
+    const payload = response.body?.data;
     if (!payload?.accessToken || !payload?.refreshToken) {
-        throw new Error("토큰 파싱 실패: 응답 구조를 확인하세요. body=" + JSON.stringify(response.body));
+        throw new Error("토큰 파싱 실패: " + JSON.stringify(response.body));
     }
-
     client.global.set("accessToken", payload.accessToken);
     client.global.set("refreshToken", payload.refreshToken);
-    client.global.set("deviceId", request.headers["X-Device-Id"] || "{{deviceId}}");
 %}
 
-### refresh (회전: 새 access + 새 refresh 발급) + 변수 업데이트
-# @name refresh
+### 토큰 갱신
+# @name local_refresh
 POST {{baseUrl}}/api/v1/auth/local/token/refresh
 X-Device-Id: {{deviceId}}
 Content-Type: application/json
@@ -62,17 +108,15 @@ Accept: application/json
 
 > {%
     const payload = response.body?.data?.data ?? response.body?.data;
-
     if (!payload?.accessToken || !payload?.refreshToken) {
-        throw new Error("토큰 파싱 실패: 응답 구조를 확인하세요. body=" + JSON.stringify(response.body));
+        throw new Error("토큰 파싱 실패: " + JSON.stringify(response.body));
     }
-
     client.global.set("accessToken", payload.accessToken);
     client.global.set("refreshToken", payload.refreshToken);
 %}
 
-### logout (현재 access denylist + refresh revoke)
-# @name logout
+### 로그아웃
+# @name local_logout
 POST {{baseUrl}}/api/v1/auth/local/logout
 X-Device-Id: {{deviceId}}
 Authorization: Bearer {{accessToken}}
@@ -84,15 +128,24 @@ Accept: application/json
   "logoutAll": false
 }
 
-### (옵션) logoutAll = true 테스트용
-# @name logout_all
-POST {{baseUrl}}/api/v1/auth/local/logout
-X-Device-Id: {{deviceId}}
+### 회원 탈퇴
+# @name local_withdraw
+POST {{baseUrl}}/api/v1/auth/local/withdraw
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 Accept: application/json
 
 {
-  "refreshToken": "{{refreshToken}}",
-  "logoutAll": true
+  "reason": "privacy"
 }
+
+### OAuth2 인가 URL 조회
+# @name local_oauth2_authorize_url
+GET {{baseUrl}}/api/v1/auth/oauth2/kakao/authorize-url?returnUrl=/app/callback
+X-Device-Id: {{deviceId}}
+Accept: application/json
+
+### 헬스 체크
+# @name health
+GET {{baseUrl}}/health
+Accept: application/json
