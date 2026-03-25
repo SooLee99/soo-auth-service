@@ -1,5 +1,7 @@
 package io.soo.springboot.storage.db.core
 
+import io.soo.springboot.core.enums.LoginStatus
+import io.soo.springboot.core.enums.LoginType
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
@@ -36,14 +38,4 @@ class LoginHistoryEntity(
     var failureReason: String? = null,
 
 ) : BaseEntity() {
-
-    enum class LoginType {
-        LOCAL,
-        OAUTH2
-    }
-
-    enum class LoginStatus {
-        SUCCESS,
-        FAILURE
-    }
 }

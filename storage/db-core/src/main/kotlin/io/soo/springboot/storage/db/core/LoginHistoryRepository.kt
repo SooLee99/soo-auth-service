@@ -1,5 +1,7 @@
 package io.soo.springboot.storage.db.core
 
+import io.soo.springboot.core.enums.LoginStatus
+import io.soo.springboot.core.enums.LoginType
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import java.time.LocalDateTime
@@ -8,8 +10,8 @@ interface LoginHistoryRepository {
     fun save(
         userId: Long,
         userEmail: String,
-        loginType: LoginHistoryEntity.LoginType,
-        status: LoginHistoryEntity.LoginStatus,
+        loginType: LoginType,
+        status: LoginStatus,
         ipAddress: String?,
         userAgent: String?,
         deviceId: String?,

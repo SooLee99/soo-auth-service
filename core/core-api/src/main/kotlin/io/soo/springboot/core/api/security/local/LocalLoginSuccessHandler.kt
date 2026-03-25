@@ -3,11 +3,11 @@ package io.soo.springboot.core.api.security.local
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.soo.springboot.core.api.security.auth.UserIdResolver
 import io.soo.springboot.core.enums.AuthProvider
+import io.soo.springboot.core.enums.LoginType
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.api.security.userdetails.UserPrincipal
 import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.core.support.response.ApiResponse
-import io.soo.springboot.storage.db.core.LoginHistoryEntity
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.core.Authentication
@@ -38,7 +38,7 @@ class LocalLoginSuccessHandler(
         loginHistoryService.recordLoginSuccess(
             userId = userId,
             userEmail = principal.email,
-            loginType = LoginHistoryEntity.LoginType.LOCAL,
+            loginType = LoginType.LOCAL,
             ipAddress = ip,
             userAgent = ua,
             deviceId = deviceId,

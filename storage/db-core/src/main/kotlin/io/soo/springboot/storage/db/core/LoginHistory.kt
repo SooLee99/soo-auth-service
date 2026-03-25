@@ -1,13 +1,15 @@
 package io.soo.springboot.storage.db.core
 
+import io.soo.springboot.core.enums.LoginStatus
+import io.soo.springboot.core.enums.LoginType
 import java.time.LocalDateTime
 
 data class LoginHistory(
     val id: Long,
     val userId: Long,
     val userEmail: String,
-    val loginType: LoginHistoryEntity.LoginType,
-    val status: LoginHistoryEntity.LoginStatus,
+    val loginType: LoginType,
+    val status: LoginStatus,
     val ipAddress: String?,
     val userAgent: String?,
     val deviceId: String?,

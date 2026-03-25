@@ -9,10 +9,10 @@ import io.soo.springboot.core.api.security.userdetails.UserPrincipalLoader
 import io.soo.springboot.core.domain.AccountStatusDeniedException
 import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.core.enums.AuthProvider
+import io.soo.springboot.core.enums.LoginType
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.response.ApiResponse
-import io.soo.springboot.storage.db.core.LoginHistoryEntity
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.MediaType
@@ -83,7 +83,7 @@ class OAuth2LoginSuccessHandler(
         loginHistoryService.recordLoginSuccess(
             userId = userId,
             userEmail = principal.email,
-            loginType = LoginHistoryEntity.LoginType.LOCAL,
+            loginType = LoginType.LOCAL,
             ipAddress = ip,
             userAgent = ua,
             deviceId = deviceId,

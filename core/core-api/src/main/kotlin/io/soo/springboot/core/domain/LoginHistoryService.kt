@@ -1,7 +1,8 @@
 package io.soo.springboot.core.domain
 
+import io.soo.springboot.core.enums.LoginStatus
+import io.soo.springboot.core.enums.LoginType
 import io.soo.springboot.storage.db.core.LoginHistory
-import io.soo.springboot.storage.db.core.LoginHistoryEntity
 import io.soo.springboot.storage.db.core.LoginHistoryRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -16,7 +17,7 @@ class LoginHistoryService(
     fun recordLoginSuccess(
         userId: Long,
         userEmail: String,
-        loginType: LoginHistoryEntity.LoginType,
+        loginType: LoginType,
         ipAddress: String?,
         userAgent: String?,
         deviceId: String?,
@@ -25,7 +26,7 @@ class LoginHistoryService(
             userId = userId,
             userEmail = userEmail,
             loginType = loginType,
-            status = LoginHistoryEntity.LoginStatus.SUCCESS,
+            status = LoginStatus.SUCCESS,
             ipAddress = ipAddress,
             userAgent = userAgent,
             deviceId = deviceId,
@@ -36,7 +37,7 @@ class LoginHistoryService(
     fun recordLoginFailure(
         userId: Long,
         userEmail: String,
-        loginType: LoginHistoryEntity.LoginType,
+        loginType: LoginType,
         ipAddress: String?,
         userAgent: String?,
         deviceId: String?,
@@ -46,7 +47,7 @@ class LoginHistoryService(
             userId = userId,
             userEmail = userEmail,
             loginType = loginType,
-            status = LoginHistoryEntity.LoginStatus.FAILURE,
+            status = LoginStatus.FAILURE,
             ipAddress = ipAddress,
             userAgent = userAgent,
             deviceId = deviceId,

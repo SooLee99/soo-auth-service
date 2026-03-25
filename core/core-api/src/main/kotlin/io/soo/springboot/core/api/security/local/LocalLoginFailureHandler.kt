@@ -3,11 +3,11 @@ package io.soo.springboot.core.api.security.local
 import io.soo.springboot.core.api.security.response.SecurityErrorFields
 import io.soo.springboot.core.api.security.response.SecurityErrorResponseWriter
 import io.soo.springboot.core.domain.AccountStatusDeniedException
+import io.soo.springboot.core.enums.LoginType
 import io.soo.springboot.core.domain.LoginDenyReason
 import io.soo.springboot.core.domain.LocalLoginPolicyService
 import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.core.support.error.ErrorType
-import io.soo.springboot.storage.db.core.LoginHistoryEntity
 import io.soo.springboot.storage.db.core.UserRepository
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -68,7 +68,7 @@ class LocalLoginFailureHandler(
             loginHistoryService.recordLoginFailure(
                 userId = user.id,
                 userEmail = normalizedEmail,
-                loginType = LoginHistoryEntity.LoginType.LOCAL,
+                loginType = LoginType.LOCAL,
                 ipAddress = ip,
                 userAgent = ua,
                 deviceId = deviceId,
