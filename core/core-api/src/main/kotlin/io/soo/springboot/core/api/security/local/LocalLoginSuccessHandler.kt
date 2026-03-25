@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.soo.springboot.core.api.security.auth.UserIdResolver
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.LoginType
-import io.soo.springboot.core.api.security.token.AuthTokenManager
+import io.soo.springboot.core.domain.auth.AuthTokenManager
 import io.soo.springboot.core.api.security.userdetails.UserPrincipal
 import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.core.support.response.ApiResponse

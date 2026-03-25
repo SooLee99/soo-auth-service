@@ -12,7 +12,7 @@ import io.soo.springboot.core.enums.UserStatus
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.error.CoreException
 
-import io.soo.springboot.core.api.security.token.AuthTokenManager
+import io.soo.springboot.core.domain.auth.AuthTokenManager
 import io.soo.springboot.storage.db.core.LocalCredential
 import io.soo.springboot.storage.db.core.LocalCredentialRepository
 import io.soo.springboot.storage.db.core.User

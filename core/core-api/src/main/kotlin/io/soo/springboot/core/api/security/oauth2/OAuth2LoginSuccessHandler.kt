@@ -3,11 +3,11 @@ package io.soo.springboot.core.api.security.oauth2
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.soo.springboot.core.api.controller.v1.response.LoginSuccessResponse
 import io.soo.springboot.core.api.security.response.SecurityErrorResponseWriter
-import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.api.security.userdetails.UserPrincipalLoader
 import io.soo.springboot.core.domain.AccountStatusDeniedException
 import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.core.domain.OAuth2LoginUseCase
+import io.soo.springboot.core.domain.auth.AuthTokenManager
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.LoginType
 import io.soo.springboot.core.support.error.CoreException

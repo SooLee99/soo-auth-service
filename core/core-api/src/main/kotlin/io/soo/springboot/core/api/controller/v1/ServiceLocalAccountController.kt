@@ -5,7 +5,7 @@ import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
 import io.soo.springboot.core.api.controller.v1.request.PhoneSignUpRequest
 import io.soo.springboot.core.api.controller.v1.request.WithdrawRequest
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
-import io.soo.springboot.core.api.security.token.AuthTokenManager
+import io.soo.springboot.core.domain.auth.AuthTokenManager
 import io.soo.springboot.core.domain.ServiceContextResolver
 import io.soo.springboot.core.domain.LocalAccountService
 import io.soo.springboot.core.domain.LocalSignUpCommand
