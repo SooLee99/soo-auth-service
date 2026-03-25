@@ -1,10 +1,10 @@
 package io.soo.springboot.core.domain
 
-import io.soo.springboot.core.api.controller.v1.request.AdminUserUpdateRequest
+import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.Role
 import io.soo.springboot.core.enums.UserStatus
-import io.soo.springboot.core.domain.auth.AuthTokenManager
+import io.soo.springboot.core.domain.auth.TokenRevocationService
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.storage.db.core.LocalCredential
@@ -18,13 +18,32 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 
+data class AdminUserUpdateCommand(
+    val email: String? = null,
+    val phoneNumber: String? = null,
+    val name: String? = null,
+    val nickname: String? = null,
+    val gender: Gender? = null,
+    val locale: String? = null,
+    val birthyear: String? = null,
+    val birthday: String? = null,
+    val profileImageUrl: String? = null,
+    val thumbnailImageUrl: String? = null,
+    val role: Role? = null,
+    val userStatus: UserStatus? = null,
+    val blocked: Boolean? = null,
+    val blockedReason: String? = null,
+    val emailVerified: Boolean? = null,
+    val phoneVerified: Boolean? = null,
+)
+
 @Service
 class AdminUserManagementService(
     private val userRepository: UserRepository,
     private val localAccountService: LocalAccountService,
     private val localCredentialRepository: LocalCredentialRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val authTokenManager: AuthTokenManager,
+    private val tokenRevocationService: TokenRevocationService,
 ) {
     @Transactional(readOnly = true)
     fun listUsers(
@@ -50,25 +69,25 @@ class AdminUserManagementService(
     }
 
     @Transactional
-    fun updateUser(userId: Long, request: AdminUserUpdateRequest, adminUserId: Long): User {
+    fun updateUser(userId: Long, command: AdminUserUpdateCommand, adminUserId: Long): User {
         val current = userRepository.findByIdIncludingDeleted(userId)
             ?: throw CoreException(ErrorType.NOT_FOUND, data = mapOf("userId" to userId))
-        if (request.userStatus == UserStatus.SOFT_DELETED) {
+        if (command.userStatus == UserStatus.SOFT_DELETED) {
             throw CoreException(
                 ErrorType.INVALID_PARAMETER,
                 data = mapOf("userStatus" to "SOFT_DELETED", "message" to "소프트 삭제는 delete API를 사용하세요."),
             )
         }
 
-        val updatedEmail = request.email?.trim()?.lowercase() ?: current.email
-        val updatedPhone = request.phoneNumber?.trim() ?: current.phoneNumber
+        val updatedEmail = command.email?.trim()?.lowercase() ?: current.email
+        val updatedPhone = command.phoneNumber?.trim() ?: current.phoneNumber
 
         validateUniqueEmail(current.id, current.email, updatedEmail)
         validateUniquePhone(current.id, current.phoneNumber, updatedPhone)
 
         val now = Instant.now()
-        val targetStatus = request.userStatus ?: current.userStatus
-        val targetBlocked = request.blocked ?: current.blocked
+        val targetStatus = command.userStatus ?: current.userStatus
+        val targetBlocked = command.blocked ?: current.blocked
         val normalizedBlocked = targetBlocked || targetStatus == UserStatus.BLOCKED
         val normalizedStatus = when {
             targetStatus == UserStatus.SOFT_DELETED -> UserStatus.SOFT_DELETED
@@ -91,21 +110,21 @@ class AdminUserManagementService(
         val saved = userRepository.save(
             current.copy(
                 email = updatedEmail,
-                emailVerified = request.emailVerified ?: current.emailVerified,
+                emailVerified = command.emailVerified ?: current.emailVerified,
                 phoneNumber = updatedPhone,
-                phoneVerified = request.phoneVerified ?: current.phoneVerified,
-                name = request.name?.trim() ?: current.name,
-                nickname = request.nickname?.trim() ?: current.nickname,
-                gender = request.gender ?: current.gender,
-                locale = request.locale?.trim() ?: current.locale,
-                birthyear = request.birthyear ?: current.birthyear,
-                birthday = request.birthday ?: current.birthday,
-                profileImageUrl = request.profileImageUrl?.trim() ?: current.profileImageUrl,
-                thumbnailImageUrl = request.thumbnailImageUrl?.trim() ?: current.thumbnailImageUrl,
-                role = request.role ?: current.role,
+                phoneVerified = command.phoneVerified ?: current.phoneVerified,
+                name = command.name?.trim() ?: current.name,
+                nickname = command.nickname?.trim() ?: current.nickname,
+                gender = command.gender ?: current.gender,
+                locale = command.locale?.trim() ?: current.locale,
+                birthyear = command.birthyear ?: current.birthyear,
+                birthday = command.birthday ?: current.birthday,
+                profileImageUrl = command.profileImageUrl?.trim() ?: current.profileImageUrl,
+                thumbnailImageUrl = command.thumbnailImageUrl?.trim() ?: current.thumbnailImageUrl,
+                role = command.role ?: current.role,
                 userStatus = normalizedStatus,
                 blocked = normalizedBlocked,
-                blockedReason = if (normalizedBlocked) request.blockedReason?.trim() ?: current.blockedReason else null,
+                blockedReason = if (normalizedBlocked) command.blockedReason?.trim() ?: current.blockedReason else null,
                 blockedAt = blockedAt,
                 blockedByAdminId = if (normalizedBlocked) adminUserId else null,
                 unblockedAt = unblockedAt,
@@ -142,7 +161,7 @@ class AdminUserManagementService(
                 passwordHash = passwordEncoder.encode(newPassword),
             )
         )
-        authTokenManager.revokeAll(userId)
+        tokenRevocationService.revokeAll(userId)
         return user
     }
 
@@ -150,7 +169,7 @@ class AdminUserManagementService(
     fun revokeUserTokens(userId: Long): User {
         val user = userRepository.findByIdIncludingDeleted(userId)
             ?: throw CoreException(ErrorType.NOT_FOUND, data = mapOf("userId" to userId))
-        authTokenManager.revokeAll(userId)
+        tokenRevocationService.revokeAll(userId)
         return user
     }
 

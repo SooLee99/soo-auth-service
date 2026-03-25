@@ -1,6 +1,8 @@
 package io.soo.springboot.core.domain
 
+import io.soo.springboot.core.enums.LoginDenyReason
 import io.soo.springboot.core.enums.UserStatus
+import io.soo.springboot.core.support.error.AccountStatusDeniedException
 import io.soo.springboot.storage.db.core.User
 import org.springframework.stereotype.Component
 
@@ -34,7 +36,3 @@ class UserStatusPolicy {
     }
 }
 
-enum class LoginDenyReason {
-    BLOCKED,
-    SOFT_DELETED,
-}

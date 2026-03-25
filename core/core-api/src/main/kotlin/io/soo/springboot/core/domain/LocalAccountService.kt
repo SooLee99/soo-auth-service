@@ -12,7 +12,7 @@ import io.soo.springboot.core.enums.UserStatus
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.error.CoreException
 
-import io.soo.springboot.core.domain.auth.AuthTokenManager
+import io.soo.springboot.core.domain.auth.TokenRevocationService
 import io.soo.springboot.storage.db.core.LocalCredential
 import io.soo.springboot.storage.db.core.LocalCredentialRepository
 import io.soo.springboot.storage.db.core.User
@@ -43,7 +43,7 @@ class LocalAccountService(
     private val userRepository: UserRepository,
     private val localAccountRepository: LocalCredentialRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val authTokenManager: AuthTokenManager,
+    private val tokenRevocationService: TokenRevocationService,
     private val userStatusAuditLogRepository: UserStatusAuditLogRepository,
 ) {
     private val secureRandom = SecureRandom()
@@ -126,7 +126,7 @@ class LocalAccountService(
      */
     @Transactional
     fun logout(jwt: Jwt, deviceId: String, refreshToken: String?, logoutAll: Boolean) {
-        authTokenManager.invalidateTokens(
+        tokenRevocationService.invalidate(
             jwt = jwt,
             deviceId = deviceId,
             refreshToken = refreshToken,
@@ -186,7 +186,7 @@ class LocalAccountService(
         )
 
         localAccountRepository.deleteByUserId(userId)
-        authTokenManager.revokeAll(userId)
+        tokenRevocationService.revokeAll(userId)
         userStatusAuditLogRepository.save(
             targetUserId = userId,
             actorUserId = actorUserId ?: userId,

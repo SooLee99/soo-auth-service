@@ -1,5 +1,6 @@
-package io.soo.springboot.core.domain
+package io.soo.springboot.core.support.error
 
+import io.soo.springboot.core.enums.LoginDenyReason
 import org.springframework.security.authentication.LockedException
 import java.time.Instant
 

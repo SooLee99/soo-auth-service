@@ -2,17 +2,15 @@ package io.soo.springboot.core.api.security.local
 
 import io.soo.springboot.core.api.security.response.SecurityErrorFields
 import io.soo.springboot.core.api.security.response.SecurityErrorResponseWriter
-import io.soo.springboot.core.domain.AccountStatusDeniedException
+import io.soo.springboot.core.support.error.AccountStatusDeniedException
 import io.soo.springboot.core.enums.LoginType
-import io.soo.springboot.core.domain.LoginDenyReason
+import io.soo.springboot.core.enums.LoginDenyReason
 import io.soo.springboot.core.domain.LocalLoginPolicyService
 import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.storage.db.core.UserRepository
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.springframework.security.authentication.BadCredentialsException
-import org.springframework.security.authentication.DisabledException
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import org.springframework.stereotype.Component
@@ -24,6 +22,7 @@ class LocalLoginFailureHandler(
     private val localLoginPolicyService: LocalLoginPolicyService,
     private val loginHistoryService: LoginHistoryService,
     private val userRepository: UserRepository,
+    private val failurePolicies: List<LocalLoginFailurePolicy>,
 ) : AuthenticationFailureHandler {
 
     override fun onAuthenticationFailure(
@@ -76,48 +75,19 @@ class LocalLoginFailureHandler(
             )
         }
 
-        val (type, fields) = when {
-            payload != null -> {
-                payload.type to linkedMapOf(
-                    "userMessage" to payload.userMessage,
-                    "detail" to payload.detail,
-                    "extra" to payload.extra.takeIf { it.isNotEmpty() },
-                ).filterValues { it != null }
-            }
-
-            exception is DisabledException -> {
-                ErrorType.ACCOUNT_DISABLED to SecurityErrorFields.accountDisabled()
-            }
-
-            isStatusDenied -> {
-                ErrorType.LOGIN_DENIED to SecurityErrorFields.loginDenied()
-            }
-
-            // 로컬 로그인 실패 정책 결과 반영 (잠금/계정없음/비밀번호오류)
-            result == LocalLoginPolicyService.FailureResult.LOCKED -> {
-                ErrorType.LOGIN_ATTEMPTS_EXCEEDED to mapOf(
-                    "reason" to "LOGIN_ATTEMPTS_EXCEEDED"
-                )
-            }
-
-            exception is BadCredentialsException -> {
-                when (result) {
-                    LocalLoginPolicyService.FailureResult.BAD_CREDENTIALS -> ErrorType.LOGIN_BAD_CREDENTIALS
-                    LocalLoginPolicyService.FailureResult.NOT_FOUND -> ErrorType.LOGIN_ACCOUNT_NOT_FOUND
-                    else -> ErrorType.UNAUTHORIZED
-                } to SecurityErrorFields.badCredentials()
-            }
-
-            else -> {
-                ErrorType.UNAUTHORIZED to mapOf("reason" to "UNAUTHORIZED")
-            }
-        }
+        val context = LocalLoginFailureContext(
+            payload = payload,
+            exception = exception,
+            loginPolicyResult = result,
+            isStatusDenied = isStatusDenied,
+        )
+        val decision = failurePolicies.first { it.supports(context) }.decide(context)
 
         writer.writeError(
             response = response,
             request = request,
-            type = type,
-            fields = fields,
+            type = decision.type,
+            fields = decision.fields,
         )
     }
 }

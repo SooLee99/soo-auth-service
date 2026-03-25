@@ -9,6 +9,7 @@ import io.soo.springboot.core.api.controller.v1.response.AdminUserBlockResponse
 import io.soo.springboot.core.api.controller.v1.response.AdminUserSummaryResponse
 import io.soo.springboot.core.api.controller.v1.response.UserStatusAuditLogResponse
 import io.soo.springboot.core.api.security.auth.UserIdResolver
+import io.soo.springboot.core.domain.AdminUserUpdateCommand
 import io.soo.springboot.core.domain.AdminUserManagementService
 import io.soo.springboot.core.domain.AdminUserBlockService
 import io.soo.springboot.core.domain.LoginHistoryService
@@ -130,7 +131,24 @@ class AdminAuthController(
         val adminUserId = userIdResolver.resolve(authentication)
         val updated = adminUserManagementService.updateUser(
             userId = userId,
-            request = body,
+            command = AdminUserUpdateCommand(
+                email = body.email,
+                phoneNumber = body.phoneNumber,
+                name = body.name,
+                nickname = body.nickname,
+                gender = body.gender,
+                locale = body.locale,
+                birthyear = body.birthyear,
+                birthday = body.birthday,
+                profileImageUrl = body.profileImageUrl,
+                thumbnailImageUrl = body.thumbnailImageUrl,
+                role = body.role,
+                userStatus = body.userStatus,
+                blocked = body.blocked,
+                blockedReason = body.blockedReason,
+                emailVerified = body.emailVerified,
+                phoneVerified = body.phoneVerified,
+            ),
             adminUserId = adminUserId,
         )
         return ApiResponse.success(req = req, data = AdminUserDetailResponse.from(updated))

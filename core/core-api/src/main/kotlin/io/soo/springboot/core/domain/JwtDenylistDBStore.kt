@@ -13,7 +13,7 @@ import io.soo.springboot.storage.db.core.JwtDenylistRepository
 
 @Service
 @Profile("local", "test")
-class DbJwtDenylistStore(
+class JwtDenylistDBStore(
     private val repo: JwtDenylistRepository,
     private val clock: Clock = Clock.systemUTC(),
 ) : JwtDenylistStore {

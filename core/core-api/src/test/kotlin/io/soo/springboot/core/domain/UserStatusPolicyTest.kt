@@ -2,6 +2,7 @@ package io.soo.springboot.core.domain
 
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.UserStatus
+import io.soo.springboot.core.support.error.AccountStatusDeniedException
 import io.soo.springboot.storage.db.core.User
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertEquals
