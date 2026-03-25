@@ -1,6 +1,5 @@
 package io.soo.springboot.core.domain.oauth2
 
-import io.soo.springboot.core.domain.OAuth2UserInfo
 import io.soo.springboot.core.enums.AuthProvider
 import org.springframework.stereotype.Component
 import java.time.Instant

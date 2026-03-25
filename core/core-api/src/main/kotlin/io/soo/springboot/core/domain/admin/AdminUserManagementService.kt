@@ -4,8 +4,8 @@ import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.Role
 import io.soo.springboot.core.enums.UserStatus
-import io.soo.springboot.core.domain.LocalAccountService
-import io.soo.springboot.core.domain.auth.TokenRevocationService
+import io.soo.springboot.core.domain.local.LocalAccountService
+import io.soo.springboot.core.domain.token.TokenRevocationService
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.storage.db.core.LocalCredential

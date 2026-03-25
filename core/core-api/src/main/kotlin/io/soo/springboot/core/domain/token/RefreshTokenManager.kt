@@ -1,4 +1,4 @@
-package io.soo.springboot.core.domain.auth
+package io.soo.springboot.core.domain.token
 
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.storage.db.core.RefreshToken

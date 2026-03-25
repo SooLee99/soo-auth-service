@@ -1,6 +1,7 @@
-package io.soo.springboot.core.domain
+package io.soo.springboot.core.domain.oauth2
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.soo.springboot.core.domain.UserStatusPolicy
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.storage.db.core.User
 import io.soo.springboot.storage.db.core.UserRepository

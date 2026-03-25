@@ -4,7 +4,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import io.soo.springboot.core.domain.auth.TokenRevocationService
+import io.soo.springboot.core.domain.local.LocalAccountService
+import io.soo.springboot.core.domain.token.TokenRevocationService
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.core.support.error.CoreException

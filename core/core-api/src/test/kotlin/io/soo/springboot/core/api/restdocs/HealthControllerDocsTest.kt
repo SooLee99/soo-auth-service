@@ -3,7 +3,7 @@ package io.soo.springboot.core.api.restdocs
 import io.mockk.every
 import io.mockk.mockk
 import io.soo.springboot.core.api.controller.v1.HealthController
-import io.soo.springboot.core.domain.HealthSnapshotService
+import io.soo.springboot.core.domain.health.HealthSnapshotService
 import io.soo.springboot.test.api.RestDocsTest
 import io.soo.springboot.test.api.RestDocsUtils
 import io.soo.springboot.test.api.mockMvcDocument

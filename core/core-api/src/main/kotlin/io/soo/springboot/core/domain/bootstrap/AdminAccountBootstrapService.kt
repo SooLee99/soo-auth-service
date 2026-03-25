@@ -1,4 +1,4 @@
-package io.soo.springboot.core.domain.admin.bootstrap
+package io.soo.springboot.core.domain.bootstrap
 
 import io.soo.springboot.storage.db.core.UserRepository
 import org.springframework.stereotype.Service

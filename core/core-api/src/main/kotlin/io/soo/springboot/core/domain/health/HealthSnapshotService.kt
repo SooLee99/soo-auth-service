@@ -1,4 +1,4 @@
-package io.soo.springboot.core.domain
+package io.soo.springboot.core.domain.health
 
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.core.env.Environment

@@ -1,4 +1,4 @@
-package io.soo.springboot.core.domain.admin.bootstrap
+package io.soo.springboot.core.domain.bootstrap
 
 sealed interface AdminBootstrapResult {
     data class Skipped(val reason: String) : AdminBootstrapResult

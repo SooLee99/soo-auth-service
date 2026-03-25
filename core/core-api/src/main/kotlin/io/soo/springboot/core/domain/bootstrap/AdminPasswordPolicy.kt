@@ -1,4 +1,4 @@
-package io.soo.springboot.core.domain.admin.bootstrap
+package io.soo.springboot.core.domain.bootstrap
 
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component

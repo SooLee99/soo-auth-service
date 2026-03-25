@@ -1,4 +1,4 @@
-package io.soo.springboot.core.domain
+package io.soo.springboot.core.domain.local
 
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Service
@@ -12,7 +12,7 @@ import io.soo.springboot.core.enums.UserStatus
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.error.CoreException
 
-import io.soo.springboot.core.domain.auth.TokenRevocationService
+import io.soo.springboot.core.domain.token.TokenRevocationService
 import io.soo.springboot.storage.db.core.LocalCredential
 import io.soo.springboot.storage.db.core.LocalCredentialRepository
 import io.soo.springboot.storage.db.core.User

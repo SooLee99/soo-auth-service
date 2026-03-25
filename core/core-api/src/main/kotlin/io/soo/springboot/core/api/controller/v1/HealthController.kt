@@ -1,6 +1,6 @@
 package io.soo.springboot.core.api.controller.v1
 
-import io.soo.springboot.core.domain.HealthSnapshotService
+import io.soo.springboot.core.domain.health.HealthSnapshotService
 import io.soo.springboot.core.support.response.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.web.bind.annotation.GetMapping

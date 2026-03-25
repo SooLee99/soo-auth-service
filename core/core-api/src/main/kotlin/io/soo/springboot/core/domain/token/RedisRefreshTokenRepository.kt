@@ -1,4 +1,4 @@
-package io.soo.springboot.core.domain
+package io.soo.springboot.core.domain.token
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.soo.springboot.storage.db.core.RefreshToken
@@ -10,6 +10,8 @@ import java.time.Clock
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.TimeUnit
+import kotlin.collections.plusAssign
+import kotlin.ranges.coerceAtLeast
 
 @Repository
 @Profile("local-dev", "dev", "staging", "live")
@@ -140,4 +142,3 @@ class RedisRefreshTokenRepository(
         return ttl
     }
 }
-

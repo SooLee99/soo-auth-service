@@ -1,4 +1,4 @@
-package io.soo.springboot.core.domain.admin.bootstrap
+package io.soo.springboot.core.domain.bootstrap
 
 data class AdminBootstrapCommand(
     val username: String,

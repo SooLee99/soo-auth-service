@@ -7,8 +7,8 @@ import io.soo.springboot.core.api.controller.v1.request.WithdrawRequest
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.domain.admin.ServiceContextResolver
-import io.soo.springboot.core.domain.LocalAccountService
-import io.soo.springboot.core.domain.LocalSignUpCommand
+import io.soo.springboot.core.domain.local.LocalAccountService
+import io.soo.springboot.core.domain.local.LocalSignUpCommand
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.response.ApiResponse

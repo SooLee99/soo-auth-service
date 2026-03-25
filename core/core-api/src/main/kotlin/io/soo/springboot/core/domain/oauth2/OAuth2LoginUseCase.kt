@@ -1,6 +1,5 @@
-package io.soo.springboot.core.domain
+package io.soo.springboot.core.domain.oauth2
 
-import io.soo.springboot.core.domain.oauth2.OAuth2UserInfoParserRegistry
 import io.soo.springboot.core.enums.AuthProvider
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken

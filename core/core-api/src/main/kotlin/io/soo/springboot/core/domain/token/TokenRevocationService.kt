@@ -1,6 +1,5 @@
-package io.soo.springboot.core.domain.auth
+package io.soo.springboot.core.domain.token
 
-import io.soo.springboot.core.domain.JwtDenylistStore
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Service
 import java.time.Duration

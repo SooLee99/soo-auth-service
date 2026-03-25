@@ -6,7 +6,7 @@ import io.soo.springboot.core.api.security.response.SecurityErrorResponseWriter
 import io.soo.springboot.core.api.security.userdetails.UserPrincipalLoader
 import io.soo.springboot.core.support.error.AccountStatusDeniedException
 import io.soo.springboot.core.domain.LoginHistoryService
-import io.soo.springboot.core.domain.OAuth2LoginUseCase
+import io.soo.springboot.core.domain.oauth2.OAuth2LoginUseCase
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.LoginType
