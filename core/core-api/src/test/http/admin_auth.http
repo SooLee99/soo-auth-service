@@ -3,6 +3,7 @@
 @adminAccessToken = replace-with-admin-token
 @targetUserId = 1
 @serviceCode = SHOP
+@smsTo = 01012345678
 
 ### 관리자 헬스 체크
 # @name admin_health
@@ -127,5 +128,41 @@ Accept: application/json
 ### 서비스 비활성화
 # @name admin_service_deactivate
 POST {{baseUrl}}/api/v1/auth/admin/services/{{serviceCode}}/deactivate
+Authorization: Bearer {{adminAccessToken}}
+Accept: application/json
+
+### 관리자 문자 발송
+# @name admin_sms_send
+POST {{baseUrl}}/api/v1/auth/admin/sms/send
+Authorization: Bearer {{adminAccessToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "to": "{{smsTo}}",
+  "text": "[ADMIN] 시스템 점검 안내 테스트 문자입니다."
+}
+
+### 관리자 문자 발송 이력 조회
+# @name admin_sms_logs
+GET {{baseUrl}}/api/v1/auth/admin/sms/logs?page=0&size=20
+Authorization: Bearer {{adminAccessToken}}
+Accept: application/json
+
+### 관리자 문자 발송 이력 조회 (기간 필터)
+# @name admin_sms_logs_by_range
+GET {{baseUrl}}/api/v1/auth/admin/sms/logs?page=0&size=20&startDate=2026-03-01T00:00:00&endDate=2026-03-31T23:59:59
+Authorization: Bearer {{adminAccessToken}}
+Accept: application/json
+
+### 관리자 문자 발송 통계 조회
+# @name admin_sms_stats
+GET {{baseUrl}}/api/v1/auth/admin/sms/stats
+Authorization: Bearer {{adminAccessToken}}
+Accept: application/json
+
+### 관리자 문자 발송 통계 조회 (기간 필터)
+# @name admin_sms_stats_by_range
+GET {{baseUrl}}/api/v1/auth/admin/sms/stats?startDate=2026-03-01T00:00:00&endDate=2026-03-31T23:59:59
 Authorization: Bearer {{adminAccessToken}}
 Accept: application/json
