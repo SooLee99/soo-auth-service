@@ -1,15 +1,15 @@
 package io.soo.springboot.core.domain.local.phone.sms
 
-import io.soo.springboot.core.domain.local.phone.PhoneVerificationNotifier
+import io.soo.springboot.core.domain.local.phone.PhoneNotifier
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 
 @Component
 @ConditionalOnProperty(prefix = "ncp.sms", name = ["enabled"], havingValue = "true")
-class NcpSmsPhoneVerificationNotifier(
+class NcpSmsNotifier(
     private val smsSender: SmsSender,
-) : PhoneVerificationNotifier {
-    override fun sendVerificationCode(phoneNumber: String, code: String, expiresInSec: Long) {
+) : PhoneNotifier {
+    override fun sendCode(phoneNumber: String, code: String, expiresInSec: Long) {
         val to = toDomesticNumber(phoneNumber)
         val content = "[soo-auth] 인증번호 [$code] (유효 ${expiresInSec / 60}분)"
         smsSender.sendSms(SmsMessage(to = to, content = content))

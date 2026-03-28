@@ -2,7 +2,7 @@ package io.soo.springboot.core.api.security.local
 
 import io.soo.springboot.core.api.security.response.SecurityErrorFields
 import io.soo.springboot.core.support.error.AccountStatusDeniedException
-import io.soo.springboot.core.domain.local.LocalLoginPolicyService
+import io.soo.springboot.core.domain.local.LocalLoginPolicy
 import io.soo.springboot.core.support.error.ErrorType
 import org.springframework.core.annotation.Order
 import org.springframework.security.authentication.BadCredentialsException
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 data class LocalLoginFailureContext(
     val payload: LocalJsonLoginFilter.AuthErrorPayload?,
     val exception: AuthenticationException,
-    val loginPolicyResult: LocalLoginPolicyService.FailureResult?,
+    val loginPolicyResult: LocalLoginPolicy.FailResult?,
     val isStatusDenied: Boolean,
 )
 
@@ -23,14 +23,14 @@ data class LocalLoginFailureDecision(
 )
 
 interface LocalLoginFailurePolicy {
-    fun supports(context: LocalLoginFailureContext): Boolean
+    fun match(context: LocalLoginFailureContext): Boolean
     fun decide(context: LocalLoginFailureContext): LocalLoginFailureDecision
 }
 
 @Component
 @Order(100)
 class PayloadFailurePolicy : LocalLoginFailurePolicy {
-    override fun supports(context: LocalLoginFailureContext): Boolean = context.payload != null
+    override fun match(context: LocalLoginFailureContext): Boolean = context.payload != null
 
     override fun decide(context: LocalLoginFailureContext): LocalLoginFailureDecision {
         val payload = context.payload ?: error("payload is required")
@@ -48,7 +48,7 @@ class PayloadFailurePolicy : LocalLoginFailurePolicy {
 @Component
 @Order(200)
 class DisabledFailurePolicy : LocalLoginFailurePolicy {
-    override fun supports(context: LocalLoginFailureContext): Boolean =
+    override fun match(context: LocalLoginFailureContext): Boolean =
         context.exception is DisabledException
 
     override fun decide(context: LocalLoginFailureContext): LocalLoginFailureDecision =
@@ -61,7 +61,7 @@ class DisabledFailurePolicy : LocalLoginFailurePolicy {
 @Component
 @Order(300)
 class StatusDeniedFailurePolicy : LocalLoginFailurePolicy {
-    override fun supports(context: LocalLoginFailureContext): Boolean =
+    override fun match(context: LocalLoginFailureContext): Boolean =
         context.isStatusDenied || context.exception is AccountStatusDeniedException
 
     override fun decide(context: LocalLoginFailureContext): LocalLoginFailureDecision =
@@ -74,8 +74,8 @@ class StatusDeniedFailurePolicy : LocalLoginFailurePolicy {
 @Component
 @Order(400)
 class LockedFailurePolicy : LocalLoginFailurePolicy {
-    override fun supports(context: LocalLoginFailureContext): Boolean =
-        context.loginPolicyResult == LocalLoginPolicyService.FailureResult.LOCKED
+    override fun match(context: LocalLoginFailureContext): Boolean =
+        context.loginPolicyResult == LocalLoginPolicy.FailResult.LOCKED
 
     override fun decide(context: LocalLoginFailureContext): LocalLoginFailureDecision =
         LocalLoginFailureDecision(
@@ -87,13 +87,13 @@ class LockedFailurePolicy : LocalLoginFailurePolicy {
 @Component
 @Order(500)
 class BadCredentialsFailurePolicy : LocalLoginFailurePolicy {
-    override fun supports(context: LocalLoginFailureContext): Boolean =
+    override fun match(context: LocalLoginFailureContext): Boolean =
         context.exception is BadCredentialsException
 
     override fun decide(context: LocalLoginFailureContext): LocalLoginFailureDecision {
         val type = when (context.loginPolicyResult) {
-            LocalLoginPolicyService.FailureResult.BAD_CREDENTIALS -> ErrorType.LOGIN_BAD_CREDENTIALS
-            LocalLoginPolicyService.FailureResult.NOT_FOUND -> ErrorType.LOGIN_ACCOUNT_NOT_FOUND
+            LocalLoginPolicy.FailResult.BAD_CREDENTIALS -> ErrorType.LOGIN_BAD_CREDENTIALS
+            LocalLoginPolicy.FailResult.NOT_FOUND -> ErrorType.LOGIN_ACCOUNT_NOT_FOUND
             else -> ErrorType.UNAUTHORIZED
         }
         return LocalLoginFailureDecision(type = type, fields = SecurityErrorFields.badCredentials())
@@ -103,7 +103,7 @@ class BadCredentialsFailurePolicy : LocalLoginFailurePolicy {
 @Component
 @Order(1000)
 class DefaultFailurePolicy : LocalLoginFailurePolicy {
-    override fun supports(context: LocalLoginFailureContext): Boolean = true
+    override fun match(context: LocalLoginFailureContext): Boolean = true
 
     override fun decide(context: LocalLoginFailureContext): LocalLoginFailureDecision =
         LocalLoginFailureDecision(

@@ -2,13 +2,13 @@ package io.soo.springboot.core.api.restdocs
 
 import io.mockk.every
 import io.mockk.mockk
-import io.soo.springboot.core.api.controller.v1.LocalPhoneVerificationServiceController
+import io.soo.springboot.core.api.controller.v1.LocalPhoneVerifyController
 import io.soo.springboot.core.api.controller.v1.request.PhoneVerificationConfirmRequest
 import io.soo.springboot.core.api.controller.v1.request.PhoneVerificationIssueRequest
-import io.soo.springboot.core.domain.admin.ServiceContextResolver
-import io.soo.springboot.core.domain.local.phone.PhoneVerificationConfirmResult
-import io.soo.springboot.core.domain.local.phone.PhoneVerificationIssueResult
-import io.soo.springboot.core.domain.local.phone.PhoneVerificationService
+import io.soo.springboot.core.domain.admin.AppResolver
+import io.soo.springboot.core.domain.local.phone.PhoneConfirm
+import io.soo.springboot.core.domain.local.phone.PhoneIssue
+import io.soo.springboot.core.domain.local.phone.PhoneVerify
 import io.soo.springboot.core.enums.ServiceStatus
 import io.soo.springboot.storage.db.core.Service
 import io.soo.springboot.test.api.RestDocsTest
@@ -24,20 +24,20 @@ import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
 import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
 
-class LocalPhoneVerificationServiceControllerDocsTest : RestDocsTest() {
+class LocalPhoneVerifyControllerDocsTest : RestDocsTest() {
 
-    private val phoneVerificationService = mockk<PhoneVerificationService>()
-    private val serviceContextResolver = mockk<ServiceContextResolver>()
+    private val phoneVerificationService = mockk<PhoneVerify>()
+    private val serviceContextResolver = mockk<AppResolver>()
 
     @BeforeEach
     fun init() {
-        every { serviceContextResolver.resolveActive(any()) } returns sampleService()
-        mockMvc = mockController(LocalPhoneVerificationServiceController(serviceContextResolver, phoneVerificationService))
+        every { serviceContextResolver.active(any()) } returns sampleService()
+        mockMvc = mockController(LocalPhoneVerifyController(serviceContextResolver, phoneVerificationService))
     }
 
     @Test
     fun requestVerification() {
-        every { phoneVerificationService.issue(any()) } returns PhoneVerificationIssueResult(
+        every { phoneVerificationService.issue(any()) } returns PhoneIssue(
             verificationId = "verification-id-001",
             expiresInSec = 180,
         )
@@ -75,7 +75,7 @@ class LocalPhoneVerificationServiceControllerDocsTest : RestDocsTest() {
 
     @Test
     fun confirmVerification() {
-        every { phoneVerificationService.confirm(any(), any(), any()) } returns PhoneVerificationConfirmResult(
+        every { phoneVerificationService.confirm(any(), any(), any()) } returns PhoneConfirm(
             proofToken = "verified-phone-token",
             expiresInSec = 600,
         )

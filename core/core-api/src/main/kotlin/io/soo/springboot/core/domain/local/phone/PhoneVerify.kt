@@ -9,9 +9,9 @@ import java.time.Instant
 import java.util.UUID
 
 @Service
-class PhoneVerificationService(
-    private val store: PhoneVerificationStore,
-    private val notifier: PhoneVerificationNotifier,
+class PhoneVerify(
+    private val store: PhoneStore,
+    private val notifier: PhoneNotifier,
 ) {
     private val random = SecureRandom()
 
@@ -20,14 +20,14 @@ class PhoneVerificationService(
         private val PROOF_TTL: Duration = Duration.ofMinutes(10)
     }
 
-    fun issue(phoneNumber: String): PhoneVerificationIssueResult {
+    fun issue(phoneNumber: String): PhoneIssue {
         val normalizedPhone = normalizePhone(phoneNumber)
         val verificationId = UUID.randomUUID().toString()
         val code = generateCode()
         val expiresAt = Instant.now().plus(CHALLENGE_TTL)
 
         store.saveChallenge(
-            PhoneVerificationChallenge(
+            PhoneChallenge(
                 verificationId = verificationId,
                 phoneNumber = normalizedPhone,
                 code = code,
@@ -35,15 +35,15 @@ class PhoneVerificationService(
             )
         )
 
-        notifier.sendVerificationCode(normalizedPhone, code, CHALLENGE_TTL.seconds)
+        notifier.sendCode(normalizedPhone, code, CHALLENGE_TTL.seconds)
 
-        return PhoneVerificationIssueResult(
+        return PhoneIssue(
             verificationId = verificationId,
             expiresInSec = CHALLENGE_TTL.seconds,
         )
     }
 
-    fun confirm(phoneNumber: String, verificationId: String, code: String): PhoneVerificationConfirmResult {
+    fun confirm(phoneNumber: String, verificationId: String, code: String): PhoneConfirm {
         val normalizedPhone = normalizePhone(phoneNumber)
         val challenge = store.findChallenge(verificationId)
             ?: throw CoreException(ErrorType.INVALID_PHONE_VERIFICATION)
@@ -64,20 +64,20 @@ class PhoneVerificationService(
         val proofToken = UUID.randomUUID().toString()
         val expiresAt = Instant.now().plus(PROOF_TTL)
         store.saveProof(
-            PhoneVerificationProof(
+            PhoneProof(
                 proofToken = proofToken,
                 phoneNumber = normalizedPhone,
                 expiresAt = expiresAt,
             )
         )
 
-        return PhoneVerificationConfirmResult(
+        return PhoneConfirm(
             proofToken = proofToken,
             expiresInSec = PROOF_TTL.seconds,
         )
     }
 
-    fun consumeVerified(phoneNumber: String, proofToken: String) {
+    fun consume(phoneNumber: String, proofToken: String) {
         val normalizedPhone = normalizePhone(phoneNumber)
         val proof = store.findProof(proofToken.trim())
             ?: throw CoreException(ErrorType.PHONE_VERIFICATION_REQUIRED)

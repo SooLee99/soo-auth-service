@@ -7,15 +7,15 @@ import io.soo.springboot.storage.db.core.ServiceRepository
 import org.springframework.stereotype.Component
 
 @Component
-class ServiceContextResolver(
+class AppResolver(
     private val serviceRepository: ServiceRepository,
 ) {
     companion object {
         private val SERVICE_CODE_REGEX = Regex("^[A-Z0-9][A-Z0-9_-]{1,63}$")
     }
 
-    fun resolveActive(serviceCode: String): Service {
-        val normalizedCode = normalizeAndValidate(serviceCode)
+    fun active(serviceCode: String): Service {
+        val normalizedCode = normalize(serviceCode)
         val active = serviceRepository.findActiveByServiceCode(normalizedCode)
         if (active != null) return active
 
@@ -27,7 +27,7 @@ class ServiceContextResolver(
         throw CoreException(ErrorType.NOT_FOUND, data = mapOf("serviceCode" to normalizedCode))
     }
 
-    fun normalizeAndValidate(serviceCode: String): String {
+    fun normalize(serviceCode: String): String {
         val normalized = serviceCode.trim().uppercase()
         if (!SERVICE_CODE_REGEX.matches(normalized)) {
             throw CoreException(

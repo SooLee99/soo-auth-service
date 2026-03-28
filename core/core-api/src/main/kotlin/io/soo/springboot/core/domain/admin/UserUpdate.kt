@@ -6,10 +6,10 @@ import org.springframework.stereotype.Component
 import java.time.Instant
 
 @Component
-class AdminUserUpdateResolver {
-    fun apply(
+class UserUpdate {
+    fun merge(
         current: User,
-        command: AdminUserUpdateCommand,
+        command: UserUpdateCmd,
         adminUserId: Long,
         now: Instant,
     ): User {

@@ -3,7 +3,7 @@ package io.soo.springboot.core.domain.token
 import java.time.Duration
 import java.time.Instant
 
-interface JwtDenylistStore {
+interface JwtDenyStore {
     /**
      * jti를 denylist에 추가 (ttl 동안)
      */
@@ -18,5 +18,5 @@ interface JwtDenylistStore {
      * (옵션) 만료된 레코드 정리
      * @return 삭제된 행 수
      */
-    fun purgeExpired(before: Instant = Instant.now()): Long
+    fun purge(before: Instant = Instant.now()): Long
 }

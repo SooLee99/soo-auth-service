@@ -9,11 +9,11 @@ import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
 import io.soo.springboot.core.api.security.auth.UserIdResolver
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.api.security.userdetails.UserPrincipal
-import io.soo.springboot.core.domain.admin.ServiceContextResolver
-import io.soo.springboot.core.domain.admin.ServiceMembershipAccessService
+import io.soo.springboot.core.domain.admin.AppResolver
+import io.soo.springboot.core.domain.admin.AppAccess
 import io.soo.springboot.core.domain.LoginHistoryService
-import io.soo.springboot.core.domain.local.LocalAccountService
-import io.soo.springboot.core.domain.local.LocalSignUpCommand
+import io.soo.springboot.core.domain.local.LocalAccount
+import io.soo.springboot.core.domain.local.LocalSignUpCmd
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.LoginType
 import io.soo.springboot.core.support.error.CoreException
@@ -37,10 +37,10 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/v1/services/{serviceCode}/auth/local")
 class LocalAccountServiceController(
-    private val localAccountService: LocalAccountService,
+    private val localAccountService: LocalAccount,
     private val authTokenManager: AuthTokenManager,
-    private val serviceContextResolver: ServiceContextResolver,
-    private val serviceMembershipAccessService: ServiceMembershipAccessService,
+    private val serviceContextResolver: AppResolver,
+    private val serviceMembershipAccessService: AppAccess,
     private val authenticationManager: AuthenticationManager,
     private val userIdResolver: UserIdResolver,
     private val loginHistoryService: LoginHistoryService,
@@ -52,7 +52,7 @@ class LocalAccountServiceController(
         @RequestBody @Valid request: LoginRequest,
         req: HttpServletRequest,
     ): ApiResponse<Any?> {
-        val resolvedService = serviceContextResolver.resolveActive(serviceCode)
+        val resolvedService = serviceContextResolver.active(serviceCode)
         val authRequest = UsernamePasswordAuthenticationToken(
             request.email.trim().lowercase(),
             request.password.trim(),
@@ -65,7 +65,7 @@ class LocalAccountServiceController(
         }
 
         val userId = userIdResolver.resolve(authentication)
-        serviceMembershipAccessService.ensureActiveMembership(resolvedService.id, userId)
+        serviceMembershipAccessService.member(resolvedService.id, userId)
 
         val tokens = authTokenManager.issue(
             authentication = authentication,
@@ -92,14 +92,14 @@ class LocalAccountServiceController(
     }
 
     @PostMapping("/signup", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun signUp(
+    fun signup(
         @PathVariable serviceCode: String,
         @RequestBody @Valid request: SignUpRequest,
         req: HttpServletRequest,
     ): ApiResponse<Any?> {
-        val resolvedService = serviceContextResolver.resolveActive(serviceCode)
-        val signedUp = localAccountService.signUp(
-            LocalSignUpCommand(
+        val resolvedService = serviceContextResolver.active(serviceCode)
+        val signedUp = localAccountService.signup(
+            LocalSignUpCmd(
                 email = request.email,
                 password = request.password,
                 phoneNumber = request.phoneNumber,
@@ -114,23 +114,23 @@ class LocalAccountServiceController(
                 birthday = request.birthday,
             )
         )
-        serviceMembershipAccessService.ensureActiveMembershipOrCreate(resolvedService.id, signedUp.id)
+        serviceMembershipAccessService.join(resolvedService.id, signedUp.id)
 
         return ApiResponse.success(req = req, data = mapOf("result" to "OK", "serviceCode" to resolvedService.serviceCode))
     }
 
     @PostMapping("/signup/phone", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun signUpByPhone(
+    fun signupPhone(
         @PathVariable serviceCode: String,
         @RequestBody @Valid request: PhoneSignUpRequest,
         req: HttpServletRequest,
     ): ApiResponse<Any?> {
-        val resolvedService = serviceContextResolver.resolveActive(serviceCode)
-        val signedUp = localAccountService.signUpByPhone(
+        val resolvedService = serviceContextResolver.active(serviceCode)
+        val signedUp = localAccountService.signupPhone(
             phoneNumber = request.phoneNumber,
             phoneVerificationToken = request.phoneVerificationToken,
         )
-        serviceMembershipAccessService.ensureActiveMembershipOrCreate(resolvedService.id, signedUp.id)
+        serviceMembershipAccessService.join(resolvedService.id, signedUp.id)
 
         return ApiResponse.success(req = req, data = mapOf("result" to "OK", "serviceCode" to resolvedService.serviceCode))
     }
@@ -142,7 +142,7 @@ class LocalAccountServiceController(
         @RequestBody request: RefreshRequest,
         req: HttpServletRequest,
     ): ApiResponse<Any?> {
-        val resolvedService = serviceContextResolver.resolveActive(serviceCode)
+        val resolvedService = serviceContextResolver.active(serviceCode)
         val issued = authTokenManager.refresh(
             oldRefreshToken = request.refreshToken,
             deviceId = deviceId,
@@ -159,12 +159,12 @@ class LocalAccountServiceController(
         @RequestBody(required = false) body: LogoutRequest?,
         req: HttpServletRequest,
     ): ApiResponse<Any?> {
-        val resolvedService = serviceContextResolver.resolveActive(serviceCode)
+        val resolvedService = serviceContextResolver.active(serviceCode)
         val principalJwt = jwt ?: throw CoreException(ErrorType.UNAUTHORIZED, "authenticated jwt is required")
         val userId = (principalJwt.claims["uid"] as? Number)?.toLong()
             ?: throw CoreException(ErrorType.UNAUTHORIZED, "uid claim is required")
-        serviceMembershipAccessService.assertTokenServiceScope(principalJwt, resolvedService.id)
-        serviceMembershipAccessService.ensureActiveMembership(resolvedService.id, userId)
+        serviceMembershipAccessService.scope(principalJwt, resolvedService.id)
+        serviceMembershipAccessService.member(resolvedService.id, userId)
 
         authTokenManager.invalidateTokens(
             jwt = principalJwt,
@@ -184,13 +184,13 @@ class LocalAccountServiceController(
         @RequestBody(required = false) @Valid body: WithdrawRequest?,
         req: HttpServletRequest,
     ): ApiResponse<Any?> {
-        val resolvedService = serviceContextResolver.resolveActive(serviceCode)
+        val resolvedService = serviceContextResolver.active(serviceCode)
         val principalJwt = jwt ?: throw CoreException(ErrorType.UNAUTHORIZED, "authenticated jwt is required")
-        serviceMembershipAccessService.assertTokenServiceScope(principalJwt, resolvedService.id)
+        serviceMembershipAccessService.scope(principalJwt, resolvedService.id)
         val userId = (principalJwt.claims["uid"] as? Number)?.toLong()
             ?: throw CoreException(ErrorType.UNAUTHORIZED, "uid claim is required")
 
-        serviceMembershipAccessService.withdrawMembership(resolvedService.id, userId, body?.reason)
+        serviceMembershipAccessService.leave(resolvedService.id, userId, body?.reason)
         authTokenManager.invalidateTokens(
             jwt = principalJwt,
             deviceId = "",

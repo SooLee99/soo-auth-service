@@ -11,24 +11,24 @@ import org.springframework.core.annotation.Order
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 
-data class AdminBootstrapState(
-    val command: AdminBootstrapCommand,
+data class AdminBootCtx(
+    val command: AdminBootCmd,
     val user: User?,
     val accountCreated: Boolean = false,
     val rolePromoted: Boolean = false,
     val credentialCreated: Boolean = false,
 )
 
-interface AdminBootstrapAction {
-    fun apply(state: AdminBootstrapState): AdminBootstrapState
+interface AdminBootStep {
+    fun apply(state: AdminBootCtx): AdminBootCtx
 }
 
 @Component
 @Order(100)
-class CreateAdminAccountAction(
+class CreateAdminStep(
     private val userRepository: UserRepository,
-) : AdminBootstrapAction {
-    override fun apply(state: AdminBootstrapState): AdminBootstrapState {
+) : AdminBootStep {
+    override fun apply(state: AdminBootCtx): AdminBootCtx {
         if (state.user != null) return state
         val created = userRepository.save(
             User(
@@ -47,10 +47,10 @@ class CreateAdminAccountAction(
 
 @Component
 @Order(200)
-class PromoteAdminRoleAction(
+class PromoteRoleStep(
     private val userRepository: UserRepository,
-) : AdminBootstrapAction {
-    override fun apply(state: AdminBootstrapState): AdminBootstrapState {
+) : AdminBootStep {
+    override fun apply(state: AdminBootCtx): AdminBootCtx {
         val current = state.user ?: return state
         if (current.role == Role.ADMIN) return state
         val promoted = userRepository.save(current.copy(role = Role.ADMIN))
@@ -60,11 +60,11 @@ class PromoteAdminRoleAction(
 
 @Component
 @Order(300)
-class EnsureLocalCredentialAction(
+class EnsureCredStep(
     private val localCredentialRepository: LocalCredentialRepository,
     private val passwordEncoder: PasswordEncoder,
-) : AdminBootstrapAction {
-    override fun apply(state: AdminBootstrapState): AdminBootstrapState {
+) : AdminBootStep {
+    override fun apply(state: AdminBootCtx): AdminBootCtx {
         val current = state.user ?: return state
         val credential = localCredentialRepository.findByUserId(current.id)
         if (credential != null) return state

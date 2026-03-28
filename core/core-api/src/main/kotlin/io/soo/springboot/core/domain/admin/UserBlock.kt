@@ -15,13 +15,13 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 
 @Service
-class AdminUserBlockService(
+class UserBlock(
     private val userRepository: UserRepository,
     private val userStatusAuditLogRepository: UserStatusAuditLogRepository,
 ) {
 
     @Transactional
-    fun blockUser(targetUserId: Long, adminUserId: Long, reason: String?): User {
+    fun block(targetUserId: Long, adminUserId: Long, reason: String?): User {
         val user = userRepository.findByIdIncludingDeleted(targetUserId)
             ?: throw CoreException(ErrorType.NOT_FOUND, mapOf("userId" to targetUserId))
         if (user.userStatus == UserStatus.SOFT_DELETED) {
@@ -51,7 +51,7 @@ class AdminUserBlockService(
     }
 
     @Transactional
-    fun unblockUser(targetUserId: Long, adminUserId: Long): User {
+    fun unblock(targetUserId: Long, adminUserId: Long): User {
         val user = userRepository.findByIdIncludingDeleted(targetUserId)
             ?: throw CoreException(ErrorType.NOT_FOUND, mapOf("userId" to targetUserId))
         if (user.userStatus == UserStatus.SOFT_DELETED) {
@@ -77,17 +77,17 @@ class AdminUserBlockService(
     }
 
     @Transactional(readOnly = true)
-    fun findBlockedUsers(pageable: Pageable): Page<User> {
-        return userRepository.findBlockedUsers(pageable)
+    fun blocked(pageable: Pageable): Page<User> {
+        return userRepository.blocked(pageable)
     }
 
     @Transactional(readOnly = true)
-    fun findSoftDeletedUsers(pageable: Pageable): Page<User> {
-        return userRepository.findSoftDeletedUsers(pageable)
+    fun deleted(pageable: Pageable): Page<User> {
+        return userRepository.deleted(pageable)
     }
 
     @Transactional(readOnly = true)
-    fun findStatusAuditLogs(targetUserId: Long, pageable: Pageable): Page<UserStatusAuditLog> {
+    fun logs(targetUserId: Long, pageable: Pageable): Page<UserStatusAuditLog> {
         return userStatusAuditLogRepository.findByTargetUserId(targetUserId, pageable)
     }
 }

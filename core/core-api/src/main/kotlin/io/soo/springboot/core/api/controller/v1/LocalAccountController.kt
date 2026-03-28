@@ -5,8 +5,8 @@ import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
 import io.soo.springboot.core.api.controller.v1.request.PhoneSignUpRequest
 import io.soo.springboot.core.api.controller.v1.request.WithdrawRequest
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
-import io.soo.springboot.core.domain.local.LocalAccountService
-import io.soo.springboot.core.domain.local.LocalSignUpCommand
+import io.soo.springboot.core.domain.local.LocalAccount
+import io.soo.springboot.core.domain.local.LocalSignUpCmd
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType
@@ -21,13 +21,13 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/v1/auth/local")
 class LocalAccountController(
-    private val localAccountService: LocalAccountService,
+    private val localAccountService: LocalAccount,
     private val authTokenManager: AuthTokenManager,
 ) {
     @PostMapping("/signup")
-    fun signUp(@RequestBody @Valid request: SignUpRequest) {
-        localAccountService.signUp(
-            LocalSignUpCommand(
+    fun signup(@RequestBody @Valid request: SignUpRequest) {
+        localAccountService.signup(
+            LocalSignUpCmd(
                 email = request.email,
                 password = request.password,
                 phoneNumber = request.phoneNumber,
@@ -45,8 +45,8 @@ class LocalAccountController(
     }
 
     @PostMapping("/signup/phone")
-    fun signUpByPhone(@RequestBody @Valid request: PhoneSignUpRequest) {
-        localAccountService.signUpByPhone(
+    fun signupPhone(@RequestBody @Valid request: PhoneSignUpRequest) {
+        localAccountService.signupPhone(
             phoneNumber = request.phoneNumber,
             phoneVerificationToken = request.phoneVerificationToken,
         )
@@ -91,7 +91,7 @@ class LocalAccountController(
         val userId = (principalJwt.claims["uid"] as? Number)?.toLong()
             ?: throw CoreException(ErrorType.UNAUTHORIZED, "uid claim is required")
 
-        localAccountService.softDelete(userId = userId, reason = body?.reason)
+        localAccountService.deleteSoft(userId = userId, reason = body?.reason)
         return ApiResponse.success(req = req, data = mapOf("result" to "OK"))
     }
 }

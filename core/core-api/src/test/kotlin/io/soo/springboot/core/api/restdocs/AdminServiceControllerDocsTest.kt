@@ -4,7 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.soo.springboot.core.api.controller.v1.AdminServiceController
 import io.soo.springboot.core.api.controller.v1.request.AdminServiceCreateRequest
-import io.soo.springboot.core.domain.admin.AdminServiceManagementService
+import io.soo.springboot.core.domain.admin.AppAdmin
 import io.soo.springboot.core.enums.ServiceStatus
 import io.soo.springboot.storage.db.core.Service
 import io.soo.springboot.test.api.RestDocsTest
@@ -27,7 +27,7 @@ import org.springframework.restdocs.request.RequestDocumentation.parameterWithNa
 
 class AdminServiceControllerDocsTest : RestDocsTest() {
 
-    private val adminServiceManagementService = mockk<AdminServiceManagementService>()
+    private val adminServiceManagementService = mockk<AppAdmin>()
     private lateinit var controller: AdminServiceController
 
     @BeforeEach
@@ -37,8 +37,8 @@ class AdminServiceControllerDocsTest : RestDocsTest() {
     }
 
     @Test
-    fun registerService() {
-        every { adminServiceManagementService.registerService(any(), any()) } returns sampleService()
+    fun create() {
+        every { adminServiceManagementService.create(any(), any()) } returns sampleService()
 
         given()
             .contentType("application/json")
@@ -66,9 +66,9 @@ class AdminServiceControllerDocsTest : RestDocsTest() {
     }
 
     @Test
-    fun listServices() {
+    fun list() {
         val page = PageImpl(listOf(sampleService()), PageRequest.of(0, 20), 1)
-        every { adminServiceManagementService.listServices(any()) } returns page
+        every { adminServiceManagementService.list(any()) } returns page
 
         given()
             .header("Authorization", "Bearer token")
@@ -96,8 +96,8 @@ class AdminServiceControllerDocsTest : RestDocsTest() {
     }
 
     @Test
-    fun deactivateService() {
-        every { adminServiceManagementService.deactivateService(any()) } returns sampleService().copy(
+    fun deactivate() {
+        every { adminServiceManagementService.deactivate(any()) } returns sampleService().copy(
             serviceStatus = ServiceStatus.INACTIVE,
         )
 

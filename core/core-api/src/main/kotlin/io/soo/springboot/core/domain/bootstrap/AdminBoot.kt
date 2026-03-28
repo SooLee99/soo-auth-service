@@ -5,24 +5,24 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class AdminAccountBootstrapService(
+class AdminBoot(
     private val userRepository: UserRepository,
-    private val passwordPolicies: List<AdminPasswordPolicy>,
-    private val bootstrapActions: List<AdminBootstrapAction>,
+    private val passwordPolicies: List<AdminPwRule>,
+    private val bootstrapActions: List<AdminBootStep>,
 ) {
     @Transactional
-    fun bootstrap(command: AdminBootstrapCommand): AdminBootstrapResult {
+    fun run(command: AdminBootCmd): AdminBootResult {
         validateRequiredCredentials(command)
 
         if (!isAllowedProfile(command.activeProfiles, command.allowedProfiles)) {
-            return AdminBootstrapResult.Skipped(
+            return AdminBootResult.Skipped(
                 reason = "activeProfiles=${command.activeProfiles}, allowedProfiles=${command.allowedProfiles}",
             )
         }
 
-        passwordPolicies.firstOrNull { it.supports(command) }?.validate(command)
+        passwordPolicies.firstOrNull { it.match(command) }?.check(command)
 
-        var state = AdminBootstrapState(
+        var state = AdminBootCtx(
             command = command,
             user = userRepository.findByEmail(command.username),
         )
@@ -31,14 +31,14 @@ class AdminAccountBootstrapService(
             state = action.apply(state)
         }
 
-        return AdminBootstrapResult.Applied(
+        return AdminBootResult.Applied(
             accountCreated = state.accountCreated,
             rolePromoted = state.rolePromoted,
             credentialCreated = state.credentialCreated,
         )
     }
 
-    private fun validateRequiredCredentials(command: AdminBootstrapCommand) {
+    private fun validateRequiredCredentials(command: AdminBootCmd) {
         if (command.username.isBlank() || command.rawPassword.isBlank()) {
             throw IllegalStateException(
                 "admin bootstrap enabled but username/password is blank. " +

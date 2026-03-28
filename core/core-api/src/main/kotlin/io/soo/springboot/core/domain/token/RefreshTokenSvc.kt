@@ -12,19 +12,19 @@ import java.security.SecureRandom
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
-data class RefreshTokenIssued(
+data class RefreshIssued(
     val token: String,
     val expiresInSec: Long,
 )
 
-data class RefreshTokenRotateResult(
+data class RefreshRotate(
     val userId: Long,
     val serviceId: Long?,
-    val issued: RefreshTokenIssued,
+    val issued: RefreshIssued,
 )
 
 @Service
-class RefreshTokenManager(
+class RefreshTokenSvc(
     private val repository: RefreshTokenRepository,
 ) {
     companion object {
@@ -48,7 +48,7 @@ class RefreshTokenManager(
     }
 
     @Transactional
-    fun issue(userId: Long, deviceId: String, provider: AuthProvider, serviceId: Long? = null): RefreshTokenIssued {
+    fun issue(userId: Long, deviceId: String, provider: AuthProvider, serviceId: Long? = null): RefreshIssued {
         val now = now()
         repository.revokeAllActiveByUserIdAndDeviceId(userId, deviceId, serviceId, now)
 
@@ -68,11 +68,11 @@ class RefreshTokenManager(
             )
         )
 
-        return RefreshTokenIssued(token = raw, expiresInSec = ChronoUnit.SECONDS.between(now, expiresAt))
+        return RefreshIssued(token = raw, expiresInSec = ChronoUnit.SECONDS.between(now, expiresAt))
     }
 
     @Transactional
-    fun rotate(oldRefreshTokenRaw: String, deviceId: String, expectedServiceId: Long? = null): RefreshTokenRotateResult {
+    fun rotate(oldRefreshTokenRaw: String, deviceId: String, expectedServiceId: Long? = null): RefreshRotate {
         val now = now()
 
         if (oldRefreshTokenRaw.isBlank()) {
@@ -129,12 +129,12 @@ class RefreshTokenManager(
             )
         )
 
-        val issued = RefreshTokenIssued(
+        val issued = RefreshIssued(
             token = newRaw,
             expiresInSec = ChronoUnit.SECONDS.between(now, newExpiresAt),
         )
 
-        return RefreshTokenRotateResult(
+        return RefreshRotate(
             userId = old.userId,
             serviceId = old.serviceId,
             issued = issued,

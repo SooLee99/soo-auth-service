@@ -10,7 +10,7 @@ import io.soo.springboot.core.api.controller.v1.request.WithdrawRequest
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.api.security.token.IssuedTokens
-import io.soo.springboot.core.domain.local.LocalAccountService
+import io.soo.springboot.core.domain.local.LocalAccount
 import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.test.api.RestDocsTest
 import io.soo.springboot.test.api.RestDocsUtils
@@ -31,7 +31,7 @@ import java.time.Instant
 
 class LocalAccountControllerDocsTest : RestDocsTest() {
 
-    private val localAccountService = mockk<LocalAccountService>(relaxed = true)
+    private val localAccountService = mockk<LocalAccount>(relaxed = true)
     private val authTokenManager = mockk<AuthTokenManager>()
     private lateinit var controller: LocalAccountController
 
@@ -42,7 +42,7 @@ class LocalAccountControllerDocsTest : RestDocsTest() {
     }
 
     @Test
-    fun signUp() {
+    fun signup() {
         val request = SignUpRequest(
             email = "user@example.com",
             password = "P@ssw0rd!",
@@ -89,7 +89,7 @@ class LocalAccountControllerDocsTest : RestDocsTest() {
     }
 
     @Test
-    fun signUpByPhone() {
+    fun signupPhone() {
         val request = PhoneSignUpRequest(
             phoneNumber = "+82 10-1234-5678",
             phoneVerificationToken = "verified-phone-token",

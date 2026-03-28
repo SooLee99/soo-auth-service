@@ -5,7 +5,7 @@ import io.soo.springboot.core.api.security.response.SecurityErrorResponseWriter
 import io.soo.springboot.core.support.error.AccountStatusDeniedException
 import io.soo.springboot.core.enums.LoginType
 import io.soo.springboot.core.enums.LoginDenyReason
-import io.soo.springboot.core.domain.local.LocalLoginPolicyService
+import io.soo.springboot.core.domain.local.LocalLoginPolicy
 import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.storage.db.core.UserRepository
@@ -19,7 +19,7 @@ import java.time.LocalDateTime
 @Component
 class LocalLoginFailureHandler(
     private val writer: SecurityErrorResponseWriter,
-    private val localLoginPolicyService: LocalLoginPolicyService,
+    private val localLoginPolicyService: LocalLoginPolicy,
     private val loginHistoryService: LoginHistoryService,
     private val userRepository: UserRepository,
     private val failurePolicies: List<LocalLoginFailurePolicy>,
@@ -44,7 +44,7 @@ class LocalLoginFailureHandler(
         val result = if (isStatusDenied) {
             null
         } else {
-            localLoginPolicyService.recordFailureByEmail(
+            localLoginPolicyService.failByEmail(
                 normalizedEmail = normalizedEmail,
                 now = LocalDateTime.now(),
             )
@@ -54,9 +54,9 @@ class LocalLoginFailureHandler(
         val user = userRepository.findByEmailIncludingDeleted(normalizedEmail)
         if (user != null) {
             val failureReason = when (result) {
-                LocalLoginPolicyService.FailureResult.LOCKED -> "LOGIN_ATTEMPTS_EXCEEDED"
-                LocalLoginPolicyService.FailureResult.BAD_CREDENTIALS -> "BAD_CREDENTIALS"
-                LocalLoginPolicyService.FailureResult.NOT_FOUND -> "ACCOUNT_NOT_FOUND"
+                LocalLoginPolicy.FailResult.LOCKED -> "LOGIN_ATTEMPTS_EXCEEDED"
+                LocalLoginPolicy.FailResult.BAD_CREDENTIALS -> "BAD_CREDENTIALS"
+                LocalLoginPolicy.FailResult.NOT_FOUND -> "ACCOUNT_NOT_FOUND"
                 null -> when (statusDenied?.reason) {
                     LoginDenyReason.SOFT_DELETED -> "ACCOUNT_SOFT_DELETED"
                     LoginDenyReason.BLOCKED -> "ACCOUNT_BLOCKED"
@@ -81,7 +81,7 @@ class LocalLoginFailureHandler(
             loginPolicyResult = result,
             isStatusDenied = isStatusDenied,
         )
-        val decision = failurePolicies.first { it.supports(context) }.decide(context)
+        val decision = failurePolicies.first { it.match(context) }.decide(context)
 
         writer.writeError(
             response = response,

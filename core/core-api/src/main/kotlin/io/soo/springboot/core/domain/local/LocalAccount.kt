@@ -12,8 +12,8 @@ import io.soo.springboot.core.enums.UserStatus
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.error.CoreException
 
-import io.soo.springboot.core.domain.token.TokenRevocationService
-import io.soo.springboot.core.domain.local.phone.PhoneVerificationService
+import io.soo.springboot.core.domain.token.TokenRevoke
+import io.soo.springboot.core.domain.local.phone.PhoneVerify
 import io.soo.springboot.storage.db.core.LocalCredential
 import io.soo.springboot.storage.db.core.LocalCredentialRepository
 import io.soo.springboot.storage.db.core.User
@@ -25,7 +25,7 @@ import java.security.MessageDigest
 import java.security.SecureRandom
 
 
-data class LocalSignUpCommand(
+data class LocalSignUpCmd(
     val email: String,
     val password: String,
     val phoneNumber: String,
@@ -41,19 +41,19 @@ data class LocalSignUpCommand(
 )
 
 @Service
-class LocalAccountService(
+class LocalAccount(
     private val userRepository: UserRepository,
     private val localAccountRepository: LocalCredentialRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val tokenRevocationService: TokenRevocationService,
-    private val phoneVerificationService: PhoneVerificationService,
+    private val tokenRevocationService: TokenRevoke,
+    private val phoneVerificationService: PhoneVerify,
     private val userStatusAuditLogRepository: UserStatusAuditLogRepository,
 ) {
     private val secureRandom = SecureRandom()
 
     @Transactional
-    fun signUp(cmd: LocalSignUpCommand): User {
-        phoneVerificationService.consumeVerified(cmd.phoneNumber, cmd.phoneVerificationToken)
+    fun signup(cmd: LocalSignUpCmd): User {
+        phoneVerificationService.consume(cmd.phoneNumber, cmd.phoneVerificationToken)
         val normalizedPhone = normalizePhoneNumber(cmd.phoneNumber)
 
         // 1) 중복 이메일/전화번호 검사
@@ -92,8 +92,8 @@ class LocalAccountService(
     }
 
     @Transactional
-    fun signUpByPhone(phoneNumber: String, phoneVerificationToken: String): User {
-        phoneVerificationService.consumeVerified(phoneNumber, phoneVerificationToken)
+    fun signupPhone(phoneNumber: String, phoneVerificationToken: String): User {
+        phoneVerificationService.consume(phoneNumber, phoneVerificationToken)
         val normalizedPhone = normalizePhoneNumber(phoneNumber)
         validatePhoneDuplicated(phoneNumber, normalizedPhone)
 
@@ -146,7 +146,7 @@ class LocalAccountService(
      * - 탈퇴 즉시 로그인 불가
      */
     @Transactional
-    fun softDelete(userId: Long, reason: String?, actorUserId: Long? = null) {
+    fun deleteSoft(userId: Long, reason: String?, actorUserId: Long? = null) {
         val user = userRepository.findByIdIncludingDeleted(userId)
             ?: throw CoreException(ErrorType.NOT_FOUND, mapOf("userId" to userId))
         if (user.userStatus == UserStatus.SOFT_DELETED) return

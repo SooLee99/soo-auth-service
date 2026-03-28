@@ -6,10 +6,10 @@ import org.springframework.stereotype.Component
 
 @Component
 @ConditionalOnProperty(prefix = "ncp.sms", name = ["enabled"], havingValue = "false", matchIfMissing = true)
-class LoggingPhoneVerificationNotifier : PhoneVerificationNotifier {
+class LogPhoneNotifier : PhoneNotifier {
     private val log = LoggerFactory.getLogger(javaClass)
 
-    override fun sendVerificationCode(phoneNumber: String, code: String, expiresInSec: Long) {
+    override fun sendCode(phoneNumber: String, code: String, expiresInSec: Long) {
         log.info(
             "phone verification code issued. phone={}, code={}, expiresInSec={}",
             phoneNumber,

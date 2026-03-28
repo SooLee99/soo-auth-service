@@ -3,7 +3,7 @@ package io.soo.springboot.core.domain
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import io.soo.springboot.core.domain.admin.AdminUserBlockService
+import io.soo.springboot.core.domain.admin.UserBlock
 import io.soo.springboot.core.enums.AdminUserActionType
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.UserStatus
@@ -17,10 +17,10 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import java.time.Instant
 
-class AdminUserBlockServiceTest {
+class UserBlockTest {
     private val userRepository = mockk<UserRepository>()
     private val auditRepository = mockk<UserStatusAuditLogRepository>()
-    private val service = AdminUserBlockService(userRepository, auditRepository)
+    private val service = UserBlock(userRepository, auditRepository)
 
     @Test
     fun `관리자 차단 성공`() {
@@ -31,7 +31,7 @@ class AdminUserBlockServiceTest {
             auditRepository.save(1L, 100L, AdminUserActionType.BLOCK, any())
         } returns UserStatusAuditLog(1L, 1L, 100L, AdminUserActionType.BLOCK, "abuse", Instant.now())
 
-        val result = service.blockUser(1L, 100L, "abuse")
+        val result = service.block(1L, 100L, "abuse")
 
         assertEquals(UserStatus.BLOCKED, result.userStatus)
         assertEquals(true, result.blocked)
@@ -52,7 +52,7 @@ class AdminUserBlockServiceTest {
             auditRepository.save(1L, 100L, AdminUserActionType.UNBLOCK, null)
         } returns UserStatusAuditLog(1L, 1L, 100L, AdminUserActionType.UNBLOCK, null, Instant.now())
 
-        val result = service.unblockUser(1L, 100L)
+        val result = service.unblock(1L, 100L)
         assertEquals(UserStatus.ACTIVE, result.userStatus)
         assertEquals(false, result.blocked)
     }
@@ -60,11 +60,11 @@ class AdminUserBlockServiceTest {
     @Test
     fun `차단 목록 조회 성공`() {
         val pageable = PageRequest.of(0, 20)
-        every { userRepository.findBlockedUsers(pageable) } returns PageImpl(listOf(
+        every { userRepository.blocked(pageable) } returns PageImpl(listOf(
             activeUser().copy(userStatus = UserStatus.BLOCKED, blocked = true, blockedReason = "policy_violation")
         ))
 
-        val page = service.findBlockedUsers(pageable)
+        val page = service.blocked(pageable)
         assertEquals(1, page.totalElements)
     }
 

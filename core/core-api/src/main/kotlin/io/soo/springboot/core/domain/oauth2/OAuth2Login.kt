@@ -8,18 +8,16 @@ import org.springframework.stereotype.Service
 
 @Service
 class OAuth2Login(
-    private val oAuth2AccountService: OAuth2Account,
-    private val oAuth2UserInfoParserRegistry: OAuth2ParserRegistry,
+    private val account: OAuth2AccountService,
+    private val parsers: OAuth2ParserRegistry,
 ) {
     fun userId(authentication: Authentication): Long {
-        val oauth2Token = authentication as? OAuth2AuthenticationToken
+        val token = authentication as? OAuth2AuthenticationToken
             ?: throw IllegalStateException("OAuth2 authentication is required: ${authentication::class.java.name}")
-
-        val provider = AuthProvider.valueOf(oauth2Token.authorizedClientRegistrationId.uppercase())
-        val oauth2User = oauth2Token.principal as? OAuth2User
-            ?: throw IllegalStateException("OAuth2 principal is required: ${oauth2Token.principal::class.java.name}")
-
-        val info = oAuth2UserInfoParserRegistry.parse(provider, oauth2User.attributes)
-        return oAuth2AccountService.upsertId(info)
+        val provider = AuthProvider.valueOf(token.authorizedClientRegistrationId.uppercase())
+        val user = token.principal as? OAuth2User
+            ?: throw IllegalStateException("OAuth2 principal is required: ${token.principal::class.java.name}")
+        val info = parsers.parse(provider, user.attributes)
+        return account.signUp(info)
     }
 }

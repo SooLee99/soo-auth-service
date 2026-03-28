@@ -7,29 +7,29 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Service
-class LocalLoginPolicyService(
+class LocalLoginPolicy(
     private val userRepository: UserRepository,
     private val localCredentialRepository: LocalCredentialRepository,
 ) {
     @Transactional
-    fun recordFailureByEmail(normalizedEmail: String, now: LocalDateTime = LocalDateTime.now()): FailureResult {
-        val user = userRepository.findByEmail(normalizedEmail) ?: return FailureResult.NOT_FOUND
-        val cred = localCredentialRepository.lockByUserId(user.id) ?: return FailureResult.NOT_FOUND
+    fun failByEmail(normalizedEmail: String, now: LocalDateTime = LocalDateTime.now()): FailResult {
+        val user = userRepository.findByEmail(normalizedEmail) ?: return FailResult.NOT_FOUND
+        val cred = localCredentialRepository.lockByUserId(user.id) ?: return FailResult.NOT_FOUND
         cred.recordLoginFailure(
             now = now,
             maxAttempts = 5,
             lockMinutes = 5,
         )
         localCredentialRepository.save(cred)
-        return if (cred.isLocked(now)) FailureResult.LOCKED else FailureResult.BAD_CREDENTIALS
+        return if (cred.isLocked(now)) FailResult.LOCKED else FailResult.BAD_CREDENTIALS
     }
 
     @Transactional
-    fun recordSuccessByUserId(userId: Long) {
+    fun successByUser(userId: Long) {
         val cred = localCredentialRepository.lockByUserId(userId) ?: return
         cred.recordLoginSuccess()
         localCredentialRepository.save(cred)
     }
 
-    enum class FailureResult { NOT_FOUND, BAD_CREDENTIALS, LOCKED }
+    enum class FailResult { NOT_FOUND, BAD_CREDENTIALS, LOCKED }
 }

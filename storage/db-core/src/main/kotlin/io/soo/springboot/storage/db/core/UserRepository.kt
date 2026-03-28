@@ -24,7 +24,7 @@ interface UserRepository {
         authProvider: AuthProvider?,
         pageable: Pageable,
     ): Page<User>
-    fun findBlockedUsers(pageable: Pageable): Page<User>
-    fun findSoftDeletedUsers(pageable: Pageable): Page<User>
+    fun blocked(pageable: Pageable): Page<User>
+    fun deleted(pageable: Pageable): Page<User>
     fun purgeSoftDeletedUsers(now: Instant): Int
 }

@@ -3,7 +3,7 @@ package io.soo.springboot.core.api.restdocs
 import io.mockk.every
 import io.mockk.mockk
 import io.soo.springboot.core.api.controller.v1.OAuth2AccountServiceController
-import io.soo.springboot.core.domain.admin.ServiceContextResolver
+import io.soo.springboot.core.domain.admin.AppResolver
 import io.soo.springboot.core.enums.ServiceStatus
 import io.soo.springboot.storage.db.core.Service
 import io.soo.springboot.test.api.RestDocsTest
@@ -22,11 +22,11 @@ import org.springframework.restdocs.request.RequestDocumentation.parameterWithNa
 
 class OAuth2AccountServiceControllerDocsTest : RestDocsTest() {
 
-    private val serviceContextResolver = mockk<ServiceContextResolver>()
+    private val serviceContextResolver = mockk<AppResolver>()
 
     @BeforeEach
     fun init() {
-        every { serviceContextResolver.resolveActive(any()) } returns sampleService()
+        every { serviceContextResolver.active(any()) } returns sampleService()
         mockMvc = mockController(OAuth2AccountServiceController(serviceContextResolver))
     }
 

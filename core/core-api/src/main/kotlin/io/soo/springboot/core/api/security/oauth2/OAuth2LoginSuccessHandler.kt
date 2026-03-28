@@ -5,11 +5,11 @@ import io.soo.springboot.core.api.controller.v1.response.LoginSuccessResponse
 import io.soo.springboot.core.api.security.response.SecurityErrorResponseWriter
 import io.soo.springboot.core.api.security.userdetails.UserPrincipalLoader
 import io.soo.springboot.core.support.error.AccountStatusDeniedException
-import io.soo.springboot.core.domain.admin.ServiceContextResolver
-import io.soo.springboot.core.domain.admin.ServiceMembershipAccessService
+import io.soo.springboot.core.domain.admin.AppResolver
+import io.soo.springboot.core.domain.admin.AppAccess
 import io.soo.springboot.core.domain.LoginHistoryService
-import io.soo.springboot.core.domain.oauth2.OAuth2Login
 import io.soo.springboot.core.api.security.token.AuthTokenManager
+import io.soo.springboot.core.domain.oauth2.OAuth2Login
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.LoginType
 import io.soo.springboot.core.support.error.CoreException
@@ -29,8 +29,8 @@ class OAuth2LoginSuccessHandler(
     private val oAuth2LoginUseCase: OAuth2Login,
     private val userPrincipalLoader: UserPrincipalLoader,
     private val errorWriter: SecurityErrorResponseWriter,
-    private val serviceContextResolver: ServiceContextResolver,
-    private val serviceMembershipAccessService: ServiceMembershipAccessService,
+    private val serviceContextResolver: AppResolver,
+    private val serviceMembershipAccessService: AppAccess,
 
     private val jwtService: AuthTokenManager,
     private val loginHistoryService: LoginHistoryService,
@@ -65,9 +65,9 @@ class OAuth2LoginSuccessHandler(
         }
         val provider: AuthProvider = principal.provider
         val appAuth = UsernamePasswordAuthenticationToken(principal.username, null, principal.authorities)
-        val scopedService = if (scopedServiceCode != null) serviceContextResolver.resolveActive(scopedServiceCode) else null
+        val scopedService = if (scopedServiceCode != null) serviceContextResolver.active(scopedServiceCode) else null
         if (scopedService != null) {
-            serviceMembershipAccessService.ensureActiveMembershipOrCreate(scopedService.id, userId)
+            serviceMembershipAccessService.join(scopedService.id, userId)
         }
 
         val issued = jwtService.issue(

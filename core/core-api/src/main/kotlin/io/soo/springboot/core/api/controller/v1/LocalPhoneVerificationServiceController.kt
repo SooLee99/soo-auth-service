@@ -2,8 +2,8 @@ package io.soo.springboot.core.api.controller.v1
 
 import io.soo.springboot.core.api.controller.v1.request.PhoneVerificationConfirmRequest
 import io.soo.springboot.core.api.controller.v1.request.PhoneVerificationIssueRequest
-import io.soo.springboot.core.domain.admin.ServiceContextResolver
-import io.soo.springboot.core.domain.local.phone.PhoneVerificationService
+import io.soo.springboot.core.domain.admin.AppResolver
+import io.soo.springboot.core.domain.local.phone.PhoneVerify
 import io.soo.springboot.core.support.response.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/services/{serviceCode}/auth/local/phone-verifications")
-class LocalPhoneVerificationServiceController(
-    private val serviceContextResolver: ServiceContextResolver,
-    private val phoneVerificationService: PhoneVerificationService,
+class LocalPhoneVerifyController(
+    private val serviceContextResolver: AppResolver,
+    private val phoneVerificationService: PhoneVerify,
 ) {
     @PostMapping("/request", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun request(
@@ -26,7 +26,7 @@ class LocalPhoneVerificationServiceController(
         @RequestBody @Valid request: PhoneVerificationIssueRequest,
         req: HttpServletRequest,
     ): ApiResponse<Any?> {
-        val resolvedService = serviceContextResolver.resolveActive(serviceCode)
+        val resolvedService = serviceContextResolver.active(serviceCode)
         val issued = phoneVerificationService.issue(request.phoneNumber)
         return ApiResponse.success(
             req = req,
@@ -44,7 +44,7 @@ class LocalPhoneVerificationServiceController(
         @RequestBody @Valid request: PhoneVerificationConfirmRequest,
         req: HttpServletRequest,
     ): ApiResponse<Any?> {
-        val resolvedService = serviceContextResolver.resolveActive(serviceCode)
+        val resolvedService = serviceContextResolver.active(serviceCode)
         val confirmed = phoneVerificationService.confirm(
             phoneNumber = request.phoneNumber,
             verificationId = request.verificationId,

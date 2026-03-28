@@ -1,6 +1,6 @@
 package io.soo.springboot.core.api.controller.v1
 
-import io.soo.springboot.core.domain.admin.ServiceContextResolver
+import io.soo.springboot.core.domain.admin.AppResolver
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.response.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/v1/services/{serviceCode}/auth/oauth2")
 class OAuth2AccountServiceController(
-    private val serviceContextResolver: ServiceContextResolver,
+    private val serviceContextResolver: AppResolver,
 ) {
 
     @GetMapping("/{provider}/authorize-url")
@@ -27,7 +27,7 @@ class OAuth2AccountServiceController(
         session: HttpSession,
         req: HttpServletRequest,
     ): ApiResponse<out String> {
-        val resolvedService = serviceContextResolver.resolveActive(serviceCode)
+        val resolvedService = serviceContextResolver.active(serviceCode)
         if (returnUrl != null && !returnUrl.startsWith("/")) {
             return ApiResponse.error(
                 type = ErrorType.INVALID_REQUEST,

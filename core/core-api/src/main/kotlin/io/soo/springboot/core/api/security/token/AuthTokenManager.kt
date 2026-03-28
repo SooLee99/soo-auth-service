@@ -1,8 +1,8 @@
 package io.soo.springboot.core.api.security.token
 
 import io.soo.springboot.core.api.security.userdetails.UserPrincipalLoader
-import io.soo.springboot.core.domain.token.JwtDenylistStore
-import io.soo.springboot.core.domain.token.RefreshTokenManager
+import io.soo.springboot.core.domain.token.JwtDenyStore
+import io.soo.springboot.core.domain.token.RefreshTokenSvc
 import io.soo.springboot.core.enums.AuthProvider
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -23,9 +23,9 @@ data class IssuedTokens(
 @Service
 class AuthTokenManager(
     private val accessTokenIssuer: AccessTokenIssuer,
-    private val refreshTokenManager: RefreshTokenManager,
+    private val refreshTokenManager: RefreshTokenSvc,
     private val userPrincipalLoader: UserPrincipalLoader,
-    private val denylistStore: JwtDenylistStore,
+    private val denylistStore: JwtDenyStore,
 ) {
     /**
      * ✅ 토큰 발급

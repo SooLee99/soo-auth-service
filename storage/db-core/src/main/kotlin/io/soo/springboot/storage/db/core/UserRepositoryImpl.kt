@@ -92,11 +92,11 @@ class UserRepositoryImpl(
         return jpaRepository.findAll(spec, pageable).map { it.toModel() }
     }
 
-    override fun findBlockedUsers(pageable: Pageable): Page<User> {
+    override fun blocked(pageable: Pageable): Page<User> {
         return jpaRepository.findAllByUserStatus(UserStatus.BLOCKED, pageable).map { it.toModel() }
     }
 
-    override fun findSoftDeletedUsers(pageable: Pageable): Page<User> {
+    override fun deleted(pageable: Pageable): Page<User> {
         return jpaRepository.findAllByUserStatus(UserStatus.SOFT_DELETED, pageable).map { it.toModel() }
     }
 

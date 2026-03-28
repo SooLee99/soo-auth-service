@@ -6,10 +6,10 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 
-class PhoneVerificationServiceTest {
-    private val store = InMemoryPhoneVerificationStore()
+class PhoneVerifyTest {
+    private val store = InMemoryPhoneStore()
     private val notifier = CapturingNotifier()
-    private val service = PhoneVerificationService(store, notifier)
+    private val service = PhoneVerify(store, notifier)
 
     @Test
     fun `인증 요청 후 확인 성공 시 증명 토큰 발급`() {
@@ -40,10 +40,10 @@ class PhoneVerificationServiceTest {
         assertEquals(ErrorType.INVALID_PHONE_VERIFICATION_CODE, ex.errorType)
     }
 
-    private class CapturingNotifier : PhoneVerificationNotifier {
+    private class CapturingNotifier : PhoneNotifier {
         var lastCode: String? = null
 
-        override fun sendVerificationCode(phoneNumber: String, code: String, expiresInSec: Long) {
+        override fun sendCode(phoneNumber: String, code: String, expiresInSec: Long) {
             lastCode = code
         }
     }

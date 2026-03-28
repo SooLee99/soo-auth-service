@@ -5,15 +5,15 @@ import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
 @Component
-class InMemoryPhoneVerificationStore : PhoneVerificationStore {
-    private val challenges = ConcurrentHashMap<String, PhoneVerificationChallenge>()
-    private val proofs = ConcurrentHashMap<String, PhoneVerificationProof>()
+class InMemoryPhoneStore : PhoneStore {
+    private val challenges = ConcurrentHashMap<String, PhoneChallenge>()
+    private val proofs = ConcurrentHashMap<String, PhoneProof>()
 
-    override fun saveChallenge(challenge: PhoneVerificationChallenge) {
+    override fun saveChallenge(challenge: PhoneChallenge) {
         challenges[challenge.verificationId] = challenge
     }
 
-    override fun findChallenge(verificationId: String): PhoneVerificationChallenge? {
+    override fun findChallenge(verificationId: String): PhoneChallenge? {
         val challenge = challenges[verificationId] ?: return null
         if (challenge.expiresAt.isBefore(Instant.now())) {
             challenges.remove(verificationId)
@@ -26,11 +26,11 @@ class InMemoryPhoneVerificationStore : PhoneVerificationStore {
         challenges.remove(verificationId)
     }
 
-    override fun saveProof(proof: PhoneVerificationProof) {
+    override fun saveProof(proof: PhoneProof) {
         proofs[proof.proofToken] = proof
     }
 
-    override fun findProof(proofToken: String): PhoneVerificationProof? {
+    override fun findProof(proofToken: String): PhoneProof? {
         val proof = proofs[proofToken] ?: return null
         if (proof.expiresAt.isBefore(Instant.now())) {
             proofs.remove(proofToken)

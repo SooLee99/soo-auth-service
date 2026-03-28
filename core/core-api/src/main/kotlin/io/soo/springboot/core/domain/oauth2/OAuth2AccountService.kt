@@ -51,14 +51,14 @@ data class OAuth2Profile(
 )
 
 @Service
-class OAuth2Account(
+class OAuth2AccountService(
     private val userRepository: UserRepository,
     private val objectMapper: ObjectMapper,
     private val userStatusPolicy: UserStatusPolicy,
 ) {
 
     @Transactional
-    fun upsertId(info: OAuth2Profile): Long {
+    fun signUp(info: OAuth2Profile): Long {
         val existing = userRepository.findByOAuthIncludingDeleted(info.provider, info.providerUserId)
 
         if (existing != null) {

@@ -6,9 +6,9 @@ import java.time.Duration
 import java.time.Instant
 
 @Service
-class TokenRevocationService(
-    private val refreshTokenManager: RefreshTokenManager,
-    private val denylistStore: JwtDenylistStore,
+class TokenRevoke(
+    private val refreshTokenManager: RefreshTokenSvc,
+    private val denylistStore: JwtDenyStore,
 ) {
     fun invalidate(jwt: Jwt, deviceId: String, refreshToken: String?, logoutAll: Boolean) {
         val exp = jwt.expiresAt

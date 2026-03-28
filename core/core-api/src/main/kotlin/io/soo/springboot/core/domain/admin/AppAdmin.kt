@@ -11,18 +11,18 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class AdminServiceManagementService(
+class AppAdmin(
     private val serviceRepository: ServiceRepository,
     private val serviceMembershipRepository: ServiceMembershipRepository,
-    private val serviceContextResolver: ServiceContextResolver,
+    private val serviceContextResolver: AppResolver,
 ) {
     companion object {
         private const val DEFAULT_SERVICE_CODE = "DEFAULT"
     }
 
     @Transactional
-    fun registerService(serviceCode: String, serviceName: String): io.soo.springboot.storage.db.core.Service {
-        val normalizedCode = serviceContextResolver.normalizeAndValidate(serviceCode)
+    fun create(serviceCode: String, serviceName: String): io.soo.springboot.storage.db.core.Service {
+        val normalizedCode = serviceContextResolver.normalize(serviceCode)
         val normalizedName = serviceName.trim()
         if (normalizedName.isBlank()) {
             throw CoreException(ErrorType.INVALID_PARAMETER, data = mapOf("serviceName" to serviceName))
@@ -42,13 +42,13 @@ class AdminServiceManagementService(
     }
 
     @Transactional(readOnly = true)
-    fun listServices(pageable: Pageable): Page<io.soo.springboot.storage.db.core.Service> {
+    fun list(pageable: Pageable): Page<io.soo.springboot.storage.db.core.Service> {
         return serviceRepository.findAll(pageable)
     }
 
     @Transactional
-    fun deactivateService(serviceCode: String): io.soo.springboot.storage.db.core.Service {
-        val normalizedCode = serviceContextResolver.normalizeAndValidate(serviceCode)
+    fun deactivate(serviceCode: String): io.soo.springboot.storage.db.core.Service {
+        val normalizedCode = serviceContextResolver.normalize(serviceCode)
         val current = serviceRepository.findByServiceCode(normalizedCode)
             ?: throw CoreException(ErrorType.NOT_FOUND, data = mapOf("serviceCode" to normalizedCode))
 

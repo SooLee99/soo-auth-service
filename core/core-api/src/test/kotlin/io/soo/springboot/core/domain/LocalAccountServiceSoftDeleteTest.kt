@@ -4,9 +4,9 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import io.soo.springboot.core.domain.local.LocalAccountService
-import io.soo.springboot.core.domain.local.phone.PhoneVerificationService
-import io.soo.springboot.core.domain.token.TokenRevocationService
+import io.soo.springboot.core.domain.local.LocalAccount
+import io.soo.springboot.core.domain.local.phone.PhoneVerify
+import io.soo.springboot.core.domain.token.TokenRevoke
 import io.soo.springboot.core.enums.AdminUserActionType
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.UserStatus
@@ -23,15 +23,15 @@ import org.junit.jupiter.api.Test
 import org.springframework.security.crypto.password.PasswordEncoder
 import java.time.Instant
 
-class LocalAccountServiceSoftDeleteTest {
+class LocalAccountSoftDeleteTest {
     private val userRepository = mockk<UserRepository>()
     private val localCredentialRepository = mockk<LocalCredentialRepository>()
     private val passwordEncoder = mockk<PasswordEncoder>()
-    private val tokenRevocationService = mockk<TokenRevocationService>(relaxed = true)
-    private val phoneVerificationService = mockk<PhoneVerificationService>(relaxed = true)
+    private val tokenRevocationService = mockk<TokenRevoke>(relaxed = true)
+    private val phoneVerificationService = mockk<PhoneVerify>(relaxed = true)
     private val auditRepository = mockk<UserStatusAuditLogRepository>()
 
-    private val service = LocalAccountService(
+    private val service = LocalAccount(
         userRepository = userRepository,
         localAccountRepository = localCredentialRepository,
         passwordEncoder = passwordEncoder,

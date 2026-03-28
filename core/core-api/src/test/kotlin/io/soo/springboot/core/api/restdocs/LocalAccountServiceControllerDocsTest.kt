@@ -2,7 +2,7 @@ package io.soo.springboot.core.api.restdocs
 
 import io.mockk.every
 import io.mockk.mockk
-import io.soo.springboot.core.api.controller.v1.LocalAccountServiceController
+import io.soo.springboot.core.api.controller.v1.LocalAccountController
 import io.soo.springboot.core.api.controller.v1.request.RefreshRequest
 import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
 import io.soo.springboot.core.api.controller.v1.request.PhoneSignUpRequest
@@ -10,8 +10,8 @@ import io.soo.springboot.core.api.controller.v1.request.WithdrawRequest
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.api.security.token.IssuedTokens
-import io.soo.springboot.core.domain.local.LocalAccountService
-import io.soo.springboot.core.domain.admin.ServiceContextResolver
+import io.soo.springboot.core.domain.local.LocalAccount
+import io.soo.springboot.core.domain.admin.AppResolver
 import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.core.enums.ServiceStatus
 import io.soo.springboot.storage.db.core.Service
@@ -34,22 +34,22 @@ import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import java.time.Instant
 
-class LocalAccountServiceControllerDocsTest : RestDocsTest() {
+class LocalAccountControllerDocsTest : RestDocsTest() {
 
-    private val localAccountService = mockk<LocalAccountService>(relaxed = true)
+    private val localAccountService = mockk<LocalAccount>(relaxed = true)
     private val authTokenManager = mockk<AuthTokenManager>()
-    private val serviceContextResolver = mockk<ServiceContextResolver>()
-    private lateinit var controller: LocalAccountServiceController
+    private val serviceContextResolver = mockk<AppResolver>()
+    private lateinit var controller: LocalAccountController
 
     @BeforeEach
     fun init() {
-        controller = LocalAccountServiceController(localAccountService, authTokenManager, serviceContextResolver)
+        controller = LocalAccountController(localAccountService, authTokenManager, serviceContextResolver)
         mockMvc = mockController(controller)
-        every { serviceContextResolver.resolveActive(any()) } returns sampleService()
+        every { serviceContextResolver.active(any()) } returns sampleService()
     }
 
     @Test
-    fun signUp() {
+    fun signup() {
         val request = SignUpRequest(
             email = "user@example.com",
             password = "P@ssw0rd!",
@@ -107,7 +107,7 @@ class LocalAccountServiceControllerDocsTest : RestDocsTest() {
     }
 
     @Test
-    fun signUpByPhone() {
+    fun signupPhone() {
         val request = PhoneSignUpRequest(
             phoneNumber = "+82 10-1234-5678",
             phoneVerificationToken = "verified-phone-token",

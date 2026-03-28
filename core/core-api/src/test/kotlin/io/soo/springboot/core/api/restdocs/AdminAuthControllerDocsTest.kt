@@ -8,8 +8,8 @@ import io.soo.springboot.core.api.controller.v1.request.AdminUserDeleteRequest
 import io.soo.springboot.core.api.controller.v1.request.AdminUserPasswordResetRequest
 import io.soo.springboot.core.api.controller.v1.request.AdminUserUpdateRequest
 import io.soo.springboot.core.api.security.auth.UserIdResolver
-import io.soo.springboot.core.domain.admin.AdminUserManagementService
-import io.soo.springboot.core.domain.admin.AdminUserBlockService
+import io.soo.springboot.core.domain.admin.UserAdmin
+import io.soo.springboot.core.domain.admin.UserBlock
 import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.core.enums.AdminUserActionType
 import io.soo.springboot.core.enums.AuthProvider
@@ -46,8 +46,8 @@ class AdminAuthControllerDocsTest : RestDocsTest() {
 
     private val loginHistoryService = mockk<LoginHistoryService>()
     private val userIdResolver = mockk<UserIdResolver>()
-    private val adminUserBlockService = mockk<AdminUserBlockService>()
-    private val adminUserManagementService = mockk<AdminUserManagementService>(relaxed = true)
+    private val adminUserBlockService = mockk<UserBlock>()
+    private val adminUserManagementService = mockk<UserAdmin>(relaxed = true)
     private lateinit var controller: AdminAuthController
 
     @BeforeEach
@@ -151,9 +151,9 @@ class AdminAuthControllerDocsTest : RestDocsTest() {
     }
 
     @Test
-    fun blockUser() {
+    fun block() {
         every { userIdResolver.resolve(any()) } returns 100L
-        every { adminUserBlockService.blockUser(1L, 100L, "abuse") } returns sampleBlockedUser()
+        every { adminUserBlockService.block(1L, 100L, "abuse") } returns sampleBlockedUser()
 
         val authentication = TestingAuthenticationToken("admin", "password", "ROLE_ADMIN")
 
@@ -186,9 +186,9 @@ class AdminAuthControllerDocsTest : RestDocsTest() {
     }
 
     @Test
-    fun unblockUser() {
+    fun unblock() {
         every { userIdResolver.resolve(any()) } returns 100L
-        every { adminUserBlockService.unblockUser(1L, 100L) } returns sampleBlockedUser().copy(
+        every { adminUserBlockService.unblock(1L, 100L) } returns sampleBlockedUser().copy(
             userStatus = UserStatus.ACTIVE,
             blocked = false,
             unblockedAt = Instant.parse("2026-03-16T12:00:00Z"),
@@ -222,7 +222,7 @@ class AdminAuthControllerDocsTest : RestDocsTest() {
 
     @Test
     fun userDetail() {
-        every { adminUserManagementService.getUserDetail(1L) } returns sampleAdminManagedUser()
+        every { adminUserManagementService.get(1L) } returns sampleAdminManagedUser()
 
         val authentication = TestingAuthenticationToken("admin", "password", "ROLE_ADMIN")
 
@@ -250,9 +250,9 @@ class AdminAuthControllerDocsTest : RestDocsTest() {
     }
 
     @Test
-    fun updateUser() {
+    fun update() {
         every { userIdResolver.resolve(any()) } returns 100L
-        every { adminUserManagementService.updateUser(1L, any(), 100L) } returns sampleAdminManagedUser().copy(
+        every { adminUserManagementService.update(1L, any(), 100L) } returns sampleAdminManagedUser().copy(
             nickname = "updated-nickname",
             role = Role.ADMIN,
         )
@@ -309,9 +309,9 @@ class AdminAuthControllerDocsTest : RestDocsTest() {
     }
 
     @Test
-    fun deleteUser() {
+    fun delete() {
         every { userIdResolver.resolve(any()) } returns 100L
-        every { adminUserManagementService.deleteUser(1L, "admin-delete", 100L) } returns sampleSoftDeletedUser()
+        every { adminUserManagementService.delete(1L, "admin-delete", 100L) } returns sampleSoftDeletedUser()
 
         val authentication = TestingAuthenticationToken("admin", "password", "ROLE_ADMIN")
 
@@ -344,9 +344,9 @@ class AdminAuthControllerDocsTest : RestDocsTest() {
     }
 
     @Test
-    fun listUsers() {
+    fun list() {
         val page = PageImpl(listOf(sampleAdminManagedUser()), PageRequest.of(0, 20), 1)
-        every { adminUserManagementService.listUsers(any(), any(), any(), any(), any()) } returns page
+        every { adminUserManagementService.list(any(), any(), any(), any(), any()) } returns page
 
         val authentication = TestingAuthenticationToken("admin", "password", "ROLE_ADMIN")
 
@@ -386,7 +386,7 @@ class AdminAuthControllerDocsTest : RestDocsTest() {
 
     @Test
     fun resetUserPassword() {
-        every { adminUserManagementService.resetPassword(1L, any()) } returns sampleAdminManagedUser()
+        every { adminUserManagementService.resetPw(1L, any()) } returns sampleAdminManagedUser()
 
         val authentication = TestingAuthenticationToken("admin", "password", "ROLE_ADMIN")
 
@@ -419,8 +419,8 @@ class AdminAuthControllerDocsTest : RestDocsTest() {
     }
 
     @Test
-    fun revokeUserTokens() {
-        every { adminUserManagementService.revokeUserTokens(1L) } returns sampleAdminManagedUser()
+    fun revokeTokens() {
+        every { adminUserManagementService.revokeTokens(1L) } returns sampleAdminManagedUser()
 
         val authentication = TestingAuthenticationToken("admin", "password", "ROLE_ADMIN")
 
@@ -450,7 +450,7 @@ class AdminAuthControllerDocsTest : RestDocsTest() {
     @Test
     fun blockedUsers() {
         val page = PageImpl(listOf(sampleBlockedUser()), PageRequest.of(0, 20), 1)
-        every { adminUserBlockService.findBlockedUsers(any()) } returns page
+        every { adminUserBlockService.blocked(any()) } returns page
 
         val authentication = TestingAuthenticationToken("admin", "password", "ROLE_ADMIN")
 
@@ -483,7 +483,7 @@ class AdminAuthControllerDocsTest : RestDocsTest() {
     @Test
     fun deletedUsers() {
         val page = PageImpl(listOf(sampleSoftDeletedUser()), PageRequest.of(0, 20), 1)
-        every { adminUserBlockService.findSoftDeletedUsers(any()) } returns page
+        every { adminUserBlockService.deleted(any()) } returns page
 
         val authentication = TestingAuthenticationToken("admin", "password", "ROLE_ADMIN")
 
@@ -524,7 +524,7 @@ class AdminAuthControllerDocsTest : RestDocsTest() {
             actionAt = Instant.parse("2026-03-16T10:00:00Z"),
         )
         val page = PageImpl(listOf(audit), PageRequest.of(0, 20), 1)
-        every { adminUserBlockService.findStatusAuditLogs(1L, any()) } returns page
+        every { adminUserBlockService.logs(1L, any()) } returns page
 
         val authentication = TestingAuthenticationToken("admin", "password", "ROLE_ADMIN")
 

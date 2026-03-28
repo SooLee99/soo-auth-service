@@ -1,13 +1,13 @@
 package io.soo.springboot.core.api.security.local
 
 import io.soo.springboot.core.enums.LoginDenyReason
-import io.soo.springboot.core.domain.local.LocalLoginPolicyService
+import io.soo.springboot.core.domain.local.LocalLoginPolicy
 import io.soo.springboot.core.support.error.AccountStatusDeniedException
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 
 data class LocalLoginFailureReasonContext(
-    val loginPolicyResult: LocalLoginPolicyService.FailureResult?,
+    val loginPolicyResult: LocalLoginPolicy.FailResult?,
     val statusDenied: AccountStatusDeniedException?,
     val isStatusDenied: Boolean,
 )
@@ -20,21 +20,21 @@ fun interface LocalLoginFailureReasonPolicy {
 @Order(100)
 class LockedFailureReasonPolicy : LocalLoginFailureReasonPolicy {
     override fun resolve(context: LocalLoginFailureReasonContext): String? =
-        if (context.loginPolicyResult == LocalLoginPolicyService.FailureResult.LOCKED) "LOGIN_ATTEMPTS_EXCEEDED" else null
+        if (context.loginPolicyResult == LocalLoginPolicy.FailResult.LOCKED) "LOGIN_ATTEMPTS_EXCEEDED" else null
 }
 
 @Component
 @Order(200)
 class BadCredentialsFailureReasonPolicy : LocalLoginFailureReasonPolicy {
     override fun resolve(context: LocalLoginFailureReasonContext): String? =
-        if (context.loginPolicyResult == LocalLoginPolicyService.FailureResult.BAD_CREDENTIALS) "BAD_CREDENTIALS" else null
+        if (context.loginPolicyResult == LocalLoginPolicy.FailResult.BAD_CREDENTIALS) "BAD_CREDENTIALS" else null
 }
 
 @Component
 @Order(300)
 class NotFoundFailureReasonPolicy : LocalLoginFailureReasonPolicy {
     override fun resolve(context: LocalLoginFailureReasonContext): String? =
-        if (context.loginPolicyResult == LocalLoginPolicyService.FailureResult.NOT_FOUND) "ACCOUNT_NOT_FOUND" else null
+        if (context.loginPolicyResult == LocalLoginPolicy.FailResult.NOT_FOUND) "ACCOUNT_NOT_FOUND" else null
 }
 
 @Component

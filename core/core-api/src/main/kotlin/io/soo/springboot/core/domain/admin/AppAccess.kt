@@ -11,11 +11,11 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 
 @Service
-class ServiceMembershipAccessService(
+class AppAccess(
     private val serviceMembershipRepository: ServiceMembershipRepository,
 ) {
     @Transactional
-    fun ensureActiveMembershipOrCreate(serviceId: Long, userId: Long): ServiceMembership {
+    fun join(serviceId: Long, userId: Long): ServiceMembership {
         val existing = serviceMembershipRepository.findByServiceIdAndUserId(serviceId, userId)
         if (existing == null) {
             return serviceMembershipRepository.save(ServiceMembership(serviceId = serviceId, userId = userId))
@@ -43,7 +43,7 @@ class ServiceMembershipAccessService(
     }
 
     @Transactional(readOnly = true)
-    fun ensureActiveMembership(serviceId: Long, userId: Long): ServiceMembership {
+    fun member(serviceId: Long, userId: Long): ServiceMembership {
         val membership = serviceMembershipRepository.findByServiceIdAndUserId(serviceId, userId)
             ?: throw CoreException(
                 ErrorType.FORBIDDEN,
@@ -65,8 +65,8 @@ class ServiceMembershipAccessService(
     }
 
     @Transactional
-    fun withdrawMembership(serviceId: Long, userId: Long, reason: String?): ServiceMembership {
-        val membership = ensureActiveMembership(serviceId, userId)
+    fun leave(serviceId: Long, userId: Long, reason: String?): ServiceMembership {
+        val membership = member(serviceId, userId)
         val trimmedReason = reason?.trim()?.takeIf { it.isNotBlank() }
         return serviceMembershipRepository.save(
             membership.copy(
@@ -77,7 +77,7 @@ class ServiceMembershipAccessService(
         )
     }
 
-    fun assertTokenServiceScope(jwt: Jwt, serviceId: Long) {
+    fun scope(jwt: Jwt, serviceId: Long) {
         val tokenServiceId = (jwt.claims["sid"] as? Number)?.toLong()
         if (tokenServiceId == null || tokenServiceId != serviceId) {
             throw CoreException(
