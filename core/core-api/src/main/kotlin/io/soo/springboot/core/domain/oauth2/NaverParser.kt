@@ -4,10 +4,10 @@ import io.soo.springboot.core.enums.AuthProvider
 import org.springframework.stereotype.Component
 
 @Component
-class NaverOAuth2UserInfoParser : OAuth2ParserSupport(), OAuth2UserInfoParser {
+class NaverParser : OAuth2ParserBase(), OAuth2Parser {
     override val provider: AuthProvider = AuthProvider.NAVER
 
-    override fun parse(attrs: Map<String, Any?>): OAuth2UserInfo {
+    override fun parse(attrs: Map<String, Any?>): OAuth2Profile {
         val response = attrs.map("response") ?: error("naver: missing response")
         val id = response.str("id") ?: error("naver: missing response.id")
         val profileImageUrl = response.str("profile_image")
@@ -17,7 +17,7 @@ class NaverOAuth2UserInfoParser : OAuth2ParserSupport(), OAuth2UserInfoParser {
             put("message", attrs.str("message"))
         }.filterValues { it != null }
 
-        return OAuth2UserInfo(
+        return OAuth2Profile(
             provider = provider,
             providerUserId = id,
             email = response.str("email"),

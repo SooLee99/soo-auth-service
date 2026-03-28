@@ -8,7 +8,7 @@ import io.soo.springboot.core.support.error.AccountStatusDeniedException
 import io.soo.springboot.core.domain.admin.ServiceContextResolver
 import io.soo.springboot.core.domain.admin.ServiceMembershipAccessService
 import io.soo.springboot.core.domain.LoginHistoryService
-import io.soo.springboot.core.domain.oauth2.OAuth2LoginUseCase
+import io.soo.springboot.core.domain.oauth2.OAuth2Login
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.LoginType
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component
 @Component
 class OAuth2LoginSuccessHandler(
     private val objectMapper: ObjectMapper,
-    private val oAuth2LoginUseCase: OAuth2LoginUseCase,
+    private val oAuth2LoginUseCase: OAuth2Login,
     private val userPrincipalLoader: UserPrincipalLoader,
     private val errorWriter: SecurityErrorResponseWriter,
     private val serviceContextResolver: ServiceContextResolver,
@@ -49,7 +49,7 @@ class OAuth2LoginSuccessHandler(
         val deviceId = headerDeviceId?.takeIf { it.isNotBlank() } ?: sessionDeviceId.orEmpty()
         val scopedServiceCode = (session?.getAttribute("SERVICE_CODE") as? String)?.takeIf { it.isNotBlank() }
         val userId = try {
-            oAuth2LoginUseCase.resolveOrCreateUserId(authentication)
+            oAuth2LoginUseCase.userId(authentication)
         } catch (_: AccountStatusDeniedException) {
             errorWriter.writeError(response, request, ErrorType.LOGIN_DENIED)
             return

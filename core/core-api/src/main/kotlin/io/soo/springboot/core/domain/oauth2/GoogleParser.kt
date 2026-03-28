@@ -4,10 +4,10 @@ import io.soo.springboot.core.enums.AuthProvider
 import org.springframework.stereotype.Component
 
 @Component
-class GoogleOAuth2UserInfoParser : OAuth2ParserSupport(), OAuth2UserInfoParser {
+class GoogleParser : OAuth2ParserBase(), OAuth2Parser {
     override val provider: AuthProvider = AuthProvider.GOOGLE
 
-    override fun parse(attrs: Map<String, Any?>): OAuth2UserInfo {
+    override fun parse(attrs: Map<String, Any?>): OAuth2Profile {
         val sub = attrs.str("sub") ?: attrs.str("id") ?: error("google: missing sub")
 
         val extra = mapOf(
@@ -16,7 +16,7 @@ class GoogleOAuth2UserInfoParser : OAuth2ParserSupport(), OAuth2UserInfoParser {
             "hd" to attrs.str("hd"),
         ).filterValues { it != null }
 
-        return OAuth2UserInfo(
+        return OAuth2Profile(
             provider = provider,
             providerUserId = sub,
             email = attrs.str("email"),

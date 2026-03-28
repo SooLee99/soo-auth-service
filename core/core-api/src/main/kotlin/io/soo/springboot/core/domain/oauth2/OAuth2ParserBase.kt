@@ -2,7 +2,7 @@ package io.soo.springboot.core.domain.oauth2
 
 import io.soo.springboot.core.enums.Gender
 
-abstract class OAuth2ParserSupport {
+abstract class OAuth2ParserBase {
     protected fun Map<String, Any?>.str(key: String): String? =
         this[key]?.toString()?.takeIf { it.isNotBlank() }
 

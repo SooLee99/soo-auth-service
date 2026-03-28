@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 
-data class OAuth2UserInfo(
+data class OAuth2Profile(
     val provider: AuthProvider,
     val providerUserId: String,
 
@@ -51,19 +51,19 @@ data class OAuth2UserInfo(
 )
 
 @Service
-class OAuth2AccountService(
+class OAuth2Account(
     private val userRepository: UserRepository,
     private val objectMapper: ObjectMapper,
     private val userStatusPolicy: UserStatusPolicy,
 ) {
 
     @Transactional
-    fun upsertAndGetUserId(info: OAuth2UserInfo): Long {
+    fun upsertId(info: OAuth2Profile): Long {
         val existing = userRepository.findByOAuthIncludingDeleted(info.provider, info.providerUserId)
 
         if (existing != null) {
             userStatusPolicy.validateLoginAllowed(existing)
-            val updated = existing.applyOAuth2(info, objectMapper)
+            val updated = existing.merge(info, objectMapper)
             userRepository.save(updated)
             return existing.id
         }
@@ -96,7 +96,7 @@ class OAuth2AccountService(
         return userRepository.save(user).id
     }
 
-    private fun User.applyOAuth2(info: OAuth2UserInfo, om: ObjectMapper): User {
+    private fun User.merge(info: OAuth2Profile, om: ObjectMapper): User {
         return copy(
             email = info.email?.takeIf { it.isNotBlank() } ?: email,
             emailVerified = info.emailVerified ?: emailVerified,

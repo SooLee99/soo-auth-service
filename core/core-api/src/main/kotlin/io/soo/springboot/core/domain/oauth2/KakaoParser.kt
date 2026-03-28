@@ -5,10 +5,10 @@ import org.springframework.stereotype.Component
 import java.time.Instant
 
 @Component
-class KakaoOAuth2UserInfoParser : OAuth2ParserSupport(), OAuth2UserInfoParser {
+class KakaoParser : OAuth2ParserBase(), OAuth2Parser {
     override val provider: AuthProvider = AuthProvider.KAKAO
 
-    override fun parse(attrs: Map<String, Any?>): OAuth2UserInfo {
+    override fun parse(attrs: Map<String, Any?>): OAuth2Profile {
         val id = attrs.anyStr("id", "user_id") ?: error("kakao: missing id")
         val connectedAt = attrs.str("connected_at")?.let { runCatching { Instant.parse(it) }.getOrNull() }
 
@@ -39,7 +39,7 @@ class KakaoOAuth2UserInfoParser : OAuth2ParserSupport(), OAuth2UserInfoParser {
             put("profile_image_needs_agreement", kakaoAccount?.bool("profile_image_needs_agreement"))
         }.filterValues { it != null }
 
-        return OAuth2UserInfo(
+        return OAuth2Profile(
             provider = provider,
             providerUserId = id,
             email = kakaoAccount?.str("email"),
