@@ -17,6 +17,12 @@ data class RefreshTokenIssued(
     val expiresInSec: Long,
 )
 
+data class RefreshTokenRotateResult(
+    val userId: Long,
+    val serviceId: Long?,
+    val issued: RefreshTokenIssued,
+)
+
 @Service
 class RefreshTokenManager(
     private val repository: RefreshTokenRepository,
@@ -42,9 +48,9 @@ class RefreshTokenManager(
     }
 
     @Transactional
-    fun issue(userId: Long, deviceId: String, provider: AuthProvider): RefreshTokenIssued {
+    fun issue(userId: Long, deviceId: String, provider: AuthProvider, serviceId: Long? = null): RefreshTokenIssued {
         val now = now()
-        repository.revokeAllActiveByUserIdAndDeviceId(userId, deviceId, now)
+        repository.revokeAllActiveByUserIdAndDeviceId(userId, deviceId, serviceId, now)
 
         val raw = randomTokenHex()
         val hash = sha256Hex(raw)
@@ -53,6 +59,7 @@ class RefreshTokenManager(
         repository.save(
             RefreshToken(
                 userId = userId,
+                serviceId = serviceId,
                 tokenHash = hash,
                 expiresAt = expiresAt,
                 deviceId = deviceId,
@@ -65,7 +72,7 @@ class RefreshTokenManager(
     }
 
     @Transactional
-    fun rotate(oldRefreshTokenRaw: String, deviceId: String): Pair<Long, RefreshTokenIssued?> {
+    fun rotate(oldRefreshTokenRaw: String, deviceId: String, expectedServiceId: Long? = null): RefreshTokenRotateResult {
         val now = now()
 
         if (oldRefreshTokenRaw.isBlank()) {
@@ -86,6 +93,10 @@ class RefreshTokenManager(
 
         if (old.deviceId != deviceId) {
             throw CoreException(ErrorType.REFRESH_TOKEN_DEVICE_MISMATCH, "device mismatch")
+        }
+
+        if (old.serviceId != expectedServiceId) {
+            throw CoreException(ErrorType.INVALID_REFRESH_TOKEN, "service scope mismatch")
         }
 
         if (old.usedAt != null) {
@@ -109,6 +120,7 @@ class RefreshTokenManager(
         repository.save(
             RefreshToken(
                 userId = old.userId,
+                serviceId = old.serviceId,
                 tokenHash = newHash,
                 expiresAt = newExpiresAt,
                 deviceId = old.deviceId,
@@ -122,16 +134,23 @@ class RefreshTokenManager(
             expiresInSec = ChronoUnit.SECONDS.between(now, newExpiresAt),
         )
 
-        return old.userId to issued
+        return RefreshTokenRotateResult(
+            userId = old.userId,
+            serviceId = old.serviceId,
+            issued = issued,
+        )
     }
 
     @Transactional
-    fun revoke(rawToken: String) {
+    fun revoke(rawToken: String, expectedServiceId: Long? = null) {
         if (rawToken.isBlank()) return
         val now = now()
 
         val hash = sha256Hex(rawToken)
         val token = repository.findByTokenHash(hash) ?: return
+        if (token.serviceId != expectedServiceId) {
+            throw CoreException(ErrorType.INVALID_REFRESH_TOKEN, "service scope mismatch")
+        }
 
         if (token.revokedAt == null) {
             repository.save(
@@ -145,12 +164,17 @@ class RefreshTokenManager(
 
     @Transactional
     fun revokeAllByUser(userId: Long) {
-        repository.revokeAllActiveByUserId(userId, now())
+        repository.revokeAllActiveByUserId(userId, null, now())
     }
 
     @Transactional
-    fun revokeByDevice(userId: Long, deviceId: String) {
+    fun revokeAllByUserAndService(userId: Long, serviceId: Long) {
+        repository.revokeAllActiveByUserId(userId, serviceId, now())
+    }
+
+    @Transactional
+    fun revokeByDevice(userId: Long, deviceId: String, serviceId: Long? = null) {
         if (deviceId.isBlank()) return
-        repository.revokeAllActiveByUserIdAndDeviceId(userId, deviceId, now())
+        repository.revokeAllActiveByUserIdAndDeviceId(userId, deviceId, serviceId, now())
     }
 }

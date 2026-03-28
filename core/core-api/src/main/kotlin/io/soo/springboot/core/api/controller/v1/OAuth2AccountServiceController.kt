@@ -36,8 +36,8 @@ class OAuth2AccountServiceController(
             )
         }
 
-        // TODO(multi-service): OAuth2 state binding
         session.setAttribute("SERVICE_CODE", resolvedService.serviceCode)
+        session.setAttribute("SERVICE_ID", resolvedService.id)
         session.setAttribute("RETURN_URL", returnUrl)
         session.setAttribute("DEVICE_ID", deviceId)
 

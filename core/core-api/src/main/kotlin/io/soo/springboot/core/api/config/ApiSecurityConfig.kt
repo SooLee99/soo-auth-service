@@ -45,6 +45,7 @@ class ApiSecurityConfig(
             "/api/v1/auth/local/token/refresh",
             "/api/v1/services/*/auth/local/signup",
             "/api/v1/services/*/auth/local/signup/phone",
+            "/api/v1/services/*/auth/local/login",
             "/api/v1/services/*/auth/local/phone-verifications/request",
             "/api/v1/services/*/auth/local/phone-verifications/confirm",
             "/api/v1/services/*/auth/local/token/refresh",

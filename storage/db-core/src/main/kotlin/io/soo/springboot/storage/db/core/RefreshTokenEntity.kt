@@ -11,6 +11,7 @@ import java.time.Instant
         Index(name = "ix_refresh_token_user", columnList = "user_id"),
         Index(name = "ix_refresh_token_expires_at", columnList = "expires_at"),
         Index(name = "ix_refresh_token_user_device", columnList = "user_id, device_id"),
+        Index(name = "ix_refresh_token_user_device_service", columnList = "user_id, device_id, service_id"),
     ],
     uniqueConstraints = [
         UniqueConstraint(name = "ux_refresh_token_hash", columnNames = ["token_hash"]),
@@ -35,6 +36,9 @@ class RefreshTokenEntity(
 
     @Column(nullable = false)
     var userId: Long,
+
+    @Column
+    var serviceId: Long? = null,
 
     // ✅ 클라이언트에서 들어온 refreshToken(원문)을 해시해서 저장
     @Column(nullable = false, length = 64)

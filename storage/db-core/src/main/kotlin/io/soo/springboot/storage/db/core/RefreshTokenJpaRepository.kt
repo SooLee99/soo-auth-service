@@ -35,6 +35,7 @@ interface RefreshTokenJpaRepository : JpaRepository<RefreshTokenEntity, Long> {
         select r from RefreshTokenEntity r
         where r.userId = :userId
           and r.deviceId = :deviceId
+          and ((:serviceId is null and r.serviceId is null) or r.serviceId = :serviceId)
           and r.revokedAt is null
           and r.expiresAt > :now
         """
@@ -42,6 +43,7 @@ interface RefreshTokenJpaRepository : JpaRepository<RefreshTokenEntity, Long> {
     fun findActiveByUserIdAndDeviceId(
         @Param("userId") userId: Long,
         @Param("deviceId") deviceId: String,
+        @Param("serviceId") serviceId: Long?,
         @Param("now") now: Instant,
     ): List<RefreshTokenEntity>
 
@@ -49,12 +51,14 @@ interface RefreshTokenJpaRepository : JpaRepository<RefreshTokenEntity, Long> {
         """
         select r from RefreshTokenEntity r
         where r.userId = :userId
+          and ((:serviceId is null and r.serviceId is null) or r.serviceId = :serviceId)
           and r.revokedAt is null
           and r.expiresAt > :now
         """
     )
     fun findActiveByUserId(
         @Param("userId") userId: Long,
+        @Param("serviceId") serviceId: Long?,
         @Param("now") now: Instant,
     ): List<RefreshTokenEntity>
 
@@ -64,11 +68,13 @@ interface RefreshTokenJpaRepository : JpaRepository<RefreshTokenEntity, Long> {
         update RefreshTokenEntity r
            set r.revokedAt = :now
          where r.userId = :userId
+           and ((:serviceId is null and r.serviceId is null) or r.serviceId = :serviceId)
            and r.revokedAt is null
         """
     )
     fun revokeAllActiveByUserId(
         @Param("userId") userId: Long,
+        @Param("serviceId") serviceId: Long?,
         @Param("now") now: Instant,
     ): Int
 
@@ -79,12 +85,14 @@ interface RefreshTokenJpaRepository : JpaRepository<RefreshTokenEntity, Long> {
            set r.revokedAt = :now
          where r.userId = :userId
            and r.deviceId = :deviceId
+           and ((:serviceId is null and r.serviceId is null) or r.serviceId = :serviceId)
            and r.revokedAt is null
         """
     )
     fun revokeAllActiveByUserIdAndDeviceId(
         @Param("userId") userId: Long,
         @Param("deviceId") deviceId: String,
+        @Param("serviceId") serviceId: Long?,
         @Param("now") now: Instant,
     ): Int
 }

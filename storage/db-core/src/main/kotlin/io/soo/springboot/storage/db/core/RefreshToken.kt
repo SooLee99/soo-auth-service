@@ -6,6 +6,7 @@ import java.time.Instant
 data class RefreshToken(
     val id: Long = 0L,
     val userId: Long,
+    val serviceId: Long? = null,
     val tokenHash: String,
     val deviceId: String,
     val provider: AuthProvider,

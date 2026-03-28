@@ -47,7 +47,7 @@ spring:
     import:
       - monitoring.yml
       - logging.yml
-      - redis.yml
+#      - redis.yml
       - db-core.yml
       - client-example.yml
       - optional:file:.env[.properties]

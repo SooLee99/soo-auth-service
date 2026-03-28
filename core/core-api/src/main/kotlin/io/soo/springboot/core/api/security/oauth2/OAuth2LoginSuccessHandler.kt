@@ -5,6 +5,8 @@ import io.soo.springboot.core.api.controller.v1.response.LoginSuccessResponse
 import io.soo.springboot.core.api.security.response.SecurityErrorResponseWriter
 import io.soo.springboot.core.api.security.userdetails.UserPrincipalLoader
 import io.soo.springboot.core.support.error.AccountStatusDeniedException
+import io.soo.springboot.core.domain.admin.ServiceContextResolver
+import io.soo.springboot.core.domain.admin.ServiceMembershipAccessService
 import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.core.domain.oauth2.OAuth2LoginUseCase
 import io.soo.springboot.core.api.security.token.AuthTokenManager
@@ -27,6 +29,8 @@ class OAuth2LoginSuccessHandler(
     private val oAuth2LoginUseCase: OAuth2LoginUseCase,
     private val userPrincipalLoader: UserPrincipalLoader,
     private val errorWriter: SecurityErrorResponseWriter,
+    private val serviceContextResolver: ServiceContextResolver,
+    private val serviceMembershipAccessService: ServiceMembershipAccessService,
 
     private val jwtService: AuthTokenManager,
     private val loginHistoryService: LoginHistoryService,
@@ -39,7 +43,11 @@ class OAuth2LoginSuccessHandler(
     ) {
         val ip = request.remoteAddr
         val ua = request.getHeader("User-Agent")
-        val deviceId = request.getHeader("X-Device-Id")?.trim().orEmpty()
+        val session = request.getSession(false)
+        val headerDeviceId = request.getHeader("X-Device-Id")?.trim()
+        val sessionDeviceId = session?.getAttribute("DEVICE_ID") as? String
+        val deviceId = headerDeviceId?.takeIf { it.isNotBlank() } ?: sessionDeviceId.orEmpty()
+        val scopedServiceCode = (session?.getAttribute("SERVICE_CODE") as? String)?.takeIf { it.isNotBlank() }
         val userId = try {
             oAuth2LoginUseCase.resolveOrCreateUserId(authentication)
         } catch (_: AccountStatusDeniedException) {
@@ -57,7 +65,18 @@ class OAuth2LoginSuccessHandler(
         }
         val provider: AuthProvider = principal.provider
         val appAuth = UsernamePasswordAuthenticationToken(principal.username, null, principal.authorities)
-        val issued = jwtService.issue(appAuth, userId, "", provider)
+        val scopedService = if (scopedServiceCode != null) serviceContextResolver.resolveActive(scopedServiceCode) else null
+        if (scopedService != null) {
+            serviceMembershipAccessService.ensureActiveMembershipOrCreate(scopedService.id, userId)
+        }
+
+        val issued = jwtService.issue(
+            authentication = appAuth,
+            userId = userId,
+            deviceId = deviceId,
+            provider = provider,
+            serviceId = scopedService?.id,
+        )
 
         val roles = principal.authorities
             .map { it.authority }
@@ -88,6 +107,13 @@ class OAuth2LoginSuccessHandler(
             userAgent = ua,
             deviceId = deviceId,
         )
+
+        if (session != null) {
+            session.removeAttribute("SERVICE_CODE")
+            session.removeAttribute("SERVICE_ID")
+            session.removeAttribute("RETURN_URL")
+            session.removeAttribute("DEVICE_ID")
+        }
 
         response.status = HttpServletResponse.SC_OK
         response.characterEncoding = "UTF-8"

@@ -58,18 +58,18 @@ class RedisRefreshTokenRepository(
         return findByTokenHash(hash)
     }
 
-    override fun findActiveByUserIdAndDeviceId(userId: Long, deviceId: String, now: Instant): List<RefreshToken> {
+    override fun findActiveByUserIdAndDeviceId(userId: Long, deviceId: String, serviceId: Long?, now: Instant): List<RefreshToken> {
         if (deviceId.isBlank()) return emptyList()
         val indexKey = userDeviceIndexKey(userId, deviceId)
-        return loadFromIndex(indexKey, now)
+        return loadFromIndex(indexKey, serviceId, now)
     }
 
-    override fun findActiveByUserId(userId: Long, now: Instant): List<RefreshToken> {
-        return loadFromIndex(userIndexKey(userId), now)
+    override fun findActiveByUserId(userId: Long, serviceId: Long?, now: Instant): List<RefreshToken> {
+        return loadFromIndex(userIndexKey(userId), serviceId, now)
     }
 
-    override fun revokeAllActiveByUserId(userId: Long, now: Instant): Int {
-        val activeTokens = findActiveByUserId(userId, now)
+    override fun revokeAllActiveByUserId(userId: Long, serviceId: Long?, now: Instant): Int {
+        val activeTokens = findActiveByUserId(userId, serviceId, now)
         if (activeTokens.isEmpty()) return 0
 
         activeTokens.forEach { token ->
@@ -83,8 +83,8 @@ class RedisRefreshTokenRepository(
         return activeTokens.size
     }
 
-    override fun revokeAllActiveByUserIdAndDeviceId(userId: Long, deviceId: String, now: Instant): Int {
-        val activeTokens = findActiveByUserIdAndDeviceId(userId, deviceId, now)
+    override fun revokeAllActiveByUserIdAndDeviceId(userId: Long, deviceId: String, serviceId: Long?, now: Instant): Int {
+        val activeTokens = findActiveByUserIdAndDeviceId(userId, deviceId, serviceId, now)
         if (activeTokens.isEmpty()) return 0
 
         activeTokens.forEach { token ->
@@ -103,7 +103,7 @@ class RedisRefreshTokenRepository(
         return 0
     }
 
-    private fun loadFromIndex(indexKey: String, now: Instant): List<RefreshToken> {
+    private fun loadFromIndex(indexKey: String, serviceId: Long?, now: Instant): List<RefreshToken> {
         val hashes = redisTemplate.opsForSet().members(indexKey).orEmpty()
         if (hashes.isEmpty()) return emptyList()
 
@@ -115,7 +115,7 @@ class RedisRefreshTokenRepository(
                 return@forEach
             }
 
-            if (token.revokedAt == null && token.expiresAt.isAfter(now)) {
+            if (token.revokedAt == null && token.expiresAt.isAfter(now) && token.serviceId == serviceId) {
                 tokens += token
             }
         }

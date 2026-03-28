@@ -18,7 +18,7 @@ class AccessTokenIssuer(
     private val jwtEncoder: JwtEncoder,
     private val props: AppJwtProperties,
 ) {
-    fun issue(authentication: Authentication, userId: Long): Pair<String, Long> {
+    fun issue(authentication: Authentication, userId: Long, serviceId: Long? = null): Pair<String, Long> {
         val now = Instant.now()
         val expiresIn = props.accessTtlSeconds
         val exp = now.plusSeconds(expiresIn)
@@ -26,7 +26,7 @@ class AccessTokenIssuer(
         val roles = authentication.authorities.map { it.authority }.sorted()
         val jti = UUID.randomUUID().toString()
 
-        val claims = JwtClaimsSet.builder()
+        val claimBuilder = JwtClaimsSet.builder()
             .issuer(props.issuer)
             .subject(authentication.name)
             .issuedAt(now)
@@ -34,7 +34,11 @@ class AccessTokenIssuer(
             .id(jti)
             .claim("roles", roles)
             .claim("uid", userId)
-            .build()
+
+        if (serviceId != null) {
+            claimBuilder.claim("sid", serviceId)
+        }
+        val claims = claimBuilder.build()
 
         val headers = JwsHeader.with(SignatureAlgorithm.RS256)
             .keyId(props.keyId)
