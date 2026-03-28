@@ -4,11 +4,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
 
 @Component
-@ConfigurationProperties("ncp.sms")
-class SmsProperties {
+@ConfigurationProperties("solapi.sms")
+class SolapiProps {
     var enabled: Boolean = false
-    var accessKey: String = ""
-    var secretKey: String = ""
-    var serviceId: String = ""
+    var apiKey: String = ""
+    var apiSecret: String = ""
     var sendFrom: String = ""
+    var apiDomain: String = "https://api.coolsms.co.kr"
 }

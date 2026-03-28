@@ -1,11 +1,13 @@
 package io.soo.springboot.core.domain.local.phone
 
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
 @Component
-class InMemoryPhoneStore : PhoneStore {
+@Profile("local", "test")
+class InMemPhoneStore : PhoneStore {
     private val challenges = ConcurrentHashMap<String, PhoneChallenge>()
     private val proofs = ConcurrentHashMap<String, PhoneProof>()
 

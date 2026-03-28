@@ -60,7 +60,7 @@ subprojects {
     java.sourceCompatibility = JavaVersion.valueOf("VERSION_${property("javaVersion")}")
     tasks.withType<KotlinCompile> {
         kotlinOptions {
-            freeCompilerArgs = listOf("-Xjsr305=strict")
+            freeCompilerArgs = listOf("-Xjsr305=strict", "-Xskip-metadata-version-check")
             jvmTarget = "${project.property("javaVersion")}"
         }
     }

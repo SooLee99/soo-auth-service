@@ -9,7 +9,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "phoneNumber": "+82 10-1234-5678"
+  "phoneNumber": "01087796627"
 }
 
 > {%
@@ -27,9 +27,9 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "phoneNumber": "+82 10-1234-5678",
+  "phoneNumber": "01087796627",
   "verificationId": "{{localVerificationId}}",
-  "code": "123456"
+  "code": "252483"
 }
 
 > {%
@@ -70,7 +70,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "phoneNumber": "+82 10-1234-5678",
+  "phoneNumber": "+82 10-8779-6627",
   "phoneVerificationToken": "{{localPhoneVerificationToken}}"
 }
 

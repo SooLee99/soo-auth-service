@@ -28,13 +28,13 @@ app:
         key-password: ${JWT_KEY_PASSWORD}
         type: "PKCS12"
 
-ncp:
+solapi:
   sms:
-    enabled: ${NCP_SMS_ENABLED:false}
-    access-key: ${NAVER_CLOUD_ACCESS_KEY:}
-    secret-key: ${NAVER_CLOUD_SECRET_KEY:}
-    service-id: ${NAVER_CLOUD_SERVICE_ID:}
-    send-from: ${NAVER_CLOUD_SEND_FROM:}
+    enabled: ${SOLAPI_SMS_ENABLED:false}
+    api-key: ${SOLAPI_API_KEY:}
+    api-secret: ${SOLAPI_API_SECRET:}
+    send-from: ${SOLAPI_SEND_FROM:}
+    api-domain: ${SOLAPI_API_DOMAIN:https://api.coolsms.co.kr}
 
 spring:
   application:
@@ -57,11 +57,6 @@ spring:
       add-mappings: true
   mvc:
     static-path-pattern: "/**"
-  sms:
-    access-key: ${NAVER_CLOUD_ACCESS_KEY}
-    secret-key: ${NAVER_CLOUD_SECRET_KEY}
-    service-id: ${NAVER_CLOUD_SERVICE_ID}
-    send-from: ${NAVER_CLOUD_SEND_FROM}
   security:
     oauth2:
       client:
