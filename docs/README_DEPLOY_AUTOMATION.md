@@ -6,8 +6,8 @@
 
 1. 배포 서버 기본 패키지 설치 (git, docker, compose)
 2. deploy 계정 생성
-3. SSH 키 등록
-4. 서버에 프로젝트 최초 배치 (/opt/soo-auth-service)
+3. SSH 배포 키 생성 및 등록
+4. 서버에 프로젝트 최초 배치 (`/opt/soo-auth-service`)
 5. 배포 스크립트 작성
 6. GitHub Actions 연결
 7. 자동 배포
@@ -120,6 +120,45 @@ sudo su - deploy
 
 # 5. SSH 키 등록 (GitHub Actions 접속용)
 
+이 단계에서 사용하는 키는 **GitHub Actions가 자동으로 만들어주는 키가 아니라**, 배포용으로 **직접 생성한 SSH 키쌍**입니다.
+
+* **public key**: 서버의 `authorized_keys` 에 등록
+* **private key**: GitHub Repository Secret `DEPLOY_SSH_KEY` 에 등록
+
+## 5-1. 배포용 SSH 키 생성
+
+키는 로컬 PC 또는 관리용 작업 환경에서 생성합니다.
+
+```bash
+ssh-keygen -t ed25519 -f ~/.ssh/soo-auth-service-deploy -C "soo-auth-service-deploy"
+```
+
+생성 후 아래 두 파일이 생깁니다.
+
+```bash
+~/.ssh/soo-auth-service-deploy
+~/.ssh/soo-auth-service-deploy.pub
+```
+
+의미는 다음과 같습니다.
+
+* `~/.ssh/soo-auth-service-deploy` → private key
+* `~/.ssh/soo-auth-service-deploy.pub` → public key
+
+public key 확인
+
+```bash
+cat ~/.ssh/soo-auth-service-deploy.pub
+```
+
+private key 확인
+
+```bash
+cat ~/.ssh/soo-auth-service-deploy
+```
+
+## 5-2. 서버에 public key 등록
+
 deploy 계정 상태에서 실행
 
 ```bash
@@ -133,13 +172,29 @@ authorized_keys 생성
 nano ~/.ssh/authorized_keys
 ```
 
-여기에 GitHub Actions에서 사용할 **public key** 붙여넣기
+여기에 **`~/.ssh/soo-auth-service-deploy.pub` 내용 전체**를 붙여넣습니다.
+
+예시 형태
+
+```text
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI... soo-auth-service-deploy
+```
 
 권한 설정
 
 ```bash
 chmod 600 ~/.ssh/authorized_keys
 ```
+
+## 5-3. 접속 테스트
+
+로컬에서 private key를 사용해 접속이 되는지 먼저 확인합니다.
+
+```bash
+ssh -i ~/.ssh/soo-auth-service-deploy deploy@<SERVER_IP>
+```
+
+정상 접속이 되면 GitHub Actions에서도 같은 private key를 사용할 수 있습니다.
 
 ---
 
@@ -187,7 +242,7 @@ cp .env.example .env
 nano .env
 ```
 
-운영 환경 값으로 수정
+운영 환경 값으로 수정합니다.
 
 ---
 
@@ -227,6 +282,7 @@ sudo -u deploy /opt/soo-auth-service/deploy.sh
 정상 동작 확인
 
 ```bash
+cd /opt/soo-auth-service
 docker compose ps
 ```
 
@@ -238,7 +294,7 @@ Repository → Settings → Secrets → Actions
 
 다음 값 추가
 
-```
+```text
 DOCKERHUB_USERNAME
 DOCKERHUB_TOKEN
 DEPLOY_HOST
@@ -249,19 +305,24 @@ DEPLOY_SSH_KEY
 
 예시
 
-```
+```text
 DEPLOY_HOST = 12.34.56.78
 DEPLOY_PORT = 22
 DEPLOY_USER = deploy
 ```
 
-DEPLOY_SSH_KEY 는 private key 전체 입력
+`DEPLOY_SSH_KEY` 에는 **5단계에서 생성한 private key 전체 내용**을 넣습니다.
 
-```
+```text
 -----BEGIN OPENSSH PRIVATE KEY-----
 ...
 -----END OPENSSH PRIVATE KEY-----
 ```
+
+정리:
+
+* 서버 `~/.ssh/authorized_keys` 에 넣는 값 → public key (`.pub`)
+* GitHub Secret `DEPLOY_SSH_KEY` 에 넣는 값 → private key
 
 ---
 
@@ -269,7 +330,7 @@ DEPLOY_SSH_KEY 는 private key 전체 입력
 
 파일 생성
 
-```
+```text
 .github/workflows/cd-deploy.yml
 ```
 
@@ -330,7 +391,7 @@ main 브랜치 push
 git push origin main
 ```
 
-자동 배포 실행됨
+자동 배포가 실행됩니다.
 
 ---
 
@@ -374,9 +435,9 @@ docker compose up -d --build
 
 ## 특정 이미지 태그로 롤백
 
-docker-compose.yml 수정
+`docker-compose.yml` 수정
 
-```
+```text
 image: username/soo-auth-service:<sha>
 ```
 
@@ -393,7 +454,7 @@ docker compose up -d
 
 서버 디렉터리
 
-```
+```text
 /opt/soo-auth-service
  ├── docker-compose.yml
  ├── .env
@@ -403,7 +464,7 @@ docker compose up -d
 
 배포 흐름
 
-```
+```text
 GitHub push
      ↓
 GitHub Actions
