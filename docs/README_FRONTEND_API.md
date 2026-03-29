@@ -23,6 +23,7 @@
 - `POST /api/v1/auth/local/signup`
 - `POST /api/v1/auth/local/signup/phone`
 - `POST /api/v1/auth/local/login`
+- `POST /api/v1/auth/local/login/phone`
 - `POST /api/v1/auth/local/token/refresh`
 - `POST /api/v1/auth/local/logout`
 - `POST /api/v1/auth/local/withdraw`
@@ -69,6 +70,27 @@ sequenceDiagram
     API-->>FE: 200 OK
 
     FE->>API: POST /auth/local/login (X-Device-Id)
+    API-->>FE: accessToken, refreshToken
+```
+
+### 4-1-b) 휴대폰 인증 + 휴대폰 로그인
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as User
+    participant FE as Frontend
+    participant API as Auth API
+
+    U->>FE: 전화번호 입력
+    FE->>API: POST /auth/local/phone-verifications/request
+    API-->>FE: verificationId
+
+    U->>FE: 문자 인증번호 입력
+    FE->>API: POST /auth/local/phone-verifications/confirm
+    API-->>FE: phoneVerificationToken
+
+    FE->>API: POST /auth/local/login/phone (X-Device-Id)
     API-->>FE: accessToken, refreshToken
 ```
 
@@ -192,6 +214,18 @@ sequenceDiagram
 {
   "email": "user@example.com",
   "password": "P@ssw0rd!"
+}
+```
+- Response `data`: `accessToken`, `refreshToken`, 만료 시간
+
+### E-2. 휴대폰 로그인
+- `POST /api/v1/auth/local/login/phone`
+- Header: `X-Device-Id` 필수
+- Request
+```json
+{
+  "phoneNumber": "+821012345678",
+  "phoneVerificationToken": "uuid"
 }
 ```
 - Response `data`: `accessToken`, `refreshToken`, 만료 시간

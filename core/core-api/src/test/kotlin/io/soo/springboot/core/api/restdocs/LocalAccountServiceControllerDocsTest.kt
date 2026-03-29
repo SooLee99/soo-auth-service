@@ -3,6 +3,7 @@ package io.soo.springboot.core.api.restdocs
 import io.mockk.every
 import io.mockk.mockk
 import io.soo.springboot.core.api.controller.v1.LocalAccountController
+import io.soo.springboot.core.api.controller.v1.request.PhoneLoginRequest
 import io.soo.springboot.core.api.controller.v1.request.RefreshRequest
 import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
 import io.soo.springboot.core.api.controller.v1.request.PhoneSignUpRequest
@@ -10,14 +11,17 @@ import io.soo.springboot.core.api.controller.v1.request.WithdrawRequest
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.api.security.token.IssuedTokens
+import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.core.domain.local.LocalAccountService
 import io.soo.springboot.core.enums.Gender
+import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.test.api.RestDocsTest
 import io.soo.springboot.test.api.RestDocsUtils
 import io.soo.springboot.test.api.mockMvcDocument
 import io.soo.springboot.test.api.requestFields
 import io.soo.springboot.test.api.requestHeaders
 import io.soo.springboot.test.api.responseFields
+import io.soo.springboot.storage.db.core.User
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
@@ -33,11 +37,12 @@ class LocalAccountServiceControllerDocsTest : RestDocsTest() {
 
     private val localAccountService = mockk<LocalAccountService>(relaxed = true)
     private val authTokenManager = mockk<AuthTokenManager>()
+    private val loginHistoryService = mockk<LoginHistoryService>(relaxed = true)
     private lateinit var controller: LocalAccountController
 
     @BeforeEach
     fun init() {
-        controller = LocalAccountController(localAccountService, authTokenManager)
+        controller = LocalAccountController(localAccountService, authTokenManager, loginHistoryService)
         mockMvc = mockController(controller)
     }
 
@@ -151,6 +156,62 @@ class LocalAccountServiceControllerDocsTest : RestDocsTest() {
                     ),
                     requestFields(
                         fieldWithPath("refreshToken").type(JsonFieldType.STRING).description("리프레시 토큰"),
+                    ),
+                    responseFields(*responseDescriptors.toTypedArray()),
+                )
+            )
+    }
+
+    @Test
+    fun loginWithPhone() {
+        every { localAccountService.loginByPhone(any(), any()) } returns User(
+            id = 1L,
+            email = "phone-user@local.internal",
+            phoneNumber = "+821012345678",
+            name = null,
+            nickname = null,
+            authProvider = AuthProvider.LOCAL,
+        )
+        every { authTokenManager.issue(any(), any(), any(), any()) } returns IssuedTokens(
+            accessToken = "access-token",
+            accessExpiresInSec = 3600,
+            refreshToken = "refresh-token",
+            refreshExpiresInSec = 1209600,
+        )
+
+        val responseDescriptors =
+            ApiResponseFieldDescriptors.successCommon() + listOf(
+                fieldWithPath("data").type(JsonFieldType.OBJECT).description("토큰 정보"),
+                fieldWithPath("data.accessToken").type(JsonFieldType.STRING).description("액세스 토큰"),
+                fieldWithPath("data.accessExpiresInSec").type(JsonFieldType.NUMBER).description("액세스 토큰 만료(초)"),
+                fieldWithPath("data.refreshToken").type(JsonFieldType.STRING).description("리프레시 토큰"),
+                fieldWithPath("data.refreshExpiresInSec").type(JsonFieldType.NUMBER).description("리프레시 토큰 만료(초)"),
+            )
+
+        given()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .header("X-Device-Id", "device-001")
+            .body(
+                PhoneLoginRequest(
+                    phoneNumber = "+821012345678",
+                    phoneVerificationToken = "verified-phone-token",
+                )
+            )
+            .`when`()
+            .post("/api/v1/auth/local/login/phone")
+            .then()
+            .statusCode(200)
+            .apply(
+                mockMvcDocument(
+                    "auth-local-login-phone",
+                    RestDocsUtils.requestPreprocessor(),
+                    RestDocsUtils.responsePreprocessor(),
+                    requestHeaders(
+                        headerWithName("X-Device-Id").description("디바이스 식별자"),
+                    ),
+                    requestFields(
+                        fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("휴대폰 번호"),
+                        fieldWithPath("phoneVerificationToken").type(JsonFieldType.STRING).description("휴대폰 인증 완료 토큰"),
                     ),
                     responseFields(*responseDescriptors.toTypedArray()),
                 )

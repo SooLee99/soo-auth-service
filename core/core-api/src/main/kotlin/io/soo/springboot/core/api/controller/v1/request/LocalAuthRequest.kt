@@ -99,6 +99,19 @@ data class PhoneSignUpRequest(
     val phoneVerificationToken: String,
 )
 
+data class PhoneLoginRequest(
+    @field:NotBlank(message = "휴대폰 번호는 필수입니다.")
+    @field:Size(max = 20, message = "휴대폰 번호가 너무 깁니다.")
+    @field:Pattern(
+        regexp = """^\+?\d[\d\s-]{7,18}\d$""",
+        message = "휴대폰 번호 형식이 올바르지 않습니다."
+    )
+    val phoneNumber: String,
+
+    @field:NotBlank(message = "휴대폰 인증 토큰은 필수입니다.")
+    val phoneVerificationToken: String,
+)
+
 data class PhoneVerificationIssueRequest(
     @field:NotBlank(message = "휴대폰 번호는 필수입니다.")
     @field:Size(max = 20, message = "휴대폰 번호가 너무 깁니다.")

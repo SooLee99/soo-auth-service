@@ -9,6 +9,7 @@ import io.soo.springboot.core.enums.AdminUserActionType
 import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.UserStatus
+import io.soo.springboot.core.domain.UserStatusPolicy
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.error.CoreException
 
@@ -47,6 +48,7 @@ class LocalAccountService(
     private val passwordEncoder: PasswordEncoder,
     private val tokenRevocationService: TokenRevoke,
     private val phoneVerificationService: PhoneVerifyService,
+    private val userStatusPolicy: UserStatusPolicy,
     private val userStatusAuditLogRepository: UserStatusAuditLogRepository,
 ) {
     private val secureRandom = SecureRandom()
@@ -122,6 +124,33 @@ class LocalAccountService(
             )
         )
         return user
+    }
+
+    @Transactional
+    fun loginByPhone(phoneNumber: String, phoneVerificationToken: String): User {
+        phoneVerificationService.consume(phoneNumber, phoneVerificationToken)
+        val normalizedPhone = normalizePhoneNumber(phoneNumber)
+
+        val activeUser = userRepository.findByPhoneNumber(normalizedPhone)
+        if (activeUser != null) {
+            userStatusPolicy.validateLoginAllowed(activeUser)
+
+            if (activeUser.authProvider != AuthProvider.LOCAL) {
+                throw CoreException(ErrorType.INVALID_CREDENTIALS)
+            }
+
+            return activeUser
+        }
+
+        val maybeDeletedUser = userRepository.findByPhoneNumberIncludingDeleted(normalizedPhone)
+            ?: throw CoreException(ErrorType.INVALID_CREDENTIALS)
+        userStatusPolicy.validateLoginAllowed(maybeDeletedUser)
+
+        if (maybeDeletedUser.authProvider != AuthProvider.LOCAL) {
+            throw CoreException(ErrorType.INVALID_CREDENTIALS)
+        }
+
+        throw CoreException(ErrorType.INVALID_CREDENTIALS)
     }
 
     /**

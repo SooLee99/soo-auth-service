@@ -14,6 +14,8 @@ import java.time.Instant
 interface UserJpaRepository : JpaRepository<UserEntity, Long>, JpaSpecificationExecutor<UserEntity> {
     fun findByEmailAndUserStatusNot(email: String, userStatus: UserStatus): UserEntity?
     fun findByEmail(email: String): UserEntity?
+    fun findByPhoneNumberAndUserStatusNot(phoneNumber: String, userStatus: UserStatus): UserEntity?
+    fun findByPhoneNumber(phoneNumber: String): UserEntity?
     fun existsByEmailAndUserStatusNot(email: String, userStatus: UserStatus): Boolean
     fun existsByEmail(email: String): Boolean
     fun existsByPhoneNumberAndUserStatusNot(phoneNumber: String, userStatus: UserStatus): Boolean

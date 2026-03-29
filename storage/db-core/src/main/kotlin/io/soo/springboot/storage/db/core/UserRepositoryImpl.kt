@@ -41,6 +41,14 @@ class UserRepositoryImpl(
         return jpaRepository.findByEmail(email)?.toModel()
     }
 
+    override fun findByPhoneNumber(phoneNumber: String): User? {
+        return jpaRepository.findByPhoneNumberAndUserStatusNot(phoneNumber, UserStatus.SOFT_DELETED)?.toModel()
+    }
+
+    override fun findByPhoneNumberIncludingDeleted(phoneNumber: String): User? {
+        return jpaRepository.findByPhoneNumber(phoneNumber)?.toModel()
+    }
+
     override fun findByOAuth(provider: AuthProvider, providerId: String): User? {
         return jpaRepository.findByAuthProviderAndOauthProviderUserIdAndUserStatusNot(
             provider,

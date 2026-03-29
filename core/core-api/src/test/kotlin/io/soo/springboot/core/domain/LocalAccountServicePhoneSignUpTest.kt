@@ -27,6 +27,7 @@ class LocalAccountServicePhoneSignUpTest {
     private val passwordEncoder = mockk<PasswordEncoder>()
     private val tokenRevocationService = mockk<TokenRevoke>(relaxed = true)
     private val phoneVerificationService = mockk<PhoneVerifyService>(relaxed = true)
+    private val userStatusPolicy = mockk<UserStatusPolicy>(relaxed = true)
     private val auditRepository = mockk<UserStatusAuditLogRepository>(relaxed = true)
 
     private val service = LocalAccountService(
@@ -35,6 +36,7 @@ class LocalAccountServicePhoneSignUpTest {
         passwordEncoder = passwordEncoder,
         tokenRevocationService = tokenRevocationService,
         phoneVerificationService = phoneVerificationService,
+        userStatusPolicy = userStatusPolicy,
         userStatusAuditLogRepository = auditRepository,
     )
 

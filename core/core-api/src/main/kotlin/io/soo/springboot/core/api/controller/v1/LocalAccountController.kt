@@ -2,18 +2,23 @@ package io.soo.springboot.core.api.controller.v1
 
 import io.soo.springboot.core.api.controller.v1.request.RefreshRequest
 import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
+import io.soo.springboot.core.api.controller.v1.request.PhoneLoginRequest
 import io.soo.springboot.core.api.controller.v1.request.PhoneSignUpRequest
 import io.soo.springboot.core.api.controller.v1.request.WithdrawRequest
+import io.soo.springboot.core.api.security.userdetails.UserPrincipal
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
 import io.soo.springboot.core.domain.local.LocalAccountService
+import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.core.domain.local.LocalSignUpCmd
 import io.soo.springboot.core.api.security.token.AuthTokenManager
+import io.soo.springboot.core.enums.LoginType
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.response.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.http.MediaType
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
@@ -23,6 +28,7 @@ import org.springframework.web.bind.annotation.*
 class LocalAccountController(
     private val localAccountService: LocalAccountService,
     private val authTokenManager: AuthTokenManager,
+    private val loginHistoryService: LoginHistoryService,
 ) {
     @PostMapping("/signup")
     fun signUp(@RequestBody @Valid request: SignUpRequest) {
@@ -50,6 +56,39 @@ class LocalAccountController(
             phoneNumber = request.phoneNumber,
             phoneVerificationToken = request.phoneVerificationToken,
         )
+    }
+
+    @PostMapping("/login/phone", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun loginWithPhone(
+        @RequestHeader("X-Device-Id") deviceId: String,
+        @RequestBody @Valid request: PhoneLoginRequest,
+        req: HttpServletRequest,
+    ): ApiResponse<Any?> {
+        val user = localAccountService.loginByPhone(
+            phoneNumber = request.phoneNumber,
+            phoneVerificationToken = request.phoneVerificationToken,
+        )
+
+        val principal = UserPrincipal(
+            userId = user.id,
+            email = user.email,
+            passwordHash = null,
+            role = user.role,
+            provider = user.authProvider,
+        )
+        val authentication = UsernamePasswordAuthenticationToken(principal, null, principal.authorities)
+        val tokens = authTokenManager.issue(authentication, user.id, deviceId, user.authProvider)
+
+        loginHistoryService.recordLoginSuccess(
+            userId = user.id,
+            userEmail = user.email,
+            loginType = LoginType.LOCAL,
+            ipAddress = req.remoteAddr,
+            userAgent = req.getHeader("User-Agent"),
+            deviceId = deviceId,
+        )
+
+        return ApiResponse.success(req = req, data = tokens)
     }
 
     @PostMapping("/token/refresh", produces = [MediaType.APPLICATION_JSON_VALUE])

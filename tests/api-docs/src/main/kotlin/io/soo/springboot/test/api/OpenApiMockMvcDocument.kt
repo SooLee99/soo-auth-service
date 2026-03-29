@@ -112,6 +112,12 @@ private object ApiDocCatalog {
             description = "이메일/비밀번호로 로그인하고 액세스/리프레시 토큰을 발급합니다.",
             authMarkdown = "- 인증 불필요",
         ),
+        "auth-local-login-phone" to ApiMeta(
+            tag = "Local Auth",
+            summary = "휴대폰 로그인",
+            description = "휴대폰 인증 토큰으로 로그인하고 액세스/리프레시 토큰을 발급합니다.",
+            authMarkdown = "- 인증 불필요",
+        ),
         "auth-local-signup" to ApiMeta(
             tag = "Local Auth",
             summary = "로컬 회원가입",
