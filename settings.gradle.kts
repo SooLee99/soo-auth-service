@@ -20,6 +20,7 @@ pluginManagement {
     val springDependencyManagementVersion: String by settings
     val asciidoctorConvertVersion: String by settings
     val ktlintVersion: String by settings
+    val restdocsApiSpecVersion: String by settings
 
     resolutionStrategy {
         eachPlugin {
@@ -32,6 +33,7 @@ pluginManagement {
                 "io.spring.dependency-management" -> useVersion(springDependencyManagementVersion)
                 "org.asciidoctor.jvm.convert" -> useVersion(asciidoctorConvertVersion)
                 "org.jlleitschuh.gradle.ktlint" -> useVersion(ktlintVersion)
+                "com.epages.restdocs-api-spec" -> useVersion(restdocsApiSpecVersion)
             }
         }
     }

@@ -1,5 +1,5 @@
 plugins {
-    id("com.epages.restdocs-api-spec") version "0.19.4"
+    id("com.epages.restdocs-api-spec")
 }
 
 tasks.getByName("bootJar") { enabled = true }
@@ -14,14 +14,14 @@ dependencies {
     testImplementation(project(":tests:api-docs"))
 
     testImplementation("com.epages:restdocs-api-spec-mockmvc")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${property("springDocVersion")}")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
-    implementation("com.solapi:sdk:1.0.3")
+    implementation("com.solapi:sdk:${property("solapiSdkVersion")}")
 
     implementation("org.springframework.session:spring-session-core")
     implementation("org.springframework.session:spring-session-jdbc")

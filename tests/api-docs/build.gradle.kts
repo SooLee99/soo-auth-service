@@ -4,6 +4,6 @@ dependencies {
     compileOnly("jakarta.servlet:jakarta.servlet-api")
     api("org.springframework.restdocs:spring-restdocs-restassured")
     api("org.springframework.restdocs:spring-restdocs-mockmvc")
-    api("com.epages:restdocs-api-spec-mockmvc:0.19.4")
+    api("com.epages:restdocs-api-spec-mockmvc:${property("restdocsApiSpecVersion")}")
     api("io.rest-assured:spring-mock-mvc")
 }
