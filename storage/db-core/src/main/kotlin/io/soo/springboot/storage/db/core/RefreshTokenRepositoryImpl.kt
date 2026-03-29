@@ -24,22 +24,22 @@ class RefreshTokenRepositoryImpl(
         return jpaRepository.findForUpdateByHash(hash)?.toModel()
     }
 
-    override fun findActiveByUserIdAndDeviceId(userId: Long, deviceId: String, serviceId: Long?, now: Instant): List<RefreshToken> {
-        return jpaRepository.findActiveByUserIdAndDeviceId(userId, deviceId, serviceId, now)
+    override fun findActiveByUserIdAndDeviceId(userId: Long, deviceId: String, now: Instant): List<RefreshToken> {
+        return jpaRepository.findActiveByUserIdAndDeviceId(userId, deviceId, now)
             .map { it.toModel() }
     }
 
-    override fun findActiveByUserId(userId: Long, serviceId: Long?, now: Instant): List<RefreshToken> {
-        return jpaRepository.findActiveByUserId(userId, serviceId, now)
+    override fun findActiveByUserId(userId: Long, now: Instant): List<RefreshToken> {
+        return jpaRepository.findActiveByUserId(userId, now)
             .map { it.toModel() }
     }
 
-    override fun revokeAllActiveByUserId(userId: Long, serviceId: Long?, now: Instant): Int {
-        return jpaRepository.revokeAllActiveByUserId(userId, serviceId, now)
+    override fun revokeAllActiveByUserId(userId: Long, now: Instant): Int {
+        return jpaRepository.revokeAllActiveByUserId(userId, now)
     }
 
-    override fun revokeAllActiveByUserIdAndDeviceId(userId: Long, deviceId: String, serviceId: Long?, now: Instant): Int {
-        return jpaRepository.revokeAllActiveByUserIdAndDeviceId(userId, deviceId, serviceId, now)
+    override fun revokeAllActiveByUserIdAndDeviceId(userId: Long, deviceId: String, now: Instant): Int {
+        return jpaRepository.revokeAllActiveByUserIdAndDeviceId(userId, deviceId, now)
     }
 
     override fun deleteExpired(before: Instant): Int {
@@ -49,7 +49,6 @@ class RefreshTokenRepositoryImpl(
     private fun RefreshToken.toEntity(): RefreshTokenEntity {
         return RefreshTokenEntity(
             userId = userId,
-            serviceId = serviceId,
             tokenHash = tokenHash,
             deviceId = deviceId,
             provider = provider,
@@ -67,7 +66,6 @@ class RefreshTokenRepositoryImpl(
         return RefreshToken(
             id = id ?: 0L,
             userId = userId,
-            serviceId = serviceId,
             tokenHash = tokenHash,
             deviceId = deviceId,
             provider = provider,

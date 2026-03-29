@@ -63,9 +63,6 @@ enum class ErrorType(
     CONFLICT(HttpStatus.CONFLICT, ErrorCode.E409, "요청이 현재 상태와 충돌합니다.", LogLevel.WARN),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, ErrorCode.E409, "이미 존재하는 이메일입니다.", LogLevel.WARN),
     DUPLICATE_PHONE_NUMBER(HttpStatus.CONFLICT, ErrorCode.E409, "이미 존재하는 전화번호입니다.", LogLevel.WARN),
-    DUPLICATE_SERVICE_CODE(HttpStatus.CONFLICT, ErrorCode.E409, "이미 존재하는 서비스 코드입니다.", LogLevel.WARN),
-    SERVICE_INACTIVE(HttpStatus.CONFLICT, ErrorCode.E409, "비활성화된 서비스입니다.", LogLevel.WARN),
-    SERVICE_HAS_ACTIVE_MEMBERSHIPS(HttpStatus.CONFLICT, ErrorCode.E409, "활성 멤버십이 존재하여 서비스를 비활성화할 수 없습니다.", LogLevel.WARN),
 
     // 413
     PAYLOAD_TOO_LARGE(HttpStatus.PAYLOAD_TOO_LARGE, ErrorCode.E413, "업로드 용량이 너무 큽니다.", LogLevel.WARN),

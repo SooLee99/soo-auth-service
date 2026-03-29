@@ -11,12 +11,12 @@ class HealthController(
     private val healthSnapshotService: HealthSnapshotService,
 ) {
     @GetMapping("/health")
-    fun health(req: HttpServletRequest): ApiResponse<Map<String, Any>> {
+    fun getHealth(req: HttpServletRequest): ApiResponse<Map<String, Any>> {
         return ApiResponse.success(req = req, data = healthSnapshotService.publicSummary(req))
     }
 
     @GetMapping("/api/v1/auth/admin/health")
-    fun adminHealth(req: HttpServletRequest): ApiResponse<Map<String, Any>> {
+    fun getAdminHealth(req: HttpServletRequest): ApiResponse<Map<String, Any>> {
         return ApiResponse.success(req = req, data = healthSnapshotService.adminDetails(req))
     }
 }

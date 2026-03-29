@@ -2,7 +2,9 @@ package io.soo.springboot.core.api.restdocs
 
 import io.mockk.every
 import io.mockk.mockk
-import io.soo.springboot.core.api.controller.v1.AdminAuthController
+import io.soo.springboot.core.api.controller.v1.AdminLoginHistoryController
+import io.soo.springboot.core.api.controller.v1.AdminUserStatusController
+import io.soo.springboot.core.api.controller.v1.AdminUsersController
 import io.soo.springboot.core.api.controller.v1.request.AdminUserBlockRequest
 import io.soo.springboot.core.api.controller.v1.request.AdminUserDeleteRequest
 import io.soo.springboot.core.api.controller.v1.request.AdminUserPasswordResetRequest
@@ -42,18 +44,22 @@ import org.springframework.security.authentication.TestingAuthenticationToken
 import java.time.Instant
 import java.time.LocalDateTime
 
-class AdminAuthControllerDocsTest : RestDocsTest() {
+class AdminUserApiDocsTest : RestDocsTest() {
 
     private val loginHistoryService = mockk<LoginHistoryService>()
     private val userIdResolver = mockk<UserIdResolver>()
     private val adminUserBlockService = mockk<UserBlock>()
     private val adminUserManagementService = mockk<UserAdmin>(relaxed = true)
-    private lateinit var controller: AdminAuthController
+    private lateinit var userController: AdminUsersController
+    private lateinit var statusController: AdminUserStatusController
+    private lateinit var historyController: AdminLoginHistoryController
 
     @BeforeEach
     fun init() {
-        controller = AdminAuthController(loginHistoryService, userIdResolver, adminUserBlockService, adminUserManagementService)
-        mockMvc = mockController(controller)
+        userController = AdminUsersController(adminUserManagementService, userIdResolver)
+        statusController = AdminUserStatusController(userIdResolver, adminUserBlockService)
+        historyController = AdminLoginHistoryController(loginHistoryService, userIdResolver)
+        mockMvc = mockControllers(userController, statusController, historyController)
     }
 
     @Test

@@ -25,7 +25,7 @@ class LocalAccountController(
     private val authTokenManager: AuthTokenManager,
 ) {
     @PostMapping("/signup")
-    fun signup(@RequestBody @Valid request: SignUpRequest) {
+    fun signUp(@RequestBody @Valid request: SignUpRequest) {
         localAccountService.signup(
             LocalSignUpCmd(
                 email = request.email,
@@ -45,7 +45,7 @@ class LocalAccountController(
     }
 
     @PostMapping("/signup/phone")
-    fun signupPhone(@RequestBody @Valid request: PhoneSignUpRequest) {
+    fun signUpWithPhone(@RequestBody @Valid request: PhoneSignUpRequest) {
         localAccountService.signupPhone(
             phoneNumber = request.phoneNumber,
             phoneVerificationToken = request.phoneVerificationToken,
@@ -53,7 +53,7 @@ class LocalAccountController(
     }
 
     @PostMapping("/token/refresh", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun refresh(
+    fun refreshTokens(
         @RequestHeader("X-Device-Id") deviceId: String,
         @RequestBody request: RefreshRequest,
         req: HttpServletRequest,
@@ -63,7 +63,7 @@ class LocalAccountController(
     }
 
     @PostMapping("/logout", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun logout(
+    fun logoutUser(
         @RequestHeader("X-Device-Id") deviceId: String,
         @AuthenticationPrincipal jwt: Jwt?,
         @RequestBody(required = false) body: LogoutRequest?,
@@ -82,7 +82,7 @@ class LocalAccountController(
     }
 
     @PostMapping("/withdraw", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun withdraw(
+    fun withdrawUser(
         @AuthenticationPrincipal jwt: Jwt?,
         @RequestBody(required = false) @Valid body: WithdrawRequest?,
         req: HttpServletRequest,

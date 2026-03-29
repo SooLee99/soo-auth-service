@@ -50,7 +50,7 @@ class LocalAccountPhoneSignUpTest {
         val savedCredential = slot<LocalCredential>()
         every { localCredentialRepository.save(capture(savedCredential)) } answers { savedCredential.captured.copy(id = 10L) }
 
-        val user = service.signUpByPhone("+82 10-1234-5678", "verified-phone-token")
+        val user = service.signupPhone("+82 10-1234-5678", "verified-phone-token")
 
         assertEquals(1L, user.id)
         assertEquals("+821012345678", savedUser.captured.phoneNumber)
@@ -71,7 +71,7 @@ class LocalAccountPhoneSignUpTest {
         every { userRepository.existsByPhoneNumber(any()) } returns true
 
         val ex = org.junit.jupiter.api.Assertions.assertThrows(CoreException::class.java) {
-            service.signUpByPhone("010-1234-5678", "verified-phone-token")
+            service.signupPhone("010-1234-5678", "verified-phone-token")
         }
         assertEquals(ErrorType.DUPLICATE_PHONE_NUMBER, ex.errorType)
     }

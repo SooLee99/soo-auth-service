@@ -18,7 +18,7 @@ class LocalPhoneVerificationController(
     private val phoneVerificationService: PhoneVerify,
 ) {
     @PostMapping("/request", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun request(
+    fun issueVerification(
         @RequestBody @Valid request: PhoneVerificationIssueRequest,
         req: HttpServletRequest,
     ): ApiResponse<Any?> {
@@ -33,7 +33,7 @@ class LocalPhoneVerificationController(
     }
 
     @PostMapping("/confirm", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun confirm(
+    fun confirmVerification(
         @RequestBody @Valid request: PhoneVerificationConfirmRequest,
         req: HttpServletRequest,
     ): ApiResponse<Any?> {

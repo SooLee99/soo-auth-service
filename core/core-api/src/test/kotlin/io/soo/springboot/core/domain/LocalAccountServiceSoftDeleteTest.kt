@@ -50,7 +50,7 @@ class LocalAccountSoftDeleteTest {
             auditRepository.save(1L, 1L, AdminUserActionType.SOFT_DELETE, any())
         } returns UserStatusAuditLog(1L, 1L, 1L, AdminUserActionType.SOFT_DELETE, "privacy", Instant.now())
 
-        service.softDelete(1L, "privacy")
+        service.deleteSoft(1L, "privacy")
 
         val saved = saveSlot.captured
         assertEquals(UserStatus.SOFT_DELETED, saved.userStatus)
@@ -71,7 +71,7 @@ class LocalAccountSoftDeleteTest {
             auditRepository.save(1L, 1L, AdminUserActionType.SOFT_DELETE, any())
         } returns UserStatusAuditLog(1L, 1L, 1L, AdminUserActionType.SOFT_DELETE, null, Instant.now())
 
-        service.softDelete(1L, null)
+        service.deleteSoft(1L, null)
 
         val saved = saveSlot.captured
         assertTrue(saved.email.startsWith("deleted+1."))

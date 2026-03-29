@@ -18,7 +18,7 @@ import io.soo.springboot.core.support.response.ApiResponse
 class OAuth2AccountController {
 
     @GetMapping("/{provider}/authorize-url")
-    fun authorizeUrl(
+    fun getAuthorizeUrl(
         @PathVariable provider: String,
         @RequestParam(required = false) returnUrl: String?,
         @RequestHeader(name = "X-Device-Id", required = false) deviceId: String?,

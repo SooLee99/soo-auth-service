@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 
 class PhoneVerifyTest {
-    private val store = InMemoryPhoneStore()
+    private val store = InMemPhoneStore()
     private val notifier = CapturingNotifier()
     private val service = PhoneVerify(store, notifier)
 
@@ -22,7 +22,7 @@ class PhoneVerifyTest {
             code = code,
         )
 
-        service.consumeVerified("+82 10-1234-5678", confirmed.proofToken)
+        service.consume("+82 10-1234-5678", confirmed.proofToken)
     }
 
     @Test

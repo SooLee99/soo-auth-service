@@ -28,7 +28,7 @@ class AdminSmsController(
 ) {
 
     @PostMapping("/send", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun send(
+    fun sendSms(
         @RequestBody @Valid body: AdminSmsSendReq,
         req: HttpServletRequest,
     ): ApiResponse<AdminSmsSendRes> {
@@ -37,7 +37,7 @@ class AdminSmsController(
     }
 
     @GetMapping("/logs", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun logs(
+    fun listSmsLogs(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) startDate: LocalDateTime?,
@@ -50,7 +50,7 @@ class AdminSmsController(
     }
 
     @GetMapping("/stats", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun stats(
+    fun getSmsStats(
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) startDate: LocalDateTime?,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) endDate: LocalDateTime?,
         req: HttpServletRequest,

@@ -43,7 +43,7 @@ public class SolapiSmsNotifier implements PhoneNotifier {
 
     @Override
     public void sendCode(String phoneNumber, String code, long expiresInSec) {
-        String text = "[soo-auth] 인증번호 [" + code + "] (유효 " + (expiresInSec / 60) + "분)";
+        String text = "[soo] 인증번호 [" + code + "] (유효 " + (expiresInSec / 60) + "분)";
         Message message = new Message();
         message.setFrom(props.getSendFrom());
         message.setTo(phoneNumber);

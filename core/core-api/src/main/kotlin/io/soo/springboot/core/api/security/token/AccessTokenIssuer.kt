@@ -18,7 +18,7 @@ class AccessTokenIssuer(
     private val jwtEncoder: JwtEncoder,
     private val props: AppJwtProperties,
 ) {
-    fun issue(authentication: Authentication, userId: Long, serviceId: Long? = null): Pair<String, Long> {
+    fun issue(authentication: Authentication, userId: Long): Pair<String, Long> {
         val now = Instant.now()
         val expiresIn = props.accessTtlSeconds
         val exp = now.plusSeconds(expiresIn)
@@ -34,10 +34,6 @@ class AccessTokenIssuer(
             .id(jti)
             .claim("roles", roles)
             .claim("uid", userId)
-
-        if (serviceId != null) {
-            claimBuilder.claim("sid", serviceId)
-        }
         val claims = claimBuilder.build()
 
         val headers = JwsHeader.with(SignatureAlgorithm.RS256)

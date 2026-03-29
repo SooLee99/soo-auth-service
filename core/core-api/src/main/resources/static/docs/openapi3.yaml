@@ -1,632 +1,3464 @@
-﻿
 openapi: 3.0.1
 info:
   title: soo-auth-service API
-  version: 1.0.0
-  description: |
-    인증 서비스 API 가이드 (REST API Docs)
-    프론트엔드용 카테고리 기준 전체 API 명세.
+  description: 인증 서비스 API 가이드 (REST API Docs).
+  version: 0.0.1-SNAPSHOT
 servers:
-  - url: http://localhost:8080
+- url: http://localhost
 tags:
-  - { name: Health, description: 헬스체크 }
-  - { name: Auth-Local, description: 공용 로컬 인증 }
-  - { name: Auth-Phone, description: 공용 휴대폰 인증 }
-  - { name: Auth-Service-Local, description: 서비스 스코프 로컬 인증 }
-  - { name: Auth-Service-Phone, description: 서비스 스코프 휴대폰 인증 }
-  - { name: Auth-OAuth2, description: OAuth2 인가 URL }
-  - { name: Admin-User, description: 관리자 사용자 관리 }
-  - { name: Admin-Service, description: 관리자 서비스 관리 }
-  - { name: Admin-SMS, description: 관리자 문자 관리 }
+- name: Health
+  description: 헬스체크/모니터링 API
+- name: Local Auth
+  description: 사용자 로컬 인증 API(로그인/회원가입/토큰/로그아웃/탈퇴)
+- name: Local Phone
+  description: 휴대폰 인증 API(인증번호 발급/확인)
+- name: OAuth2
+  description: 소셜 로그인 시작 URL API
+- name: Admin Audit
+  description: 관리자 감사 로그 API(로그인 이력)
+- name: Admin Users
+  description: 관리자 사용자 관리 API(조회/수정/비밀번호/토큰/삭제)
+- name: Admin User Status
+  description: 관리자 사용자 상태 API(차단/해제/상태 이력/차단·삭제 목록)
+- name: Admin SMS
+  description: 관리자 SMS 운영 API(발송/이력/통계)
 paths:
-  /health:
-    get:
-      tags: [Health]
-      summary: 공개 헬스체크
-      responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
   /api/v1/auth/admin/health:
     get:
-      tags: [Health]
-      summary: 관리자 상세 헬스체크
-      security: [{ bearerAuth: [] }]
-      responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
-  /api/v1/auth/local/login:
-    post:
-      tags: [Auth-Local]
-      summary: 로컬 로그인
-      parameters: [{ $ref: '#/components/parameters/XDeviceIdRequired' }]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/LoginRequest' }
-      responses:
-        '200': { $ref: '#/components/responses/SuccessIssuedTokens' }
-
-  /api/v1/auth/local/signup:
-    post:
-      tags: [Auth-Local]
-      summary: 로컬 회원가입
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/SignUpRequest' }
-      responses:
-        '200': { description: OK }
-
-  /api/v1/auth/local/signup/phone:
-    post:
-      tags: [Auth-Local]
-      summary: 전화번호 기반 가입
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/PhoneSignUpRequest' }
-      responses:
-        '200': { description: OK }
-
-  /api/v1/auth/local/token/refresh:
-    post:
-      tags: [Auth-Local]
-      summary: 토큰 재발급
-      parameters: [{ $ref: '#/components/parameters/XDeviceIdRequired' }]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/RefreshRequest' }
-      responses:
-        '200': { $ref: '#/components/responses/SuccessIssuedTokens' }
-  /api/v1/auth/local/logout:
-    post:
-      tags: [Auth-Local]
-      summary: 로그아웃
-      security: [{ bearerAuth: [] }]
-      parameters: [{ $ref: '#/components/parameters/XDeviceIdRequired' }]
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/LogoutRequest' }
-      responses:
-        '200': { $ref: '#/components/responses/SuccessOk' }
-
-  /api/v1/auth/local/withdraw:
-    post:
-      tags: [Auth-Local]
-      summary: 회원 탈퇴(소프트 삭제)
-      security: [{ bearerAuth: [] }]
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/WithdrawRequest' }
-      responses:
-        '200': { $ref: '#/components/responses/SuccessOk' }
-
-  /api/v1/auth/local/phone-verifications/request:
-    post:
-      tags: [Auth-Phone]
-      summary: 인증번호 발급
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/PhoneIssueRequest' }
-      responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
-  /api/v1/auth/local/phone-verifications/confirm:
-    post:
-      tags: [Auth-Phone]
-      summary: 인증번호 확인
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/PhoneConfirmRequest' }
-      responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
-  /api/v1/services/{serviceCode}/auth/local/login:
-    post:
-      tags: [Auth-Service-Local]
-      summary: 서비스 스코프 로그인
+      tags:
+      - Health
+      summary: 관리자 상세 헬스 체크
+      description: "관리자 권한으로 DB/Redis/System/링크 상세 상태를 조회합니다.\n\n### 인증\n- `Authorization:\
+        \ Bearer {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요\n\n### 헤더\n- `Authorization`:\
+        \ Bearer 액세스 토큰\n\n### 응답 바디 필드\n- `result`: 결과\n- `meta.timestamp`: 응답 생성\
+        \ 시각\n- `meta.request.path`: 요청 경로\n- `meta.request.method`: 요청 메서드\n- `data.status`:\
+        \ 전체 헬스 상태\n- `data.application`: 애플리케이션 이름\n- `data.profiles`: 활성 프로파일 목록\
+        \n- `data.uptimeSec`: 업타임(초)\n- `data.components.database.status`: DB 상태\n\
+        - `data.components.database.latencyMs`: DB 응답시간(ms)\n- `data.components.redis.status`:\
+        \ Redis 상태\n- `data.components.redis.latencyMs`: Redis 응답시간(ms)\n- `data.system.jvm.heapUsedBytes`:\
+        \ JVM 사용 Heap(bytes)\n- `data.system.jvm.heapMaxBytes`: JVM 최대 Heap(bytes)\n\
+        - `data.system.jvm.processors`: 가용 CPU 코어 수\n- `data.system.disk.totalBytes`:\
+        \ 디스크 전체 용량(bytes)\n- `data.system.disk.usableBytes`: 디스크 사용 가능 용량(bytes)\n\
+        - `data.links.docs.swagger`: Swagger UI URL\n- `data.links.docs.docs`: API\
+        \ 문서 URL\n- `data.links.monitoring.grafana`: Grafana URL\n- `data.links.monitoring.prometheus`:\
+        \ Prometheus 메트릭 URL\n- `data.links.monitoring.loki`: Loki URL\n- `data.links.logs.lokiQuery`:\
+        \ Loki Query API URL\n- `data.links.logs.grafanaExplore`: Grafana Explore\
+        \ URL\n\n### 공통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n-\
+        \ **400** validation 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples**\
+        \ 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-admin-health
       parameters:
-        - { $ref: '#/components/parameters/ServiceCode' }
-        - { $ref: '#/components/parameters/XDeviceIdRequired' }
-      requestBody:
+      - name: Authorization
+        in: header
+        description: Bearer 액세스 토큰
         required: true
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/LoginRequest' }
+        schema:
+          type: string
+        example: Bearer token
       responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
-  /api/v1/services/{serviceCode}/auth/local/signup:
-    post:
-      tags: [Auth-Service-Local]
-      summary: 서비스 스코프 회원가입
-      parameters: [{ $ref: '#/components/parameters/ServiceCode' }]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/SignUpRequest' }
-      responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
-  /api/v1/services/{serviceCode}/auth/local/signup/phone:
-    post:
-      tags: [Auth-Service-Local]
-      summary: 서비스 스코프 전화번호 가입
-      parameters: [{ $ref: '#/components/parameters/ServiceCode' }]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/PhoneSignUpRequest' }
-      responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-  /api/v1/services/{serviceCode}/auth/local/token/refresh:
-    post:
-      tags: [Auth-Service-Local]
-      summary: 서비스 스코프 토큰 재발급
-      parameters:
-        - { $ref: '#/components/parameters/ServiceCode' }
-        - { $ref: '#/components/parameters/XDeviceIdRequired' }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/RefreshRequest' }
-      responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
-  /api/v1/services/{serviceCode}/auth/local/logout:
-    post:
-      tags: [Auth-Service-Local]
-      summary: 서비스 스코프 로그아웃
-      security: [{ bearerAuth: [] }]
-      parameters:
-        - { $ref: '#/components/parameters/ServiceCode' }
-        - { $ref: '#/components/parameters/XDeviceIdRequired' }
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/LogoutRequest' }
-      responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
-  /api/v1/services/{serviceCode}/auth/local/withdraw:
-    post:
-      tags: [Auth-Service-Local]
-      summary: 서비스 스코프 탈퇴
-      security: [{ bearerAuth: [] }]
-      parameters: [{ $ref: '#/components/parameters/ServiceCode' }]
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/WithdrawRequest' }
-      responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
-  /api/v1/services/{serviceCode}/auth/local/phone-verifications/request:
-    post:
-      tags: [Auth-Service-Phone]
-      summary: 서비스 스코프 인증번호 발급
-      parameters: [{ $ref: '#/components/parameters/ServiceCode' }]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/PhoneIssueRequest' }
-      responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
-  /api/v1/services/{serviceCode}/auth/local/phone-verifications/confirm:
-    post:
-      tags: [Auth-Service-Phone]
-      summary: 서비스 스코프 인증번호 확인
-      parameters: [{ $ref: '#/components/parameters/ServiceCode' }]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/PhoneConfirmRequest' }
-      responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
-  /api/v1/auth/oauth2/{provider}/authorize-url:
-    get:
-      tags: [Auth-OAuth2]
-      summary: OAuth2 인가 URL 조회(공용)
-      parameters:
-        - { $ref: '#/components/parameters/Provider' }
-        - { $ref: '#/components/parameters/ReturnUrl' }
-        - { $ref: '#/components/parameters/XDeviceIdOptional' }
-      responses:
-        '200': { $ref: '#/components/responses/SuccessString' }
-
-  /api/v1/services/{serviceCode}/auth/oauth2/{provider}/authorize-url:
-    get:
-      tags: [Auth-OAuth2]
-      summary: OAuth2 인가 URL 조회(서비스 스코프)
-      parameters:
-        - { $ref: '#/components/parameters/ServiceCode' }
-        - { $ref: '#/components/parameters/Provider' }
-        - { $ref: '#/components/parameters/ReturnUrl' }
-        - { $ref: '#/components/parameters/XDeviceIdOptional' }
-      responses:
-        '200': { $ref: '#/components/responses/SuccessString' }
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-admin-health553791584'
+              examples:
+                auth-admin-health:
+                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
+                    \   \"timestamp\" : \"2026-03-29T13:51:04.1395766\",\r\n    \"\
+                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/health\"\
+                    ,\r\n      \"method\" : \"GET\"\r\n    }\r\n  },\r\n  \"data\"\
+                    \ : {\r\n    \"status\" : \"UP\",\r\n    \"application\" : \"\
+                    core-api\",\r\n    \"profiles\" : [ \"dev\" ],\r\n    \"uptimeSec\"\
+                    \ : 10,\r\n    \"components\" : {\r\n      \"database\" : {\r\n\
+                    \        \"status\" : \"UP\",\r\n        \"latencyMs\" : 2\r\n\
+                    \      },\r\n      \"redis\" : {\r\n        \"status\" : \"UP\"\
+                    ,\r\n        \"latencyMs\" : 1\r\n      }\r\n    },\r\n    \"\
+                    system\" : {\r\n      \"jvm\" : {\r\n        \"heapUsedBytes\"\
+                    \ : 1000,\r\n        \"heapMaxBytes\" : 10000,\r\n        \"processors\"\
+                    \ : 4\r\n      },\r\n      \"disk\" : {\r\n        \"totalBytes\"\
+                    \ : 100000,\r\n        \"usableBytes\" : 90000\r\n      }\r\n\
+                    \    },\r\n    \"links\" : {\r\n      \"docs\" : {\r\n       \
+                    \ \"swagger\" : \"https://api.example.com/docs/swagger/index.html\"\
+                    ,\r\n        \"docs\" : \"https://api.example.com/docs/index.html\"\
+                    \r\n      },\r\n      \"monitoring\" : {\r\n        \"grafana\"\
+                    \ : \"https://api.example.com:3000\",\r\n        \"prometheus\"\
+                    \ : \"https://api.example.com/actuator/prometheus\",\r\n     \
+                    \   \"loki\" : \"https://api.example.com:3100\"\r\n      },\r\n\
+                    \      \"logs\" : {\r\n        \"lokiQuery\" : \"https://api.example.com:3100/loki/api/v1/query_range\"\
+                    ,\r\n        \"grafanaExplore\" : \"https://api.example.com:3000/explore\"\
+                    \r\n      }\r\n    }\r\n  }\r\n}"
   /api/v1/auth/admin/login-history:
     get:
-      tags: [Admin-User]
-      summary: 로그인 이력 조회
-      security: [{ bearerAuth: [] }]
+      tags:
+      - Admin Audit
+      summary: 관리자 로그인 이력 조회
+      description: "관리자 권한으로 로그인 이력을 페이징 조회합니다.\n\n### 인증\n- `Authorization: Bearer\
+        \ {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요\n\n### 헤더\n- `Authorization`: Bearer\
+        \ 액세스 토큰\n\n### Query 파라미터\n- `page`: 페이지 번호 (0부터 시작)\n- `size`: 페이지 크기\n\
+        - `sort`: 정렬 조건(예: createdAt,desc)\n- `startDate`: 조회 시작 시각 (ISO-8601)\n-\
+        \ `endDate`: 조회 종료 시각 (ISO-8601)\n\n### 응답 바디 필드\n- `result`: 결과\n- `meta`:\
+        \ 메타 정보\n- `meta.timestamp`: 응답 생성 시각\n- `meta.request`: 요청 정보\n- `meta.request.path`:\
+        \ 요청 경로\n- `meta.request.method`: HTTP 메서드\n- `meta.request.query`: 쿼리 스트링\
+        (있으면 문자열, 없으면 null)\n- `meta.requestId`: 요청 ID(있으면 문자열)\n- `meta.durationMs`:\
+        \ 처리 시간(ms)\n- `meta.locale`: 로케일\n- `meta.paging`: 페이징 메타(있는 경우)\n- `data`:\
+        \ 로그인 이력 페이지(Page)\n- `data.content`: 로그인 이력 목록(Page.content)\n- `data.content[].id`:\
+        \ 이력 ID\n- `data.content[].userId`: 사용자 ID\n- `data.content[].userEmail`:\
+        \ 사용자 이메일\n- `data.content[].loginType`: 로그인 유형\n- `data.content[].status`:\
+        \ 로그인 상태\n- `data.content[].ipAddress`: IP 주소(없으면 null)\n- `data.content[].userAgent`:\
+        \ User-Agent(없으면 null)\n- `data.content[].deviceId`: 디바이스 ID(없으면 null)\n-\
+        \ `data.content[].failureReason`: 실패 사유(없으면 null)\n- `data.content[].createdAt`:\
+        \ 로그인 시각\n- `data.totalElements`: 전체 건수\n- `data.totalPages`: 전체 페이지 수\n-\
+        \ `data.size`: 페이지 크기\n- `data.number`: 현재 페이지 번호\n- `data.numberOfElements`:\
+        \ 현재 페이지 요소 수\n- `data.first`: 첫 페이지 여부\n- `data.last`: 마지막 페이지 여부\n- `data.empty`:\
+        \ 비어있는 페이지 여부\n- `data.pageable`: null\n- `data.sort`: null\n- `error`: 에러\
+        \ 정보(실패 시에만 존재)\n\n### 공통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요\
+        한 API)\n- **400** validation 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의\
+        \ **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-admin-login-history
       parameters:
-        - { $ref: '#/components/parameters/Page' }
-        - { $ref: '#/components/parameters/Size' }
-        - { $ref: '#/components/parameters/StartDate' }
-        - { $ref: '#/components/parameters/EndDate' }
+      - name: page
+        in: query
+        description: 페이지 번호 (0부터 시작)
+        required: false
+        schema:
+          type: string
+      - name: size
+        in: query
+        description: 페이지 크기
+        required: false
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: "정렬 조건(예: createdAt,desc)"
+        required: false
+        schema:
+          type: string
+      - name: startDate
+        in: query
+        description: 조회 시작 시각 (ISO-8601)
+        required: false
+        schema:
+          type: string
+      - name: endDate
+        in: query
+        description: 조회 종료 시각 (ISO-8601)
+        required: false
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer 액세스 토큰
+        required: true
+        schema:
+          type: string
+        example: Bearer token
       responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-admin-login-history-262485762'
+              examples:
+                auth-admin-login-history:
+                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
+                    \   \"timestamp\" : \"2026-03-29T13:51:03.2081116\",\r\n    \"\
+                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/login-history\"\
+                    ,\r\n      \"method\" : \"GET\",\r\n      \"query\" : \"page=0&size=20\"\
+                    \r\n    }\r\n  },\r\n  \"data\" : {\r\n    \"content\" : [ {\r\
+                    \n      \"id\" : 1,\r\n      \"userId\" : 1,\r\n      \"userEmail\"\
+                    \ : \"user@example.com\",\r\n      \"loginType\" : \"LOCAL\",\r\
+                    \n      \"status\" : \"SUCCESS\",\r\n      \"ipAddress\" : \"\
+                    127.0.0.1\",\r\n      \"userAgent\" : \"Mozilla/5.0\",\r\n   \
+                    \   \"deviceId\" : \"device-001\",\r\n      \"failureReason\"\
+                    \ : null,\r\n      \"createdAt\" : \"2025-01-01T12:00:00\"\r\n\
+                    \    } ],\r\n    \"pageable\" : {\r\n      \"pageNumber\" : 0,\r\
+                    \n      \"pageSize\" : 20,\r\n      \"sort\" : {\r\n        \"\
+                    empty\" : true,\r\n        \"unsorted\" : true,\r\n        \"\
+                    sorted\" : false\r\n      },\r\n      \"offset\" : 0,\r\n    \
+                    \  \"paged\" : true,\r\n      \"unpaged\" : false\r\n    },\r\n\
+                    \    \"totalElements\" : 1,\r\n    \"last\" : true,\r\n    \"\
+                    totalPages\" : 1,\r\n    \"size\" : 20,\r\n    \"number\" : 0,\r\
+                    \n    \"sort\" : {\r\n      \"empty\" : true,\r\n      \"unsorted\"\
+                    \ : true,\r\n      \"sorted\" : false\r\n    },\r\n    \"numberOfElements\"\
+                    \ : 1,\r\n    \"first\" : true,\r\n    \"empty\" : false\r\n \
+                    \ }\r\n}"
   /api/v1/auth/admin/users:
     get:
-      tags: [Admin-User]
-      summary: 사용자 목록 조회
-      security: [{ bearerAuth: [] }]
+      tags:
+      - Admin Users
+      summary: 관리자 사용자 목록 조회
+      description: "검색/필터 조건으로 사용자 목록을 페이징 조회합니다.\n\n### 인증\n- `Authorization: Bearer\
+        \ {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요\n\n### 헤더\n- `Authorization`: Bearer\
+        \ 액세스 토큰\n\n### Query 파라미터\n- `page`: 페이지 번호 (0부터 시작)\n- `size`: 페이지 크기\n\
+        - `keyword`: 검색어(email/name/nickname/phone)\n- `userStatus`: 상태 필터(ACTIVE/BLOCKED/SOFT_DELETED)\n\
+        - `role`: 권한 필터(USER/ADMIN)\n- `authProvider`: 인증 제공자 필터(LOCAL/GOOGLE/NAVER/KAKAO)\n\
+        \n### 응답 바디 필드\n- `result`: 결과\n- `meta`: 메타 정보\n- `meta.timestamp`: 응답 생성\
+        \ 시각\n- `meta.request`: 요청 정보\n- `meta.request.path`: 요청 경로\n- `meta.request.method`:\
+        \ HTTP 메서드\n- `meta.request.query`: 쿼리 스트링\n- `data`: 사용자 목록 페이지\n- `data.content`:\
+        \ 사용자 요약 목록\n- `data.content[].userId`: 사용자 ID\n- `data.content[].email`:\
+        \ 이메일\n- `data.content[].name`: 이름\n- `data.content[].nickname`: 닉네임\n- `data.content[].role`:\
+        \ 권한\n- `data.content[].authProvider`: 인증 제공자\n- `data.content[].userStatus`:\
+        \ 상태\n- `data.content[].blocked`: 차단 여부\n- `data.content[].deletedAt`: 삭제\
+        \ 시각\n- `data.totalElements`: 전체 건수\n- `data.totalPages`: 전체 페이지 수\n- `data.size`:\
+        \ 페이지 크기\n- `data.number`: 현재 페이지 번호\n- `data.numberOfElements`: 현재 페이지 요소\
+        \ 수\n- `data.first`: 첫 페이지 여부\n- `data.last`: 마지막 페이지 여부\n- `data.empty`:\
+        \ 비어있는 페이지 여부\n- `data.pageable`: null\n- `data.sort`: null\n- `error`: 에러\
+        \ 정보\n\n### 공통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400**\
+        \ validation 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션\
+        에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-admin-users-list
       parameters:
-        - { $ref: '#/components/parameters/Page' }
-        - { $ref: '#/components/parameters/Size' }
-        - { name: keyword, in: query, schema: { type: string } }
-        - { name: userStatus, in: query, schema: { type: string } }
-        - { name: role, in: query, schema: { type: string } }
-        - { name: authProvider, in: query, schema: { type: string } }
-      responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
-  /api/v1/auth/admin/users/{userId}:
-    get:
-      tags: [Admin-User]
-      summary: 사용자 상세 조회
-      security: [{ bearerAuth: [] }]
-      parameters: [{ $ref: '#/components/parameters/UserId' }]
-      responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-    patch:
-      tags: [Admin-User]
-      summary: 사용자 수정
-      security: [{ bearerAuth: [] }]
-      parameters: [{ $ref: '#/components/parameters/UserId' }]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/AdminUserUpdateRequest' }
-      responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
-  /api/v1/auth/admin/users/{userId}/block:
-    post:
-      tags: [Admin-User]
-      summary: 사용자 차단
-      security: [{ bearerAuth: [] }]
-      parameters: [{ $ref: '#/components/parameters/UserId' }]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/AdminUserBlockRequest' }
-      responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
-  /api/v1/auth/admin/users/{userId}/unblock:
-    post:
-      tags: [Admin-User]
-      summary: 사용자 차단 해제
-      security: [{ bearerAuth: [] }]
-      parameters: [{ $ref: '#/components/parameters/UserId' }]
-      responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
-  /api/v1/auth/admin/users/{userId}/delete:
-    post:
-      tags: [Admin-User]
-      summary: 사용자 소프트 삭제
-      security: [{ bearerAuth: [] }]
-      parameters: [{ $ref: '#/components/parameters/UserId' }]
-      requestBody:
+      - name: page
+        in: query
+        description: 페이지 번호 (0부터 시작)
         required: false
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/AdminUserDeleteRequest' }
-      responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-  /api/v1/auth/admin/users/{userId}/password/reset:
-    post:
-      tags: [Admin-User]
-      summary: 비밀번호 초기화
-      security: [{ bearerAuth: [] }]
-      parameters: [{ $ref: '#/components/parameters/UserId' }]
-      requestBody:
+        schema:
+          type: string
+      - name: size
+        in: query
+        description: 페이지 크기
+        required: false
+        schema:
+          type: string
+      - name: keyword
+        in: query
+        description: 검색어(email/name/nickname/phone)
+        required: false
+        schema:
+          type: string
+      - name: userStatus
+        in: query
+        description: 상태 필터(ACTIVE/BLOCKED/SOFT_DELETED)
+        required: false
+        schema:
+          type: string
+      - name: role
+        in: query
+        description: 권한 필터(USER/ADMIN)
+        required: false
+        schema:
+          type: string
+      - name: authProvider
+        in: query
+        description: 인증 제공자 필터(LOCAL/GOOGLE/NAVER/KAKAO)
+        required: false
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer 액세스 토큰
         required: true
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/AdminUserPasswordResetRequest' }
+        schema:
+          type: string
+        example: Bearer token
       responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
-  /api/v1/auth/admin/users/{userId}/tokens/revoke:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-admin-users-1322716065'
+              examples:
+                auth-admin-users-list:
+                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
+                    \   \"timestamp\" : \"2026-03-29T13:51:02.6525714\",\r\n    \"\
+                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/users\"\
+                    ,\r\n      \"method\" : \"GET\",\r\n      \"query\" : \"page=0&size=20&keyword=user&userStatus=ACTIVE&role=USER&authProvider=LOCAL\"\
+                    \r\n    }\r\n  },\r\n  \"data\" : {\r\n    \"content\" : [ {\r\
+                    \n      \"userId\" : 1,\r\n      \"email\" : \"user@example.com\"\
+                    ,\r\n      \"name\" : \"홍길동\",\r\n      \"nickname\" : \"gildong\"\
+                    ,\r\n      \"role\" : \"USER\",\r\n      \"authProvider\" : \"\
+                    LOCAL\",\r\n      \"userStatus\" : \"ACTIVE\",\r\n      \"blocked\"\
+                    \ : false,\r\n      \"deletedAt\" : null\r\n    } ],\r\n    \"\
+                    pageable\" : {\r\n      \"pageNumber\" : 0,\r\n      \"pageSize\"\
+                    \ : 20,\r\n      \"sort\" : {\r\n        \"empty\" : true,\r\n\
+                    \        \"unsorted\" : true,\r\n        \"sorted\" : false\r\n\
+                    \      },\r\n      \"offset\" : 0,\r\n      \"paged\" : true,\r\
+                    \n      \"unpaged\" : false\r\n    },\r\n    \"totalElements\"\
+                    \ : 1,\r\n    \"last\" : true,\r\n    \"totalPages\" : 1,\r\n\
+                    \    \"size\" : 20,\r\n    \"number\" : 0,\r\n    \"sort\" : {\r\
+                    \n      \"empty\" : true,\r\n      \"unsorted\" : true,\r\n  \
+                    \    \"sorted\" : false\r\n    },\r\n    \"numberOfElements\"\
+                    \ : 1,\r\n    \"first\" : true,\r\n    \"empty\" : false\r\n \
+                    \ }\r\n}"
+  /api/v1/auth/local/login:
     post:
-      tags: [Admin-User]
-      summary: 토큰 강제 만료
-      security: [{ bearerAuth: [] }]
-      parameters: [{ $ref: '#/components/parameters/UserId' }]
-      responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
-  /api/v1/auth/admin/users/blocked:
-    get:
-      tags: [Admin-User]
-      summary: 차단 사용자 목록
-      security: [{ bearerAuth: [] }]
+      tags:
+      - Local Auth
+      summary: 로컬 로그인
+      description: "이메일/비밀번호로 로그인하고 액세스/리프레시 토큰을 발급합니다.\n\n### 인증\n- 인증 불필요\n\n###\
+        \ 헤더\n- `X-Device-Id`: 디바이스 식별자 (선택)\n\n### 요청 바디 필드\n- `email`: 이메일\n- `password`:\
+        \ 비밀번호\n\n### 응답 바디 필드\n- `result`: 결과\n- `meta`: 메타 정보\n- `meta.timestamp`:\
+        \ 응답 생성 시각\n- `meta.request`: 요청 정보\n- `meta.request.path`: 요청 경로\n- `meta.request.method`:\
+        \ HTTP 메서드\n- `meta.request.query`: 쿼리 스트링(있으면 문자열, 없으면 null)\n- `data`: 토\
+        큰 정보\n- `data.accessToken`: 액세스 토큰\n- `data.accessExpiresInSec`: 액세스 토큰 만료\
+        (초)\n- `data.refreshToken`: 리프레시 토큰\n- `data.refreshExpiresInSec`: 리프레시 토큰\
+        \ 만료(초)\n\n### 공통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n\
+        - **400** validation 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples**\
+        \ 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-local-login
       parameters:
-        - { $ref: '#/components/parameters/Page' }
-        - { $ref: '#/components/parameters/Size' }
-      responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
-  /api/v1/auth/admin/users/deleted:
-    get:
-      tags: [Admin-User]
-      summary: 탈퇴 사용자 목록
-      security: [{ bearerAuth: [] }]
-      parameters:
-        - { $ref: '#/components/parameters/Page' }
-        - { $ref: '#/components/parameters/Size' }
-      responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
-  /api/v1/auth/admin/users/{userId}/status-audits:
-    get:
-      tags: [Admin-User]
-      summary: 상태 감사 로그
-      security: [{ bearerAuth: [] }]
-      parameters:
-        - { $ref: '#/components/parameters/UserId' }
-        - { $ref: '#/components/parameters/Page' }
-        - { $ref: '#/components/parameters/Size' }
-      responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
-  /api/v1/auth/admin/services:
-    get:
-      tags: [Admin-Service]
-      summary: 서비스 목록 조회
-      security: [{ bearerAuth: [] }]
-      parameters:
-        - { $ref: '#/components/parameters/Page' }
-        - { $ref: '#/components/parameters/Size' }
-      responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-    post:
-      tags: [Admin-Service]
-      summary: 서비스 등록
-      security: [{ bearerAuth: [] }]
+      - name: X-Device-Id
+        in: header
+        description: 디바이스 식별자 (선택)
+        required: false
+        schema:
+          type: string
+        example: device-001
       requestBody:
-        required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/AdminServiceCreateRequest' }
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-local-login-788118888'
+            examples:
+              auth-local-login:
+                value: "{\r\n  \"email\" : \"user@example.com\",\r\n  \"password\"\
+                  \ : \"P@ssw0rd!\"\r\n}"
       responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
-  /api/v1/auth/admin/services/{serviceCode}/deactivate:
+        "200":
+          description: "200"
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-local-login1560895474'
+              examples:
+                auth-local-login:
+                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
+                    \   \"timestamp\" : \"2026-03-29T13:51:05.3250369\",\r\n    \"\
+                    request\" : {\r\n      \"path\" : \"/api/v1/auth/local/login\"\
+                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
+                    \ : {\r\n    \"accessToken\" : \"access-token\",\r\n    \"accessExpiresInSec\"\
+                    \ : 3600,\r\n    \"refreshToken\" : \"refresh-token\",\r\n   \
+                    \ \"refreshExpiresInSec\" : 1209600\r\n  }\r\n}"
+  /api/v1/auth/local/logout:
     post:
-      tags: [Admin-Service]
-      summary: 서비스 비활성화
-      security: [{ bearerAuth: [] }]
-      parameters: [{ $ref: '#/components/parameters/ServiceCode' }]
-      responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
-  /api/v1/auth/admin/sms/send:
-    post:
-      tags: [Admin-SMS]
-      summary: 관리자 문자 발송
-      security: [{ bearerAuth: [] }]
+      tags:
+      - Local Auth
+      summary: 로그아웃
+      description: "현재 디바이스 또는 전체 디바이스 로그아웃을 처리합니다.\n\n### 인증\n- `Authorization: Bearer\
+        \ {accessToken}` 필요\n\n### 헤더\n- `Authorization`: Bearer 액세스 토큰\n- `X-Device-Id`:\
+        \ 디바이스 식별자\n\n### 요청 바디 필드\n- `refreshToken`: 리프레시 토큰 (단건 로그아웃)\n- `logoutAll`:\
+        \ 전체 로그아웃 여부\n\n### 응답 바디 필드\n- `result`: 요청 처리 결과 (SUCCESS/ERROR)\n- `meta.timestamp`:\
+        \ 응답 생성 시각 (서버 로컬 시간)\n- `meta.requestId`: 요청 추적 ID (있을 때만 반환)\n- `meta.durationMs`:\
+        \ 처리 시간(ms)\n- `meta.request.path`: 요청 경로\n- `meta.request.method`: HTTP 메\
+        서드\n- `meta.request.query`: 쿼리 문자열 (없으면 null)\n- `meta.paging`: 페이징 메타 정보\
+        \ (있을 때만 반환)\n- `meta.locale`: 응답 로케일 (있을 때만 반환)\n- `error`: 오류 정보 (에러 응답에\
+        서만 포함)\n- `data`: 결과\n- `data.result`: OK\n\n### 공통 에러\n- **401** 인증 실패/만료\
+        /위조\n- **403** 권한 없음(권한 필요한 API)\n- **400** validation 실패(필드 형식/필수 누락)\n\n\
+        > 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-local-logout
+      parameters:
+      - name: Authorization
+        in: header
+        description: Bearer 액세스 토큰
+        required: true
+        schema:
+          type: string
+        example: Bearer token
+      - name: X-Device-Id
+        in: header
+        description: 디바이스 식별자
+        required: true
+        schema:
+          type: string
+        example: device-001
       requestBody:
-        required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/AdminSmsSendReq' }
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-local-logout1868317452'
+            examples:
+              auth-local-logout:
+                value: "{\r\n  \"refreshToken\" : \"refresh-token\",\r\n  \"logoutAll\"\
+                  \ : false\r\n}"
       responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-local-logout-2020253012'
+              examples:
+                auth-local-logout:
+                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
+                    \   \"timestamp\" : \"2026-03-29T13:51:04.4330992\",\r\n    \"\
+                    request\" : {\r\n      \"path\" : \"/api/v1/auth/local/logout\"\
+                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
+                    \ : {\r\n    \"result\" : \"OK\"\r\n  }\r\n}"
+  /api/v1/auth/local/signup:
+    post:
+      tags:
+      - Local Auth
+      summary: 로컬 회원가입
+      description: "이메일/비밀번호 기반 로컬 계정을 생성합니다.\n\n### 인증\n- 인증 불필요\n\n### 요청 바디 필드\n\
+        - `email`: 이메일\n- `password`: 비밀번호\n- `name`: 이름\n- `nickname`: 닉네임\n- `gender`:\
+        \ 성별 (MALE/FEMALE)\n- `phoneNumber`: 휴대폰 번호\n- `phoneVerificationToken`: 휴\
+        대폰 인증 완료 토큰\n- `locale`: 로케일 (기본값: ko-KR)\n- `profileImageUrl`: 프로필 이미지 URL\n\
+        - `thumbnailImageUrl`: 썸네일 이미지 URL\n- `birthyear`: 출생연도 (yyyy)\n- `birthday`:\
+        \ 생일 (MM-DD)\n\n### 공통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n\
+        - **400** validation 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples**\
+        \ 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-local-signup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-local-signup-108875888'
+            examples:
+              auth-local-signup:
+                value: "{\r\n  \"email\" : \"user@example.com\",\r\n  \"password\"\
+                  \ : \"P@ssw0rd!\",\r\n  \"name\" : \"홍길동\",\r\n  \"nickname\" :\
+                  \ \"gildong\",\r\n  \"gender\" : \"MALE\",\r\n  \"phoneNumber\"\
+                  \ : \"+82 10-1234-5678\",\r\n  \"phoneVerificationToken\" : \"verified-phone-token\"\
+                  ,\r\n  \"locale\" : \"ko-KR\",\r\n  \"profileImageUrl\" : \"http://dev.soo.io/profile.png\"\
+                  ,\r\n  \"thumbnailImageUrl\" : \"http://dev.soo.io/thumbnail.png\"\
+                  ,\r\n  \"birthyear\" : \"1990\",\r\n  \"birthday\" : \"01-31\"\r\
+                  \n}"
+      responses:
+        "200":
+          description: "200"
+  /api/v1/auth/local/withdraw:
+    post:
+      tags:
+      - Local Auth
+      summary: 회원 탈퇴
+      description: "사용자를 소프트 삭제하고 인증정보/토큰을 정리합니다.\n\n### 인증\n- `Authorization: Bearer\
+        \ {accessToken}` 필요\n\n### 헤더\n- `Authorization`: Bearer 액세스 토큰\n\n### 요청\
+        \ 바디 필드\n- `reason`: 탈퇴 사유\n\n### 응답 바디 필드\n- `result`: 요청 처리 결과 (SUCCESS/ERROR)\n\
+        - `meta.timestamp`: 응답 생성 시각 (서버 로컬 시간)\n- `meta.requestId`: 요청 추적 ID (있을\
+        \ 때만 반환)\n- `meta.durationMs`: 처리 시간(ms)\n- `meta.request.path`: 요청 경로\n-\
+        \ `meta.request.method`: HTTP 메서드\n- `meta.request.query`: 쿼리 문자열 (없으면 null)\n\
+        - `meta.paging`: 페이징 메타 정보 (있을 때만 반환)\n- `meta.locale`: 응답 로케일 (있을 때만 반환)\n\
+        - `error`: 오류 정보 (에러 응답에서만 포함)\n- `data`: 결과\n- `data.result`: OK\n\n### 공\
+        통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400** validation\
+        \ 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과\
+        로 자동 포함됩니다."
+      operationId: auth-local-withdraw
+      parameters:
+      - name: Authorization
+        in: header
+        description: Bearer 액세스 토큰
+        required: true
+        schema:
+          type: string
+        example: Bearer token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-local-withdraw-1115063761'
+            examples:
+              auth-local-withdraw:
+                value: "{\r\n  \"reason\" : \"privacy\"\r\n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-local-logout-2020253012'
+              examples:
+                auth-local-withdraw:
+                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
+                    \   \"timestamp\" : \"2026-03-29T13:51:04.5395772\",\r\n    \"\
+                    request\" : {\r\n      \"path\" : \"/api/v1/auth/local/withdraw\"\
+                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
+                    \ : {\r\n    \"result\" : \"OK\"\r\n  }\r\n}"
   /api/v1/auth/admin/sms/logs:
     get:
-      tags: [Admin-SMS]
-      summary: 문자 발송 이력 조회
-      security: [{ bearerAuth: [] }]
+      tags:
+      - Admin SMS
+      summary: 관리자 SMS 발송 이력 조회
+      description: "발송 이력을 기간/페이지 조건으로 조회합니다.\n\n### 인증\n- `Authorization: Bearer\
+        \ {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요\n\n### 헤더\n- `Authorization`: Bearer\
+        \ 관리자 액세스 토큰\n\n### Query 파라미터\n- `page`: 페이지 번호 (0부터 시작)\n- `size`: 페이지 크\
+        기\n- `startDate`: 조회 시작 시각 (ISO-8601)\n- `endDate`: 조회 종료 시각 (ISO-8601)\n\n\
+        ### 응답 바디 필드\n- `result`: 요청 처리 결과 (SUCCESS/ERROR)\n- `meta.timestamp`: 응답\
+        \ 생성 시각 (서버 로컬 시간)\n- `meta.requestId`: 요청 추적 ID (있을 때만 반환)\n- `meta.durationMs`:\
+        \ 처리 시간(ms)\n- `meta.request.path`: 요청 경로\n- `meta.request.method`: HTTP 메\
+        서드\n- `meta.request.query`: 쿼리 문자열 (없으면 null)\n- `meta.paging`: 페이징 메타 정보\
+        \ (있을 때만 반환)\n- `meta.locale`: 응답 로케일 (있을 때만 반환)\n- `error`: 오류 정보 (에러 응답에\
+        서만 포함)\n- `data`: 문자 발송 이력 페이지\n- `data.content`: 문자 발송 이력 목록\n- `data.content[].id`:\
+        \ 이력 ID\n- `data.content[].to`: 수신 번호\n- `data.content[].from`: 발신 번호\n- `data.content[].text`:\
+        \ 발송 메시지\n- `data.content[].ok`: 성공 여부\n- `data.content[].provider`: 발송 제공\
+        자\n- `data.content[].code`: 실패 코드(없으면 null)\n- `data.content[].msg`: 실패 메시\
+        지(없으면 null)\n- `data.content[].at`: 발송 시각\n- `data.totalElements`: 전체 건수\n\
+        - `data.totalPages`: 전체 페이지 수\n- `data.size`: 페이지 크기\n- `data.number`: 현재\
+        \ 페이지 번호\n- `data.numberOfElements`: 현재 페이지 요소 수\n- `data.first`: 첫 페이지 여부\
+        \n- `data.last`: 마지막 페이지 여부\n- `data.empty`: 비어있는 페이지 여부\n- `data.pageable`:\
+        \ null\n- `data.sort`: null\n\n### 공통 에러\n- **401** 인증 실패/만료/위조\n- **403**\
+        \ 권한 없음(권한 필요한 API)\n- **400** validation 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시\
+        는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-admin-sms-logs
       parameters:
-        - { $ref: '#/components/parameters/Page' }
-        - { $ref: '#/components/parameters/Size' }
-        - { $ref: '#/components/parameters/StartDate' }
-        - { $ref: '#/components/parameters/EndDate' }
+      - name: page
+        in: query
+        description: 페이지 번호 (0부터 시작)
+        required: false
+        schema:
+          type: string
+      - name: size
+        in: query
+        description: 페이지 크기
+        required: false
+        schema:
+          type: string
+      - name: startDate
+        in: query
+        description: 조회 시작 시각 (ISO-8601)
+        required: false
+        schema:
+          type: string
+      - name: endDate
+        in: query
+        description: 조회 종료 시각 (ISO-8601)
+        required: false
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer 관리자 액세스 토큰
+        required: true
+        schema:
+          type: string
+        example: Bearer token
       responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-admin-sms-logs1758979252'
+              examples:
+                auth-admin-sms-logs:
+                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
+                    \   \"timestamp\" : \"2026-03-29T13:50:57.3900427\",\r\n    \"\
+                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/sms/logs\"\
+                    ,\r\n      \"method\" : \"GET\",\r\n      \"query\" : \"page=0&size=20\"\
+                    \r\n    }\r\n  },\r\n  \"data\" : {\r\n    \"content\" : [ {\r\
+                    \n      \"id\" : 1,\r\n      \"to\" : \"01012345678\",\r\n   \
+                    \   \"from\" : \"029302266\",\r\n      \"text\" : \"[soo-auth]\
+                    \ 인증번호 [123456] (유효 3분)\",\r\n      \"ok\" : true,\r\n      \"\
+                    provider\" : \"SOLAPI\",\r\n      \"code\" : null,\r\n      \"\
+                    msg\" : null,\r\n      \"at\" : \"2026-03-28T12:00:00\"\r\n  \
+                    \  } ],\r\n    \"pageable\" : {\r\n      \"pageNumber\" : 0,\r\
+                    \n      \"pageSize\" : 20,\r\n      \"sort\" : {\r\n        \"\
+                    empty\" : true,\r\n        \"unsorted\" : true,\r\n        \"\
+                    sorted\" : false\r\n      },\r\n      \"offset\" : 0,\r\n    \
+                    \  \"paged\" : true,\r\n      \"unpaged\" : false\r\n    },\r\n\
+                    \    \"totalElements\" : 1,\r\n    \"last\" : true,\r\n    \"\
+                    totalPages\" : 1,\r\n    \"size\" : 20,\r\n    \"number\" : 0,\r\
+                    \n    \"sort\" : {\r\n      \"empty\" : true,\r\n      \"unsorted\"\
+                    \ : true,\r\n      \"sorted\" : false\r\n    },\r\n    \"numberOfElements\"\
+                    \ : 1,\r\n    \"first\" : true,\r\n    \"empty\" : false\r\n \
+                    \ }\r\n}"
+  /api/v1/auth/admin/sms/send:
+    post:
+      tags:
+      - Admin SMS
+      summary: 관리자 SMS 발송
+      description: "관리자 권한으로 단문 메시지를 발송합니다.\n\n### 인증\n- `Authorization: Bearer {accessToken}`\
+        \ 필요\n- 권한: `ROLE_ADMIN` 필요\n\n### 헤더\n- `Authorization`: Bearer 관리자 액세스 토\
+        큰\n\n### 요청 바디 필드\n- `to`: 수신 번호\n- `text`: 발송 메시지\n\n### 응답 바디 필드\n- `result`:\
+        \ 요청 처리 결과 (SUCCESS/ERROR)\n- `meta.timestamp`: 응답 생성 시각 (서버 로컬 시간)\n- `meta.requestId`:\
+        \ 요청 추적 ID (있을 때만 반환)\n- `meta.durationMs`: 처리 시간(ms)\n- `meta.request.path`:\
+        \ 요청 경로\n- `meta.request.method`: HTTP 메서드\n- `meta.request.query`: 쿼리 문자열\
+        \ (없으면 null)\n- `meta.paging`: 페이징 메타 정보 (있을 때만 반환)\n- `meta.locale`: 응답 로\
+        케일 (있을 때만 반환)\n- `error`: 오류 정보 (에러 응답에서만 포함)\n- `data`: 발송 결과\n- `data.id`:\
+        \ 이력 ID\n- `data.to`: 수신 번호\n- `data.from`: 발신 번호\n- `data.text`: 발송 메시지\n\
+        - `data.ok`: 성공 여부\n- `data.provider`: 발송 제공자\n- `data.at`: 발송 시각\n\n### 공\
+        통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400** validation\
+        \ 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과\
+        로 자동 포함됩니다."
+      operationId: auth-admin-sms-send
+      parameters:
+      - name: Authorization
+        in: header
+        description: Bearer 관리자 액세스 토큰
+        required: true
+        schema:
+          type: string
+        example: Bearer token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-admin-sms-send-1110343501'
+            examples:
+              auth-admin-sms-send:
+                value: "{\r\n  \"to\" : \"01011112222\",\r\n  \"text\" : \"관리자 공지\
+                  \ 테스트\"\r\n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-admin-sms-send1615980123'
+              examples:
+                auth-admin-sms-send:
+                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
+                    \   \"timestamp\" : \"2026-03-29T13:50:59.9252031\",\r\n    \"\
+                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/sms/send\"\
+                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
+                    \ : {\r\n    \"id\" : 2,\r\n    \"to\" : \"01011112222\",\r\n\
+                    \    \"from\" : \"029302266\",\r\n    \"text\" : \"관리자 공지 테스트\"\
+                    ,\r\n    \"ok\" : true,\r\n    \"provider\" : \"SOLAPI\",\r\n\
+                    \    \"at\" : \"2026-03-28T13:00:00\"\r\n  }\r\n}"
   /api/v1/auth/admin/sms/stats:
     get:
-      tags: [Admin-SMS]
-      summary: 문자 발송 통계 조회
-      security: [{ bearerAuth: [] }]
+      tags:
+      - Admin SMS
+      summary: 관리자 SMS 통계 조회
+      description: "발송 성공/실패 통계를 조회합니다.\n\n### 인증\n- `Authorization: Bearer {accessToken}`\
+        \ 필요\n- 권한: `ROLE_ADMIN` 필요\n\n### 헤더\n- `Authorization`: Bearer 관리자 액세스 토\
+        큰\n\n### Query 파라미터\n- `startDate`: 조회 시작 시각 (ISO-8601)\n- `endDate`: 조회 종\
+        료 시각 (ISO-8601)\n\n### 응답 바디 필드\n- `result`: 요청 처리 결과 (SUCCESS/ERROR)\n- `meta.timestamp`:\
+        \ 응답 생성 시각 (서버 로컬 시간)\n- `meta.requestId`: 요청 추적 ID (있을 때만 반환)\n- `meta.durationMs`:\
+        \ 처리 시간(ms)\n- `meta.request.path`: 요청 경로\n- `meta.request.method`: HTTP 메\
+        서드\n- `meta.request.query`: 쿼리 문자열 (없으면 null)\n- `meta.paging`: 페이징 메타 정보\
+        \ (있을 때만 반환)\n- `meta.locale`: 응답 로케일 (있을 때만 반환)\n- `error`: 오류 정보 (에러 응답에\
+        서만 포함)\n- `data`: 문자 발송 통계\n- `data.total`: 전체 발송 수\n- `data.ok`: 성공 수\n-\
+        \ `data.fail`: 실패 수\n- `data.rate`: 성공률(%)\n\n### 공통 에러\n- **401** 인증 실패/만\
+        료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400** validation 실패(필드 형식/필수 누락)\n\n\
+        > 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-admin-sms-stats
       parameters:
-        - { $ref: '#/components/parameters/StartDate' }
-        - { $ref: '#/components/parameters/EndDate' }
+      - name: startDate
+        in: query
+        description: 조회 시작 시각 (ISO-8601)
+        required: false
+        schema:
+          type: string
+      - name: endDate
+        in: query
+        description: 조회 종료 시각 (ISO-8601)
+        required: false
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer 관리자 액세스 토큰
+        required: true
+        schema:
+          type: string
+        example: Bearer token
       responses:
-        '200': { $ref: '#/components/responses/SuccessAny' }
-
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-admin-sms-stats1143583724'
+              examples:
+                auth-admin-sms-stats:
+                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
+                    \   \"timestamp\" : \"2026-03-29T13:51:00.139739\",\r\n    \"\
+                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/sms/stats\"\
+                    ,\r\n      \"method\" : \"GET\"\r\n    }\r\n  },\r\n  \"data\"\
+                    \ : {\r\n    \"total\" : 100,\r\n    \"ok\" : 95,\r\n    \"fail\"\
+                    \ : 5,\r\n    \"rate\" : 95.0\r\n  }\r\n}"
+  /api/v1/auth/admin/users/blocked:
+    get:
+      tags:
+      - Admin User Status
+      summary: 관리자 차단 사용자 목록 조회
+      description: "차단된 사용자 목록을 페이징 조회합니다.\n\n### 인증\n- `Authorization: Bearer {accessToken}`\
+        \ 필요\n- 권한: `ROLE_ADMIN` 필요\n\n### 헤더\n- `Authorization`: Bearer 액세스 토큰\n\n\
+        ### Query 파라미터\n- `page`: 페이지 번호 (0부터 시작)\n- `size`: 페이지 크기\n\n### 응답 바디 필\
+        드\n- `result`: 결과\n- `meta`: 메타 정보\n- `meta.timestamp`: 응답 생성 시각\n- `meta.request`:\
+        \ 요청 정보\n- `meta.request.path`: 요청 경로\n- `meta.request.method`: HTTP 메서드\n\
+        - `meta.request.query`: 쿼리 스트링\n- `data`: 사용자 상태 목록 페이지\n- `data.content`:\
+        \ 사용자 목록\n- `data.content[].userId`: 사용자 식별자\n- `data.content[].userStatus`:\
+        \ 사용자 상태\n- `data.content[].blocked`: 차단 여부\n- `data.content[].blockedReason`:\
+        \ 차단 사유\n- `data.content[].blockedAt`: 차단 시각\n- `data.content[].blockedByAdminId`:\
+        \ 차단 관리자\n- `data.content[].unblockedAt`: 차단 해제 시각\n- `data.content[].unblockedByAdminId`:\
+        \ 차단 해제 관리자\n- `data.content[].deletedAt`: 탈퇴 시각\n- `data.content[].deletionReason`:\
+        \ 탈퇴 사유\n- `data.content[].retentionUntil`: 보관 만료 예정 시각\n- `data.totalElements`:\
+        \ 전체 건수\n- `data.totalPages`: 전체 페이지 수\n- `data.size`: 페이지 크기\n- `data.number`:\
+        \ 현재 페이지 번호\n- `data.numberOfElements`: 현재 페이지 요소 수\n- `data.first`: 첫 페이지\
+        \ 여부\n- `data.last`: 마지막 페이지 여부\n- `data.empty`: 비어있는 페이지 여부\n- `data.pageable`:\
+        \ null\n- `data.sort`: null\n- `error`: 에러 정보\n\n### 공통 에러\n- **401** 인증 실\
+        패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400** validation 실패(필드 형식/필수 누락\
+        )\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-admin-blocked-users
+      parameters:
+      - name: page
+        in: query
+        description: 페이지 번호 (0부터 시작)
+        required: false
+        schema:
+          type: string
+      - name: size
+        in: query
+        description: 페이지 크기
+        required: false
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer 액세스 토큰
+        required: true
+        schema:
+          type: string
+        example: Bearer token
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-admin-users-blocked-322523064'
+              examples:
+                auth-admin-blocked-users:
+                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
+                    \   \"timestamp\" : \"2026-03-29T13:51:02.3708708\",\r\n    \"\
+                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/users/blocked\"\
+                    ,\r\n      \"method\" : \"GET\",\r\n      \"query\" : \"page=0&size=20\"\
+                    \r\n    }\r\n  },\r\n  \"data\" : {\r\n    \"content\" : [ {\r\
+                    \n      \"userId\" : 1,\r\n      \"userStatus\" : \"BLOCKED\"\
+                    ,\r\n      \"blocked\" : true,\r\n      \"blockedReason\" : \"\
+                    abuse\",\r\n      \"blockedAt\" : \"2026-03-16T10:00:00Z\",\r\n\
+                    \      \"blockedByAdminId\" : 100,\r\n      \"unblockedAt\" :\
+                    \ null,\r\n      \"unblockedByAdminId\" : null,\r\n      \"deletedAt\"\
+                    \ : null,\r\n      \"deletionReason\" : null,\r\n      \"retentionUntil\"\
+                    \ : null\r\n    } ],\r\n    \"pageable\" : {\r\n      \"pageNumber\"\
+                    \ : 0,\r\n      \"pageSize\" : 20,\r\n      \"sort\" : {\r\n \
+                    \       \"empty\" : true,\r\n        \"unsorted\" : true,\r\n\
+                    \        \"sorted\" : false\r\n      },\r\n      \"offset\" :\
+                    \ 0,\r\n      \"paged\" : true,\r\n      \"unpaged\" : false\r\
+                    \n    },\r\n    \"totalElements\" : 1,\r\n    \"last\" : true,\r\
+                    \n    \"totalPages\" : 1,\r\n    \"size\" : 20,\r\n    \"number\"\
+                    \ : 0,\r\n    \"sort\" : {\r\n      \"empty\" : true,\r\n    \
+                    \  \"unsorted\" : true,\r\n      \"sorted\" : false\r\n    },\r\
+                    \n    \"numberOfElements\" : 1,\r\n    \"first\" : true,\r\n \
+                    \   \"empty\" : false\r\n  }\r\n}"
+  /api/v1/auth/admin/users/deleted:
+    get:
+      tags:
+      - Admin User Status
+      summary: 관리자 소프트 탈퇴 사용자 목록 조회
+      description: "소프트 탈퇴된 사용자 목록을 페이징 조회합니다.\n\n### 인증\n- `Authorization: Bearer\
+        \ {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요\n\n### 헤더\n- `Authorization`: Bearer\
+        \ 액세스 토큰\n\n### Query 파라미터\n- `page`: 페이지 번호 (0부터 시작)\n- `size`: 페이지 크기\n\n\
+        ### 응답 바디 필드\n- `result`: 결과\n- `meta`: 메타 정보\n- `meta.timestamp`: 응답 생성 시\
+        각\n- `meta.request`: 요청 정보\n- `meta.request.path`: 요청 경로\n- `meta.request.method`:\
+        \ HTTP 메서드\n- `meta.request.query`: 쿼리 스트링\n- `data`: 사용자 상태 목록 페이지\n- `data.content`:\
+        \ 사용자 목록\n- `data.content[].userId`: 사용자 식별자\n- `data.content[].userStatus`:\
+        \ 사용자 상태\n- `data.content[].blocked`: 차단 여부\n- `data.content[].blockedReason`:\
+        \ 차단 사유\n- `data.content[].blockedAt`: 차단 시각\n- `data.content[].blockedByAdminId`:\
+        \ 차단 관리자\n- `data.content[].unblockedAt`: 차단 해제 시각\n- `data.content[].unblockedByAdminId`:\
+        \ 차단 해제 관리자\n- `data.content[].deletedAt`: 탈퇴 시각\n- `data.content[].deletionReason`:\
+        \ 탈퇴 사유\n- `data.content[].retentionUntil`: 보관 만료 예정 시각\n- `data.totalElements`:\
+        \ 전체 건수\n- `data.totalPages`: 전체 페이지 수\n- `data.size`: 페이지 크기\n- `data.number`:\
+        \ 현재 페이지 번호\n- `data.numberOfElements`: 현재 페이지 요소 수\n- `data.first`: 첫 페이지\
+        \ 여부\n- `data.last`: 마지막 페이지 여부\n- `data.empty`: 비어있는 페이지 여부\n- `data.pageable`:\
+        \ null\n- `data.sort`: null\n- `error`: 에러 정보\n\n### 공통 에러\n- **401** 인증 실\
+        패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400** validation 실패(필드 형식/필수 누락\
+        )\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-admin-deleted-users
+      parameters:
+      - name: page
+        in: query
+        description: 페이지 번호 (0부터 시작)
+        required: false
+        schema:
+          type: string
+      - name: size
+        in: query
+        description: 페이지 크기
+        required: false
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer 액세스 토큰
+        required: true
+        schema:
+          type: string
+        example: Bearer token
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-admin-users-blocked-322523064'
+              examples:
+                auth-admin-deleted-users:
+                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
+                    \   \"timestamp\" : \"2026-03-29T13:51:01.9051697\",\r\n    \"\
+                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/users/deleted\"\
+                    ,\r\n      \"method\" : \"GET\",\r\n      \"query\" : \"page=0&size=20\"\
+                    \r\n    }\r\n  },\r\n  \"data\" : {\r\n    \"content\" : [ {\r\
+                    \n      \"userId\" : 2,\r\n      \"userStatus\" : \"SOFT_DELETED\"\
+                    ,\r\n      \"blocked\" : false,\r\n      \"blockedReason\" : null,\r\
+                    \n      \"blockedAt\" : null,\r\n      \"blockedByAdminId\" :\
+                    \ null,\r\n      \"unblockedAt\" : null,\r\n      \"unblockedByAdminId\"\
+                    \ : null,\r\n      \"deletedAt\" : \"2026-03-16T11:00:00Z\",\r\
+                    \n      \"deletionReason\" : \"privacy\",\r\n      \"retentionUntil\"\
+                    \ : \"2031-03-16T11:00:00Z\"\r\n    } ],\r\n    \"pageable\" :\
+                    \ {\r\n      \"pageNumber\" : 0,\r\n      \"pageSize\" : 20,\r\
+                    \n      \"sort\" : {\r\n        \"empty\" : true,\r\n        \"\
+                    unsorted\" : true,\r\n        \"sorted\" : false\r\n      },\r\
+                    \n      \"offset\" : 0,\r\n      \"paged\" : true,\r\n      \"\
+                    unpaged\" : false\r\n    },\r\n    \"totalElements\" : 1,\r\n\
+                    \    \"last\" : true,\r\n    \"totalPages\" : 1,\r\n    \"size\"\
+                    \ : 20,\r\n    \"number\" : 0,\r\n    \"sort\" : {\r\n      \"\
+                    empty\" : true,\r\n      \"unsorted\" : true,\r\n      \"sorted\"\
+                    \ : false\r\n    },\r\n    \"numberOfElements\" : 1,\r\n    \"\
+                    first\" : true,\r\n    \"empty\" : false\r\n  }\r\n}"
+  /api/v1/auth/admin/users/{userId}:
+    get:
+      tags:
+      - Admin Users
+      summary: 관리자 사용자 상세 조회
+      description: "특정 사용자의 상세 정보를 조회합니다.\n\n### 인증\n- `Authorization: Bearer {accessToken}`\
+        \ 필요\n- 권한: `ROLE_ADMIN` 필요\n\n### 헤더\n- `Authorization`: Bearer 액세스 토큰\n\n\
+        ### Path 파라미터\n- `userId`: 조회 대상 사용자 ID\n\n### 응답 바디 필드\n- `result`: 결과\n\
+        - `meta`: 메타 정보\n- `meta.timestamp`: 응답 생성 시각\n- `meta.request`: 요청 정보\n-\
+        \ `meta.request.path`: 요청 경로\n- `meta.request.method`: HTTP 메서드\n- `meta.request.query`:\
+        \ 쿼리 스트링\n- `data`: 사용자 상세 정보\n- `data.userId`: 사용자 ID\n- `data.email`: 이메\
+        일\n- `data.emailVerified`: 이메일 인증 여부\n- `data.phoneNumber`: 전화번호\n- `data.phoneVerified`:\
+        \ 전화번호 인증 여부\n- `data.name`: 이름\n- `data.nickname`: 닉네임\n- `data.gender`:\
+        \ 성별\n- `data.locale`: 로케일\n- `data.birthyear`: 출생연도\n- `data.birthday`: 생\
+        일\n- `data.profileImageUrl`: 프로필 이미지 URL\n- `data.thumbnailImageUrl`: 썸네일\
+        \ 이미지 URL\n- `data.authProvider`: 인증 제공자\n- `data.oauthProviderUserId`: 소셜\
+        \ 사용자 ID\n- `data.role`: 권한\n- `data.userStatus`: 상태\n- `data.blocked`: 차단\
+        \ 여부\n- `data.blockedReason`: 차단 사유\n- `data.blockedAt`: 차단 시각\n- `data.blockedByAdminId`:\
+        \ 차단 관리자 ID\n- `data.unblockedAt`: 차단 해제 시각\n- `data.unblockedByAdminId`:\
+        \ 차단 해제 관리자 ID\n- `data.deletedAt`: 삭제 시각\n- `data.deletionReason`: 삭제 사유\n\
+        - `data.retentionUntil`: 보관 만료 시각\n- `error`: 에러 정보\n\n### 공통 에러\n- **401**\
+        \ 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400** validation 실패(필드 형식\
+        /필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다\
+        ."
+      operationId: auth-admin-user-detail
+      parameters:
+      - name: userId
+        in: path
+        description: 조회 대상 사용자 ID
+        required: true
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer 액세스 토큰
+        required: true
+        schema:
+          type: string
+        example: Bearer token
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-admin-users-userId1698032162'
+              examples:
+                auth-admin-user-detail:
+                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
+                    \   \"timestamp\" : \"2026-03-29T13:51:03.4241114\",\r\n    \"\
+                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/users/1\"\
+                    ,\r\n      \"method\" : \"GET\"\r\n    }\r\n  },\r\n  \"data\"\
+                    \ : {\r\n    \"userId\" : 1,\r\n    \"email\" : \"user@example.com\"\
+                    ,\r\n    \"emailVerified\" : true,\r\n    \"phoneNumber\" : \"\
+                    +82 10-1234-5678\",\r\n    \"phoneVerified\" : true,\r\n    \"\
+                    name\" : \"홍길동\",\r\n    \"nickname\" : \"gildong\",\r\n    \"\
+                    gender\" : \"MALE\",\r\n    \"locale\" : \"ko-KR\",\r\n    \"\
+                    birthyear\" : \"1990\",\r\n    \"birthday\" : \"01-31\",\r\n \
+                    \   \"profileImageUrl\" : \"https://cdn.example.com/profile.png\"\
+                    ,\r\n    \"thumbnailImageUrl\" : \"https://cdn.example.com/thumb.png\"\
+                    ,\r\n    \"authProvider\" : \"LOCAL\",\r\n    \"oauthProviderUserId\"\
+                    \ : null,\r\n    \"role\" : \"USER\",\r\n    \"userStatus\" :\
+                    \ \"ACTIVE\",\r\n    \"blocked\" : false,\r\n    \"blockedReason\"\
+                    \ : null,\r\n    \"blockedAt\" : null,\r\n    \"blockedByAdminId\"\
+                    \ : null,\r\n    \"unblockedAt\" : null,\r\n    \"unblockedByAdminId\"\
+                    \ : null,\r\n    \"deletedAt\" : null,\r\n    \"deletionReason\"\
+                    \ : null,\r\n    \"retentionUntil\" : null\r\n  }\r\n}"
+    patch:
+      tags:
+      - Admin Users
+      summary: 관리자 사용자 정보 수정
+      description: "특정 사용자의 프로필/권한/상태를 수정합니다.\n\n### 인증\n- `Authorization: Bearer\
+        \ {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요\n\n### 헤더\n- `Authorization`: Bearer\
+        \ 액세스 토큰\n\n### Path 파라미터\n- `userId`: 수정 대상 사용자 ID\n\n### 요청 바디 필드\n- `email`:\
+        \ 이메일\n- `phoneNumber`: 휴대폰 번호\n- `name`: 이름\n- `nickname`: 닉네임\n- `gender`:\
+        \ 성별\n- `locale`: 로케일\n- `birthyear`: 출생연도\n- `birthday`: 생일\n- `profileImageUrl`:\
+        \ 프로필 이미지 URL\n- `thumbnailImageUrl`: 썸네일 이미지 URL\n- `role`: 권한(USER/ADMIN)\n\
+        - `userStatus`: 상태(ACTIVE/BLOCKED)\n- `blocked`: 차단 여부\n- `blockedReason`:\
+        \ 차단 사유\n- `emailVerified`: 이메일 인증 여부\n- `phoneVerified`: 휴대폰 인증 여부\n\n###\
+        \ 응답 바디 필드\n- `result`: 결과\n- `meta`: 메타 정보\n- `meta.timestamp`: 응답 생성 시각\n\
+        - `meta.request`: 요청 정보\n- `meta.request.path`: 요청 경로\n- `meta.request.method`:\
+        \ HTTP 메서드\n- `meta.request.query`: 쿼리 스트링\n- `data`: 사용자 상세 정보\n- `data.userId`:\
+        \ 사용자 ID\n- `data.email`: 이메일\n- `data.emailVerified`: 이메일 인증 여부\n- `data.phoneNumber`:\
+        \ 전화번호\n- `data.phoneVerified`: 전화번호 인증 여부\n- `data.name`: 이름\n- `data.nickname`:\
+        \ 닉네임\n- `data.gender`: 성별\n- `data.locale`: 로케일\n- `data.birthyear`: 출생연도\
+        \n- `data.birthday`: 생일\n- `data.profileImageUrl`: 프로필 이미지 URL\n- `data.thumbnailImageUrl`:\
+        \ 썸네일 이미지 URL\n- `data.authProvider`: 인증 제공자\n- `data.oauthProviderUserId`:\
+        \ 소셜 사용자 ID\n- `data.role`: 권한\n- `data.userStatus`: 상태\n- `data.blocked`:\
+        \ 차단 여부\n- `data.blockedReason`: 차단 사유\n- `data.blockedAt`: 차단 시각\n- `data.blockedByAdminId`:\
+        \ 차단 관리자 ID\n- `data.unblockedAt`: 차단 해제 시각\n- `data.unblockedByAdminId`:\
+        \ 차단 해제 관리자 ID\n- `data.deletedAt`: 삭제 시각\n- `data.deletionReason`: 삭제 사유\n\
+        - `data.retentionUntil`: 보관 만료 시각\n- `error`: 에러 정보\n\n### 공통 에러\n- **401**\
+        \ 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400** validation 실패(필드 형식\
+        /필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다\
+        ."
+      operationId: auth-admin-user-update
+      parameters:
+      - name: userId
+        in: path
+        description: 수정 대상 사용자 ID
+        required: true
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer 액세스 토큰
+        required: true
+        schema:
+          type: string
+        example: Bearer token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-admin-users-userId327764809'
+            examples:
+              auth-admin-user-update:
+                value: "{\r\n  \"email\" : null,\r\n  \"phoneNumber\" : null,\r\n\
+                  \  \"name\" : null,\r\n  \"nickname\" : \"updated-nickname\",\r\n\
+                  \  \"gender\" : null,\r\n  \"locale\" : null,\r\n  \"birthyear\"\
+                  \ : null,\r\n  \"birthday\" : null,\r\n  \"profileImageUrl\" : null,\r\
+                  \n  \"thumbnailImageUrl\" : null,\r\n  \"role\" : \"ADMIN\",\r\n\
+                  \  \"userStatus\" : null,\r\n  \"blocked\" : false,\r\n  \"blockedReason\"\
+                  \ : null,\r\n  \"emailVerified\" : null,\r\n  \"phoneVerified\"\
+                  \ : null\r\n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-admin-users-userId1698032162'
+              examples:
+                auth-admin-user-update:
+                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
+                    \   \"timestamp\" : \"2026-03-29T13:51:01.6915718\",\r\n    \"\
+                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/users/1\"\
+                    ,\r\n      \"method\" : \"PATCH\"\r\n    }\r\n  },\r\n  \"data\"\
+                    \ : {\r\n    \"userId\" : 1,\r\n    \"email\" : \"user@example.com\"\
+                    ,\r\n    \"emailVerified\" : true,\r\n    \"phoneNumber\" : \"\
+                    +82 10-1234-5678\",\r\n    \"phoneVerified\" : true,\r\n    \"\
+                    name\" : \"홍길동\",\r\n    \"nickname\" : \"updated-nickname\",\r\
+                    \n    \"gender\" : \"MALE\",\r\n    \"locale\" : \"ko-KR\",\r\n\
+                    \    \"birthyear\" : \"1990\",\r\n    \"birthday\" : \"01-31\"\
+                    ,\r\n    \"profileImageUrl\" : \"https://cdn.example.com/profile.png\"\
+                    ,\r\n    \"thumbnailImageUrl\" : \"https://cdn.example.com/thumb.png\"\
+                    ,\r\n    \"authProvider\" : \"LOCAL\",\r\n    \"oauthProviderUserId\"\
+                    \ : null,\r\n    \"role\" : \"ADMIN\",\r\n    \"userStatus\" :\
+                    \ \"ACTIVE\",\r\n    \"blocked\" : false,\r\n    \"blockedReason\"\
+                    \ : null,\r\n    \"blockedAt\" : null,\r\n    \"blockedByAdminId\"\
+                    \ : null,\r\n    \"unblockedAt\" : null,\r\n    \"unblockedByAdminId\"\
+                    \ : null,\r\n    \"deletedAt\" : null,\r\n    \"deletionReason\"\
+                    \ : null,\r\n    \"retentionUntil\" : null\r\n  }\r\n}"
+  /api/v1/auth/local/phone-verifications/confirm:
+    post:
+      tags:
+      - Local Phone
+      summary: 휴대폰 인증번호 확인
+      description: "인증번호를 검증하고 회원가입에 사용할 phoneVerificationToken을 발급합니다.\n\n### 인증\n\
+        - 인증 불필요\n\n### 요청 바디 필드\n- `phoneNumber`: 인증 확인할 휴대폰 번호\n- `verificationId`:\
+        \ 인증 요청 식별자\n- `code`: 6자리 인증번호\n\n### 응답 바디 필드\n- `result`: 요청 처리 결과 (SUCCESS/ERROR)\n\
+        - `meta.timestamp`: 응답 생성 시각 (서버 로컬 시간)\n- `meta.requestId`: 요청 추적 ID (있을\
+        \ 때만 반환)\n- `meta.durationMs`: 처리 시간(ms)\n- `meta.request.path`: 요청 경로\n-\
+        \ `meta.request.method`: HTTP 메서드\n- `meta.request.query`: 쿼리 문자열 (없으면 null)\n\
+        - `meta.paging`: 페이징 메타 정보 (있을 때만 반환)\n- `meta.locale`: 응답 로케일 (있을 때만 반환)\n\
+        - `error`: 오류 정보 (에러 응답에서만 포함)\n- `data`: 인증 확인 결과\n- `data.phoneVerificationToken`:\
+        \ 회원가입에 사용할 휴대폰 인증 토큰\n- `data.expiresInSec`: 인증 토큰 만료까지 남은 시간(초)\n\n### 공\
+        통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400** validation\
+        \ 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과\
+        로 자동 포함됩니다."
+      operationId: auth-local-phone-verification-confirm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-local-phone-verifications-confirm168401481'
+            examples:
+              auth-local-phone-verification-confirm:
+                value: "{\r\n  \"phoneNumber\" : \"+82 10-1234-5678\",\r\n  \"verificationId\"\
+                  \ : \"verification-id-001\",\r\n  \"code\" : \"123456\"\r\n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-local-phone-verifications-confirm445202834'
+              examples:
+                auth-local-phone-verification-confirm:
+                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
+                    \   \"timestamp\" : \"2026-03-29T13:51:05.7437693\",\r\n    \"\
+                    request\" : {\r\n      \"path\" : \"/api/v1/auth/local/phone-verifications/confirm\"\
+                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
+                    \ : {\r\n    \"phoneVerificationToken\" : \"verified-phone-token\"\
+                    ,\r\n    \"expiresInSec\" : 600\r\n  }\r\n}"
+  /api/v1/auth/local/phone-verifications/request:
+    post:
+      tags:
+      - Local Phone
+      summary: 휴대폰 인증번호 발급
+      description: "휴대폰 번호로 인증번호를 발급하고 verificationId를 반환합니다.\n\n### 인증\n- 인증 불필요\n\
+        \n### 요청 바디 필드\n- `phoneNumber`: 인증 요청할 휴대폰 번호\n\n### 응답 바디 필드\n- `result`:\
+        \ 요청 처리 결과 (SUCCESS/ERROR)\n- `meta.timestamp`: 응답 생성 시각 (서버 로컬 시간)\n- `meta.requestId`:\
+        \ 요청 추적 ID (있을 때만 반환)\n- `meta.durationMs`: 처리 시간(ms)\n- `meta.request.path`:\
+        \ 요청 경로\n- `meta.request.method`: HTTP 메서드\n- `meta.request.query`: 쿼리 문자열\
+        \ (없으면 null)\n- `meta.paging`: 페이징 메타 정보 (있을 때만 반환)\n- `meta.locale`: 응답 로\
+        케일 (있을 때만 반환)\n- `error`: 오류 정보 (에러 응답에서만 포함)\n- `data`: 인증 요청 결과\n- `data.verificationId`:\
+        \ 인증 요청 식별자\n- `data.expiresInSec`: 인증번호 만료까지 남은 시간(초)\n\n### 공통 에러\n- **401**\
+        \ 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400** validation 실패(필드 형식\
+        /필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다\
+        ."
+      operationId: auth-local-phone-verification-request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-local-phone-verifications-request-394943525'
+            examples:
+              auth-local-phone-verification-request:
+                value: "{\r\n  \"phoneNumber\" : \"+82 10-1234-5678\"\r\n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-local-phone-verifications-request271430078'
+              examples:
+                auth-local-phone-verification-request:
+                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
+                    \   \"timestamp\" : \"2026-03-29T13:51:05.5611954\",\r\n    \"\
+                    request\" : {\r\n      \"path\" : \"/api/v1/auth/local/phone-verifications/request\"\
+                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
+                    \ : {\r\n    \"verificationId\" : \"verification-id-001\",\r\n\
+                    \    \"expiresInSec\" : 180\r\n  }\r\n}"
+  /api/v1/auth/local/signup/phone:
+    post:
+      tags:
+      - Local Auth
+      summary: 전화번호 간편 회원가입
+      description: "전화번호 인증 토큰으로 최소 정보 계정을 생성합니다.\n\n### 인증\n- 인증 불필요\n\n### 요청 바디\
+        \ 필드\n- `phoneNumber`: 휴대폰 번호\n- `phoneVerificationToken`: 휴대폰 인증 완료 토큰\n\n\
+        ### 공통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400** validation\
+        \ 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과\
+        로 자동 포함됩니다."
+      operationId: auth-local-signup-phone
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-local-signup-phone1536767407'
+            examples:
+              auth-local-signup-phone:
+                value: "{\r\n  \"phoneNumber\" : \"+82 10-1234-5678\",\r\n  \"phoneVerificationToken\"\
+                  \ : \"verified-phone-token\"\r\n}"
+      responses:
+        "200":
+          description: "200"
+  /api/v1/auth/local/token/refresh:
+    post:
+      tags:
+      - Local Auth
+      summary: 토큰 재발급
+      description: "리프레시 토큰으로 새 액세스/리프레시 토큰을 발급합니다.\n\n### 인증\n- 인증 불필요(리프레시 토큰 필요\
+        )\n\n### 헤더\n- `X-Device-Id`: 디바이스 식별자\n\n### 요청 바디 필드\n- `refreshToken`:\
+        \ 리프레시 토큰\n\n### 응답 바디 필드\n- `result`: 요청 처리 결과 (SUCCESS/ERROR)\n- `meta.timestamp`:\
+        \ 응답 생성 시각 (서버 로컬 시간)\n- `meta.requestId`: 요청 추적 ID (있을 때만 반환)\n- `meta.durationMs`:\
+        \ 처리 시간(ms)\n- `meta.request.path`: 요청 경로\n- `meta.request.method`: HTTP 메\
+        서드\n- `meta.request.query`: 쿼리 문자열 (없으면 null)\n- `meta.paging`: 페이징 메타 정보\
+        \ (있을 때만 반환)\n- `meta.locale`: 응답 로케일 (있을 때만 반환)\n- `error`: 오류 정보 (에러 응답에\
+        서만 포함)\n- `data`: 토큰 정보\n- `data.accessToken`: 액세스 토큰\n- `data.accessExpiresInSec`:\
+        \ 액세스 토큰 만료(초)\n- `data.refreshToken`: 리프레시 토큰\n- `data.refreshExpiresInSec`:\
+        \ 리프레시 토큰 만료(초)\n\n### 공통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요\
+        한 API)\n- **400** validation 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의\
+        \ **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-local-refresh
+      parameters:
+      - name: X-Device-Id
+        in: header
+        description: 디바이스 식별자
+        required: true
+        schema:
+          type: string
+        example: device-001
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-local-token-refresh1056639717'
+            examples:
+              auth-local-refresh:
+                value: "{\r\n  \"refreshToken\" : \"refresh-token\"\r\n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-local-token-refresh-1150988368'
+              examples:
+                auth-local-refresh:
+                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
+                    \   \"timestamp\" : \"2026-03-29T13:51:04.9962204\",\r\n    \"\
+                    request\" : {\r\n      \"path\" : \"/api/v1/auth/local/token/refresh\"\
+                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
+                    \ : {\r\n    \"accessToken\" : \"access-token\",\r\n    \"accessExpiresInSec\"\
+                    \ : 3600,\r\n    \"refreshToken\" : \"refresh-token\",\r\n   \
+                    \ \"refreshExpiresInSec\" : 1209600\r\n  }\r\n}"
+  /api/v1/auth/oauth2/{provider}/authorize-url:
+    get:
+      tags:
+      - OAuth2
+      summary: OAuth2 인가 URL 조회
+      description: "소셜 로그인 시작 경로(인가 URL)를 반환합니다.\n\n### 인증\n- 인증 불필요\n\n### 헤더\n-\
+        \ `X-Device-Id`: 디바이스 식별자 (선택)\n\n### Path 파라미터\n- `provider`: OAuth2 공급자\
+        \ (예: kakao, naver, google)\n\n### Query 파라미터\n- `returnUrl`: 로그인 완료 후 리다이\
+        렉트할 상대 경로\n\n### 응답 바디 필드\n- `result`: 요청 처리 결과 (SUCCESS/ERROR)\n- `meta.timestamp`:\
+        \ 응답 생성 시각 (서버 로컬 시간)\n- `meta.requestId`: 요청 추적 ID (있을 때만 반환)\n- `meta.durationMs`:\
+        \ 처리 시간(ms)\n- `meta.request.path`: 요청 경로\n- `meta.request.method`: HTTP 메\
+        서드\n- `meta.request.query`: 쿼리 문자열 (없으면 null)\n- `meta.paging`: 페이징 메타 정보\
+        \ (있을 때만 반환)\n- `meta.locale`: 응답 로케일 (있을 때만 반환)\n- `error`: 오류 정보 (에러 응답에\
+        서만 포함)\n- `data`: OAuth2 인가 URL 경로 (예: /oauth2/authorization/{provider})\n\
+        \n### 공통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400**\
+        \ validation 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션\
+        에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-oauth2-authorize-url
+      parameters:
+      - name: provider
+        in: path
+        description: "OAuth2 공급자 (예: kakao, naver, google)"
+        required: true
+        schema:
+          type: string
+      - name: returnUrl
+        in: query
+        description: 로그인 완료 후 리다이렉트할 상대 경로
+        required: false
+        schema:
+          type: string
+      - name: X-Device-Id
+        in: header
+        description: 디바이스 식별자 (선택)
+        required: false
+        schema:
+          type: string
+        example: device-001
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-oauth2-provider-authorize-url1616597692'
+              examples:
+                auth-oauth2-authorize-url:
+                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
+                    \   \"timestamp\" : \"2026-03-29T13:51:05.82062\",\r\n    \"request\"\
+                    \ : {\r\n      \"path\" : \"/api/v1/auth/oauth2/kakao/authorize-url\"\
+                    ,\r\n      \"method\" : \"GET\",\r\n      \"query\" : \"returnUrl=/app/callback\"\
+                    \r\n    }\r\n  },\r\n  \"data\" : \"/oauth2/authorization/kakao\"\
+                    \r\n}"
+  /api/v1/auth/admin/users/{userId}/block:
+    post:
+      tags:
+      - Admin User Status
+      summary: 관리자 사용자 차단
+      description: "관리자 권한으로 특정 사용자를 차단합니다.\n\n### 인증\n- `Authorization: Bearer {accessToken}`\
+        \ 필요\n- 권한: `ROLE_ADMIN` 필요\n\n### 헤더\n- `Authorization`: Bearer 액세스 토큰\n\n\
+        ### Path 파라미터\n- `userId`: 차단 대상 사용자 ID\n\n### 요청 바디 필드\n- `reason`: 차단 사유\
+        \n\n### 응답 바디 필드\n- `result`: 결과\n- `meta`: 메타 정보\n- `meta.timestamp`: 응답\
+        \ 생성 시각\n- `meta.request`: 요청 정보\n- `meta.request.path`: 요청 경로\n- `meta.request.method`:\
+        \ HTTP 메서드\n- `meta.request.query`: 쿼리 스트링\n- `data`: 사용자 상태 정보\n- `data.userId`:\
+        \ 사용자 식별자\n- `data.userStatus`: 사용자 상태(ACTIVE/BLOCKED/SOFT_DELETED)\n- `data.blocked`:\
+        \ 차단 여부\n- `data.blockedReason`: 차단 사유\n- `data.blockedAt`: 차단 시각\n- `data.blockedByAdminId`:\
+        \ 차단한 관리자 ID\n- `data.unblockedAt`: 차단 해제 시각\n- `data.unblockedByAdminId`:\
+        \ 차단 해제 관리자 ID\n- `data.deletedAt`: 탈퇴 시각\n- `data.deletionReason`: 탈퇴 사유\n\
+        - `data.retentionUntil`: 보관 만료 예정 시각\n- `error`: 에러 정보\n\n### 공통 에러\n- **401**\
+        \ 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400** validation 실패(필드 형식\
+        /필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다\
+        ."
+      operationId: auth-admin-user-block
+      parameters:
+      - name: userId
+        in: path
+        description: 차단 대상 사용자 ID
+        required: true
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer 액세스 토큰
+        required: true
+        schema:
+          type: string
+        example: Bearer token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-admin-users-userId-block1800099987'
+            examples:
+              auth-admin-user-block:
+                value: "{\r\n  \"reason\" : \"abuse\"\r\n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-admin-users-userId-unblock-1556520031'
+              examples:
+                auth-admin-user-block:
+                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
+                    \   \"timestamp\" : \"2026-03-29T13:51:02.9802331\",\r\n    \"\
+                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/users/1/block\"\
+                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
+                    \ : {\r\n    \"userId\" : 1,\r\n    \"userStatus\" : \"BLOCKED\"\
+                    ,\r\n    \"blocked\" : true,\r\n    \"blockedReason\" : \"abuse\"\
+                    ,\r\n    \"blockedAt\" : \"2026-03-16T10:00:00Z\",\r\n    \"blockedByAdminId\"\
+                    \ : 100,\r\n    \"unblockedAt\" : null,\r\n    \"unblockedByAdminId\"\
+                    \ : null,\r\n    \"deletedAt\" : null,\r\n    \"deletionReason\"\
+                    \ : null,\r\n    \"retentionUntil\" : null\r\n  }\r\n}"
+  /api/v1/auth/admin/users/{userId}/delete:
+    post:
+      tags:
+      - Admin Users
+      summary: 관리자 사용자 소프트 삭제
+      description: "특정 사용자를 소프트 삭제 처리합니다.\n\n### 인증\n- `Authorization: Bearer {accessToken}`\
+        \ 필요\n- 권한: `ROLE_ADMIN` 필요\n\n### 헤더\n- `Authorization`: Bearer 액세스 토큰\n\n\
+        ### Path 파라미터\n- `userId`: 삭제 대상 사용자 ID\n\n### 요청 바디 필드\n- `reason`: 삭제 사유\
+        \n\n### 응답 바디 필드\n- `result`: 결과\n- `meta`: 메타 정보\n- `meta.timestamp`: 응답\
+        \ 생성 시각\n- `meta.request`: 요청 정보\n- `meta.request.path`: 요청 경로\n- `meta.request.method`:\
+        \ HTTP 메서드\n- `meta.request.query`: 쿼리 스트링\n- `data`: 사용자 상태 정보\n- `data.userId`:\
+        \ 사용자 식별자\n- `data.userStatus`: 사용자 상태(ACTIVE/BLOCKED/SOFT_DELETED)\n- `data.blocked`:\
+        \ 차단 여부\n- `data.blockedReason`: 차단 사유\n- `data.blockedAt`: 차단 시각\n- `data.blockedByAdminId`:\
+        \ 차단한 관리자 ID\n- `data.unblockedAt`: 차단 해제 시각\n- `data.unblockedByAdminId`:\
+        \ 차단 해제 관리자 ID\n- `data.deletedAt`: 탈퇴 시각\n- `data.deletionReason`: 탈퇴 사유\n\
+        - `data.retentionUntil`: 보관 만료 예정 시각\n- `error`: 에러 정보\n\n### 공통 에러\n- **401**\
+        \ 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400** validation 실패(필드 형식\
+        /필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다\
+        ."
+      operationId: auth-admin-user-delete
+      parameters:
+      - name: userId
+        in: path
+        description: 삭제 대상 사용자 ID
+        required: true
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer 액세스 토큰
+        required: true
+        schema:
+          type: string
+        example: Bearer token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-admin-users-userId-delete-795616532'
+            examples:
+              auth-admin-user-delete:
+                value: "{\r\n  \"reason\" : \"admin-delete\"\r\n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-admin-users-userId-unblock-1556520031'
+              examples:
+                auth-admin-user-delete:
+                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
+                    \   \"timestamp\" : \"2026-03-29T13:51:01.3371479\",\r\n    \"\
+                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/users/1/delete\"\
+                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
+                    \ : {\r\n    \"userId\" : 2,\r\n    \"userStatus\" : \"SOFT_DELETED\"\
+                    ,\r\n    \"blocked\" : false,\r\n    \"blockedReason\" : null,\r\
+                    \n    \"blockedAt\" : null,\r\n    \"blockedByAdminId\" : null,\r\
+                    \n    \"unblockedAt\" : null,\r\n    \"unblockedByAdminId\" :\
+                    \ null,\r\n    \"deletedAt\" : \"2026-03-16T11:00:00Z\",\r\n \
+                    \   \"deletionReason\" : \"privacy\",\r\n    \"retentionUntil\"\
+                    \ : \"2031-03-16T11:00:00Z\"\r\n  }\r\n}"
+  /api/v1/auth/admin/users/{userId}/status-audits:
+    get:
+      tags:
+      - Admin User Status
+      summary: 관리자 사용자 상태 변경 이력 조회
+      description: "특정 사용자에 대한 차단/해제/탈퇴 상태 변경 이력을 조회합니다.\n\n### 인증\n- `Authorization:\
+        \ Bearer {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요\n\n### 헤더\n- `Authorization`:\
+        \ Bearer 액세스 토큰\n\n### Path 파라미터\n- `userId`: 이력 조회 대상 사용자 ID\n\n### Query\
+        \ 파라미터\n- `page`: 페이지 번호 (0부터 시작)\n- `size`: 페이지 크기\n\n### 응답 바디 필드\n- `result`:\
+        \ 결과\n- `meta`: 메타 정보\n- `meta.timestamp`: 응답 생성 시각\n- `meta.request`: 요청\
+        \ 정보\n- `meta.request.path`: 요청 경로\n- `meta.request.method`: HTTP 메서드\n- `meta.request.query`:\
+        \ 쿼리 스트링(있으면 문자열, 없으면 null)\n- `data`: 상태 이력 페이지(Page)\n- `data.content`:\
+        \ 상태 이력 목록\n- `data.content[].id`: 이력 ID\n- `data.content[].targetUserId`:\
+        \ 대상 사용자 ID\n- `data.content[].actorUserId`: 처리 관리자/사용자 ID\n- `data.content[].actionType`:\
+        \ 상태 변경 액션(BLOCK/UNBLOCK/SOFT_DELETE)\n- `data.content[].reason`: 사유\n- `data.content[].actionAt`:\
+        \ 처리 시각\n- `data.totalElements`: 전체 건수\n- `data.totalPages`: 전체 페이지 수\n- `data.size`:\
+        \ 페이지 크기\n- `data.number`: 현재 페이지 번호\n- `data.numberOfElements`: 현재 페이지 요소\
+        \ 수\n- `data.first`: 첫 페이지 여부\n- `data.last`: 마지막 페이지 여부\n- `data.empty`:\
+        \ 비어있는 페이지 여부\n- `data.pageable`: null\n- `data.sort`: null\n- `error`: 에러\
+        \ 정보\n\n### 공통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400**\
+        \ validation 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션\
+        에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-admin-user-status-audits
+      parameters:
+      - name: userId
+        in: path
+        description: 이력 조회 대상 사용자 ID
+        required: true
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: 페이지 번호 (0부터 시작)
+        required: false
+        schema:
+          type: string
+      - name: size
+        in: query
+        description: 페이지 크기
+        required: false
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer 액세스 토큰
+        required: true
+        schema:
+          type: string
+        example: Bearer token
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-admin-users-userId-status-audits-1202361055'
+              examples:
+                auth-admin-user-status-audits:
+                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
+                    \   \"timestamp\" : \"2026-03-29T13:51:03.5352966\",\r\n    \"\
+                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/users/1/status-audits\"\
+                    ,\r\n      \"method\" : \"GET\",\r\n      \"query\" : \"page=0&size=20\"\
+                    \r\n    }\r\n  },\r\n  \"data\" : {\r\n    \"content\" : [ {\r\
+                    \n      \"id\" : 1,\r\n      \"targetUserId\" : 1,\r\n      \"\
+                    actorUserId\" : 100,\r\n      \"actionType\" : \"BLOCK\",\r\n\
+                    \      \"reason\" : \"abuse\",\r\n      \"actionAt\" : \"2026-03-16T10:00:00Z\"\
+                    \r\n    } ],\r\n    \"pageable\" : {\r\n      \"pageNumber\" :\
+                    \ 0,\r\n      \"pageSize\" : 20,\r\n      \"sort\" : {\r\n   \
+                    \     \"empty\" : true,\r\n        \"unsorted\" : true,\r\n  \
+                    \      \"sorted\" : false\r\n      },\r\n      \"offset\" : 0,\r\
+                    \n      \"paged\" : true,\r\n      \"unpaged\" : false\r\n   \
+                    \ },\r\n    \"totalElements\" : 1,\r\n    \"last\" : true,\r\n\
+                    \    \"totalPages\" : 1,\r\n    \"size\" : 20,\r\n    \"number\"\
+                    \ : 0,\r\n    \"sort\" : {\r\n      \"empty\" : true,\r\n    \
+                    \  \"unsorted\" : true,\r\n      \"sorted\" : false\r\n    },\r\
+                    \n    \"numberOfElements\" : 1,\r\n    \"first\" : true,\r\n \
+                    \   \"empty\" : false\r\n  }\r\n}"
+  /api/v1/auth/admin/users/{userId}/unblock:
+    post:
+      tags:
+      - Admin User Status
+      summary: 관리자 사용자 차단 해제
+      description: "관리자 권한으로 특정 사용자의 차단을 해제합니다.\n\n### 인증\n- `Authorization: Bearer\
+        \ {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요\n\n### 헤더\n- `Authorization`: Bearer\
+        \ 액세스 토큰\n\n### Path 파라미터\n- `userId`: 차단 해제 대상 사용자 ID\n\n### 응답 바디 필드\n-\
+        \ `result`: 결과\n- `meta`: 메타 정보\n- `meta.timestamp`: 응답 생성 시각\n- `meta.request`:\
+        \ 요청 정보\n- `meta.request.path`: 요청 경로\n- `meta.request.method`: HTTP 메서드\n\
+        - `meta.request.query`: 쿼리 스트링\n- `data`: 사용자 상태 정보\n- `data.userId`: 사용자\
+        \ 식별자\n- `data.userStatus`: 사용자 상태(ACTIVE/BLOCKED/SOFT_DELETED)\n- `data.blocked`:\
+        \ 차단 여부\n- `data.blockedReason`: 차단 사유\n- `data.blockedAt`: 차단 시각\n- `data.blockedByAdminId`:\
+        \ 차단한 관리자 ID\n- `data.unblockedAt`: 차단 해제 시각\n- `data.unblockedByAdminId`:\
+        \ 차단 해제 관리자 ID\n- `data.deletedAt`: 탈퇴 시각\n- `data.deletionReason`: 탈퇴 사유\n\
+        - `data.retentionUntil`: 보관 만료 예정 시각\n- `error`: 에러 정보\n\n### 공통 에러\n- **401**\
+        \ 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400** validation 실패(필드 형식\
+        /필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다\
+        ."
+      operationId: auth-admin-user-unblock
+      parameters:
+      - name: userId
+        in: path
+        description: 차단 해제 대상 사용자 ID
+        required: true
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer 액세스 토큰
+        required: true
+        schema:
+          type: string
+        example: Bearer token
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-admin-users-userId-unblock-1556520031'
+              examples:
+                auth-admin-user-unblock:
+                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
+                    \   \"timestamp\" : \"2026-03-29T13:51:02.277947\",\r\n    \"\
+                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/users/1/unblock\"\
+                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
+                    \ : {\r\n    \"userId\" : 1,\r\n    \"userStatus\" : \"ACTIVE\"\
+                    ,\r\n    \"blocked\" : false,\r\n    \"blockedReason\" : \"abuse\"\
+                    ,\r\n    \"blockedAt\" : \"2026-03-16T10:00:00Z\",\r\n    \"blockedByAdminId\"\
+                    \ : 100,\r\n    \"unblockedAt\" : \"2026-03-16T12:00:00Z\",\r\n\
+                    \    \"unblockedByAdminId\" : 100,\r\n    \"deletedAt\" : null,\r\
+                    \n    \"deletionReason\" : null,\r\n    \"retentionUntil\" : null\r\
+                    \n  }\r\n}"
+  /api/v1/auth/admin/users/{userId}/password/reset:
+    post:
+      tags:
+      - Admin Users
+      summary: 관리자 사용자 비밀번호 재설정
+      description: "비밀번호를 재설정하고 기존 토큰을 무효화합니다.\n\n### 인증\n- `Authorization: Bearer\
+        \ {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요\n\n### 헤더\n- `Authorization`: Bearer\
+        \ 액세스 토큰\n\n### Path 파라미터\n- `userId`: 비밀번호 재설정 대상 사용자 ID\n\n### 요청 바디 필드\n\
+        - `newPassword`: 새 비밀번호\n\n### 응답 바디 필드\n- `result`: 결과\n- `meta`: 메타 정보\n\
+        - `meta.timestamp`: 응답 생성 시각\n- `meta.request`: 요청 정보\n- `meta.request.path`:\
+        \ 요청 경로\n- `meta.request.method`: HTTP 메서드\n- `meta.request.query`: 쿼리 스트링\
+        \n- `data`: 사용자 상세 정보\n- `data.userId`: 사용자 ID\n- `data.email`: 이메일\n- `data.emailVerified`:\
+        \ 이메일 인증 여부\n- `data.phoneNumber`: 전화번호\n- `data.phoneVerified`: 전화번호 인증 여\
+        부\n- `data.name`: 이름\n- `data.nickname`: 닉네임\n- `data.gender`: 성별\n- `data.locale`:\
+        \ 로케일\n- `data.birthyear`: 출생연도\n- `data.birthday`: 생일\n- `data.profileImageUrl`:\
+        \ 프로필 이미지 URL\n- `data.thumbnailImageUrl`: 썸네일 이미지 URL\n- `data.authProvider`:\
+        \ 인증 제공자\n- `data.oauthProviderUserId`: 소셜 사용자 ID\n- `data.role`: 권한\n- `data.userStatus`:\
+        \ 상태\n- `data.blocked`: 차단 여부\n- `data.blockedReason`: 차단 사유\n- `data.blockedAt`:\
+        \ 차단 시각\n- `data.blockedByAdminId`: 차단 관리자 ID\n- `data.unblockedAt`: 차단 해제\
+        \ 시각\n- `data.unblockedByAdminId`: 차단 해제 관리자 ID\n- `data.deletedAt`: 삭제 시각\
+        \n- `data.deletionReason`: 삭제 사유\n- `data.retentionUntil`: 보관 만료 시각\n- `error`:\
+        \ 에러 정보\n\n### 공통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n\
+        - **400** validation 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples**\
+        \ 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-admin-user-password-reset
+      parameters:
+      - name: userId
+        in: path
+        description: 비밀번호 재설정 대상 사용자 ID
+        required: true
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer 액세스 토큰
+        required: true
+        schema:
+          type: string
+        example: Bearer token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-admin-users-userId-password-reset-1938778681'
+            examples:
+              auth-admin-user-password-reset:
+                value: "{\r\n  \"newPassword\" : \"NewP@ssword1!\"\r\n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-admin-users-userId1698032162'
+              examples:
+                auth-admin-user-password-reset:
+                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
+                    \   \"timestamp\" : \"2026-03-29T13:51:00.7749152\",\r\n    \"\
+                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/users/1/password/reset\"\
+                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
+                    \ : {\r\n    \"userId\" : 1,\r\n    \"email\" : \"user@example.com\"\
+                    ,\r\n    \"emailVerified\" : true,\r\n    \"phoneNumber\" : \"\
+                    +82 10-1234-5678\",\r\n    \"phoneVerified\" : true,\r\n    \"\
+                    name\" : \"홍길동\",\r\n    \"nickname\" : \"gildong\",\r\n    \"\
+                    gender\" : \"MALE\",\r\n    \"locale\" : \"ko-KR\",\r\n    \"\
+                    birthyear\" : \"1990\",\r\n    \"birthday\" : \"01-31\",\r\n \
+                    \   \"profileImageUrl\" : \"https://cdn.example.com/profile.png\"\
+                    ,\r\n    \"thumbnailImageUrl\" : \"https://cdn.example.com/thumb.png\"\
+                    ,\r\n    \"authProvider\" : \"LOCAL\",\r\n    \"oauthProviderUserId\"\
+                    \ : null,\r\n    \"role\" : \"USER\",\r\n    \"userStatus\" :\
+                    \ \"ACTIVE\",\r\n    \"blocked\" : false,\r\n    \"blockedReason\"\
+                    \ : null,\r\n    \"blockedAt\" : null,\r\n    \"blockedByAdminId\"\
+                    \ : null,\r\n    \"unblockedAt\" : null,\r\n    \"unblockedByAdminId\"\
+                    \ : null,\r\n    \"deletedAt\" : null,\r\n    \"deletionReason\"\
+                    \ : null,\r\n    \"retentionUntil\" : null\r\n  }\r\n}"
+  /api/v1/auth/admin/users/{userId}/tokens/revoke:
+    post:
+      tags:
+      - Admin Users
+      summary: 관리자 사용자 토큰 강제 만료
+      description: "특정 사용자의 모든 토큰을 즉시 무효화합니다.\n\n### 인증\n- `Authorization: Bearer\
+        \ {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요\n\n### 헤더\n- `Authorization`: Bearer\
+        \ 액세스 토큰\n\n### Path 파라미터\n- `userId`: 토큰 강제 만료 대상 사용자 ID\n\n### 응답 바디 필드\n\
+        - `result`: 결과\n- `meta`: 메타 정보\n- `meta.timestamp`: 응답 생성 시각\n- `meta.request`:\
+        \ 요청 정보\n- `meta.request.path`: 요청 경로\n- `meta.request.method`: HTTP 메서드\n\
+        - `meta.request.query`: 쿼리 스트링\n- `data`: 사용자 상세 정보\n- `data.userId`: 사용자\
+        \ ID\n- `data.email`: 이메일\n- `data.emailVerified`: 이메일 인증 여부\n- `data.phoneNumber`:\
+        \ 전화번호\n- `data.phoneVerified`: 전화번호 인증 여부\n- `data.name`: 이름\n- `data.nickname`:\
+        \ 닉네임\n- `data.gender`: 성별\n- `data.locale`: 로케일\n- `data.birthyear`: 출생연도\
+        \n- `data.birthday`: 생일\n- `data.profileImageUrl`: 프로필 이미지 URL\n- `data.thumbnailImageUrl`:\
+        \ 썸네일 이미지 URL\n- `data.authProvider`: 인증 제공자\n- `data.oauthProviderUserId`:\
+        \ 소셜 사용자 ID\n- `data.role`: 권한\n- `data.userStatus`: 상태\n- `data.blocked`:\
+        \ 차단 여부\n- `data.blockedReason`: 차단 사유\n- `data.blockedAt`: 차단 시각\n- `data.blockedByAdminId`:\
+        \ 차단 관리자 ID\n- `data.unblockedAt`: 차단 해제 시각\n- `data.unblockedByAdminId`:\
+        \ 차단 해제 관리자 ID\n- `data.deletedAt`: 삭제 시각\n- `data.deletionReason`: 삭제 사유\n\
+        - `data.retentionUntil`: 보관 만료 시각\n- `error`: 에러 정보\n\n### 공통 에러\n- **401**\
+        \ 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400** validation 실패(필드 형식\
+        /필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다\
+        ."
+      operationId: auth-admin-user-tokens-revoke
+      parameters:
+      - name: userId
+        in: path
+        description: 토큰 강제 만료 대상 사용자 ID
+        required: true
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer 액세스 토큰
+        required: true
+        schema:
+          type: string
+        example: Bearer token
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-admin-users-userId1698032162'
+              examples:
+                auth-admin-user-tokens-revoke:
+                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
+                    \   \"timestamp\" : \"2026-03-29T13:51:02.1652202\",\r\n    \"\
+                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/users/1/tokens/revoke\"\
+                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
+                    \ : {\r\n    \"userId\" : 1,\r\n    \"email\" : \"user@example.com\"\
+                    ,\r\n    \"emailVerified\" : true,\r\n    \"phoneNumber\" : \"\
+                    +82 10-1234-5678\",\r\n    \"phoneVerified\" : true,\r\n    \"\
+                    name\" : \"홍길동\",\r\n    \"nickname\" : \"gildong\",\r\n    \"\
+                    gender\" : \"MALE\",\r\n    \"locale\" : \"ko-KR\",\r\n    \"\
+                    birthyear\" : \"1990\",\r\n    \"birthday\" : \"01-31\",\r\n \
+                    \   \"profileImageUrl\" : \"https://cdn.example.com/profile.png\"\
+                    ,\r\n    \"thumbnailImageUrl\" : \"https://cdn.example.com/thumb.png\"\
+                    ,\r\n    \"authProvider\" : \"LOCAL\",\r\n    \"oauthProviderUserId\"\
+                    \ : null,\r\n    \"role\" : \"USER\",\r\n    \"userStatus\" :\
+                    \ \"ACTIVE\",\r\n    \"blocked\" : false,\r\n    \"blockedReason\"\
+                    \ : null,\r\n    \"blockedAt\" : null,\r\n    \"blockedByAdminId\"\
+                    \ : null,\r\n    \"unblockedAt\" : null,\r\n    \"unblockedByAdminId\"\
+                    \ : null,\r\n    \"deletedAt\" : null,\r\n    \"deletionReason\"\
+                    \ : null,\r\n    \"retentionUntil\" : null\r\n  }\r\n}"
+  /health:
+    get:
+      tags:
+      - Health
+      summary: 공개 헬스 체크
+      description: "인증 없이 서비스 기본 상태를 확인합니다.\n\n### 인증\n- 인증 불필요\n\n### 응답 바디 필드\n\
+        - `result`: 결과\n- `meta.timestamp`: 응답 생성 시각\n- `meta.request.path`: 요청 경로\
+        \n- `meta.request.method`: 요청 메서드\n- `data.status`: 헬스 상태\n- `data.application`:\
+        \ 애플리케이션 이름\n- `data.uptimeSec`: 업타임(초)\n- `data.links.docs.swagger`: Swagger\
+        \ UI URL\n- `data.links.docs.docs`: API 문서 URL\n\n### 공통 에러\n- **401** 인증\
+        \ 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400** validation 실패(필드 형식/필수\
+        \ 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: health
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/health-916046377'
+              examples:
+                health:
+                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
+                    \   \"timestamp\" : \"2026-03-29T13:51:04.0798426\",\r\n    \"\
+                    request\" : {\r\n      \"path\" : \"/health\",\r\n      \"method\"\
+                    \ : \"GET\"\r\n    }\r\n  },\r\n  \"data\" : {\r\n    \"status\"\
+                    \ : \"UP\",\r\n    \"application\" : \"core-api\",\r\n    \"uptimeSec\"\
+                    \ : 10,\r\n    \"links\" : {\r\n      \"docs\" : {\r\n       \
+                    \ \"swagger\" : \"https://api.example.com/docs/swagger/index.html\"\
+                    ,\r\n        \"docs\" : \"https://api.example.com/docs/index.html\"\
+                    \r\n      }\r\n    }\r\n  }\r\n}"
 components:
-  securitySchemes:
-    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
-  parameters:
-    XDeviceIdRequired: { name: X-Device-Id, in: header, required: true, schema: { type: string } }
-    XDeviceIdOptional: { name: X-Device-Id, in: header, required: false, schema: { type: string } }
-    ServiceCode: { name: serviceCode, in: path, required: true, schema: { type: string } }
-    Provider: { name: provider, in: path, required: true, schema: { type: string, enum: [kakao, naver, google] } }
-    ReturnUrl: { name: returnUrl, in: query, required: false, schema: { type: string } }
-    UserId: { name: userId, in: path, required: true, schema: { type: integer, format: int64 } }
-    Page: { name: page, in: query, required: false, schema: { type: integer, default: 0 } }
-    Size: { name: size, in: query, required: false, schema: { type: integer, default: 20 } }
-    StartDate: { name: startDate, in: query, required: false, schema: { type: string, format: date-time } }
-    EndDate: { name: endDate, in: query, required: false, schema: { type: string, format: date-time } }
-  responses:
-    SuccessAny:
-      description: SUCCESS
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ApiResponseAny' }
-    SuccessString:
-      description: SUCCESS
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ApiResponseString' }
-    SuccessOk:
-      description: SUCCESS
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ApiResponseOk' }
-    SuccessIssuedTokens:
-      description: SUCCESS
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ApiResponseIssuedTokens' }
   schemas:
-    ApiResponseAny:
+    api-v1-auth-admin-users-userId327764809:
       type: object
       properties:
-        result: { type: string, example: SUCCESS }
-        meta: { type: object }
-        data: {}
-        error: { type: object, nullable: true }
-    ApiResponseString:
-      allOf:
-        - $ref: '#/components/schemas/ApiResponseAny'
-        - type: object
+        birthday:
+          type: string
+          description: 생일
+          nullable: true
+        userStatus:
+          type: string
+          description: 상태(ACTIVE/BLOCKED)
+          nullable: true
+        role:
+          type: string
+          description: 권한(USER/ADMIN)
+          nullable: true
+        birthyear:
+          type: string
+          description: 출생연도
+          nullable: true
+        gender:
+          type: string
+          description: 성별
+          nullable: true
+        blockedReason:
+          type: string
+          description: 차단 사유
+          nullable: true
+        phoneVerified:
+          type: boolean
+          description: 휴대폰 인증 여부
+          nullable: true
+        locale:
+          type: string
+          description: 로케일
+          nullable: true
+        emailVerified:
+          type: boolean
+          description: 이메일 인증 여부
+          nullable: true
+        thumbnailImageUrl:
+          type: string
+          description: 썸네일 이미지 URL
+          nullable: true
+        phoneNumber:
+          type: string
+          description: 휴대폰 번호
+          nullable: true
+        blocked:
+          type: boolean
+          description: 차단 여부
+          nullable: true
+        nickname:
+          type: string
+          description: 닉네임
+          nullable: true
+        name:
+          type: string
+          description: 이름
+          nullable: true
+        profileImageUrl:
+          type: string
+          description: 프로필 이미지 URL
+          nullable: true
+        email:
+          type: string
+          description: 이메일
+          nullable: true
+    api-v1-auth-local-phone-verifications-confirm168401481:
+      required:
+      - code
+      - phoneNumber
+      - verificationId
+      type: object
+      properties:
+        code:
+          type: string
+          description: 6자리 인증번호
+        phoneNumber:
+          type: string
+          description: 인증 확인할 휴대폰 번호
+        verificationId:
+          type: string
+          description: 인증 요청 식별자
+    api-v1-auth-admin-sms-stats1143583724:
+      required:
+      - data
+      - result
+      type: object
+      properties:
+        result:
+          type: string
+          description: 요청 처리 결과 (SUCCESS/ERROR)
+        data:
+          required:
+          - fail
+          - ok
+          - rate
+          - total
+          type: object
           properties:
-            data: { type: string }
-    ApiResponseOk:
-      allOf:
-        - $ref: '#/components/schemas/ApiResponseAny'
-        - type: object
+            fail:
+              type: number
+              description: 실패 수
+            total:
+              type: number
+              description: 전체 발송 수
+            rate:
+              type: number
+              description: 성공률(%)
+            ok:
+              type: number
+              description: 성공 수
+          description: 문자 발송 통계
+        meta:
+          required:
+          - timestamp
+          type: object
           properties:
-            data:
+            request:
+              required:
+              - method
+              - path
               type: object
               properties:
-                result: { type: string, example: OK }
-    ApiResponseIssuedTokens:
-      allOf:
-        - $ref: '#/components/schemas/ApiResponseAny'
-        - type: object
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: string
+                  description: 쿼리 문자열 (없으면 null)
+                  nullable: true
+            requestId:
+              type: string
+              description: 요청 추적 ID (있을 때만 반환)
+              nullable: true
+            paging:
+              type: object
+              description: 페이징 메타 정보 (있을 때만 반환)
+              nullable: true
+            locale:
+              type: string
+              description: 응답 로케일 (있을 때만 반환)
+              nullable: true
+            durationMs:
+              type: number
+              description: 처리 시간(ms)
+              nullable: true
+            timestamp:
+              type: string
+              description: 응답 생성 시각 (서버 로컬 시간)
+        error:
+          type: object
+          description: 오류 정보 (에러 응답에서만 포함)
+          nullable: true
+    api-v1-auth-admin-sms-send1615980123:
+      required:
+      - data
+      - result
+      type: object
+      properties:
+        result:
+          type: string
+          description: 요청 처리 결과 (SUCCESS/ERROR)
+        data:
+          required:
+          - at
+          - from
+          - id
+          - ok
+          - provider
+          - text
+          - to
+          type: object
           properties:
-            data: { $ref: '#/components/schemas/IssuedTokens' }
-    IssuedTokens:
+            at:
+              type: string
+              description: 발송 시각
+            provider:
+              type: string
+              description: 발송 제공자
+            from:
+              type: string
+              description: 발신 번호
+            text:
+              type: string
+              description: 발송 메시지
+            to:
+              type: string
+              description: 수신 번호
+            id:
+              type: number
+              description: 이력 ID
+            ok:
+              type: boolean
+              description: 성공 여부
+          description: 발송 결과
+        meta:
+          required:
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: string
+                  description: 쿼리 문자열 (없으면 null)
+                  nullable: true
+            requestId:
+              type: string
+              description: 요청 추적 ID (있을 때만 반환)
+              nullable: true
+            paging:
+              type: object
+              description: 페이징 메타 정보 (있을 때만 반환)
+              nullable: true
+            locale:
+              type: string
+              description: 응답 로케일 (있을 때만 반환)
+              nullable: true
+            durationMs:
+              type: number
+              description: 처리 시간(ms)
+              nullable: true
+            timestamp:
+              type: string
+              description: 응답 생성 시각 (서버 로컬 시간)
+        error:
+          type: object
+          description: 오류 정보 (에러 응답에서만 포함)
+          nullable: true
+    api-v1-auth-admin-users-blocked-322523064:
+      required:
+      - data
+      - meta
+      - result
       type: object
       properties:
-        accessToken: { type: string }
-        accessExpiresInSec: { type: integer, format: int64 }
-        refreshToken: { type: string }
-        refreshExpiresInSec: { type: integer, format: int64 }
-    LoginRequest:
+        result:
+          type: string
+          description: 결과
+        data:
+          required:
+          - content
+          - empty
+          - first
+          - last
+          - number
+          - numberOfElements
+          - size
+          - totalElements
+          - totalPages
+          type: object
+          properties:
+            number:
+              type: number
+              description: 현재 페이지 번호
+            last:
+              type: boolean
+              description: 마지막 페이지 여부
+            numberOfElements:
+              type: number
+              description: 현재 페이지 요소 수
+            size:
+              type: number
+              description: 페이지 크기
+            totalPages:
+              type: number
+              description: 전체 페이지 수
+            first:
+              type: boolean
+              description: 첫 페이지 여부
+            content:
+              type: array
+              description: 사용자 목록
+              items:
+                required:
+                - blocked
+                - userId
+                - userStatus
+                type: object
+                properties:
+                  unblockedByAdminId:
+                    type: object
+                    description: 차단 해제 관리자
+                    nullable: true
+                  deletionReason:
+                    type: object
+                    description: 탈퇴 사유
+                    nullable: true
+                  blockedByAdminId:
+                    type: object
+                    description: 차단 관리자
+                    nullable: true
+                  deletedAt:
+                    type: object
+                    description: 탈퇴 시각
+                    nullable: true
+                  userStatus:
+                    type: string
+                    description: 사용자 상태
+                  blocked:
+                    type: boolean
+                    description: 차단 여부
+                  retentionUntil:
+                    type: object
+                    description: 보관 만료 예정 시각
+                    nullable: true
+                  blockedReason:
+                    type: object
+                    description: 차단 사유
+                    nullable: true
+                  blockedAt:
+                    type: object
+                    description: 차단 시각
+                    nullable: true
+                  unblockedAt:
+                    type: object
+                    description: 차단 해제 시각
+                    nullable: true
+                  userId:
+                    type: number
+                    description: 사용자 식별자
+            empty:
+              type: boolean
+              description: 비어있는 페이지 여부
+            totalElements:
+              type: number
+              description: 전체 건수
+          description: 사용자 상태 목록 페이지
+        meta:
+          required:
+          - request
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: object
+                  description: 쿼리 스트링
+                  nullable: true
+              description: 요청 정보
+            timestamp:
+              type: string
+              description: 응답 생성 시각
+          description: 메타 정보
+        error:
+          type: object
+          description: 에러 정보
+          nullable: true
+    api-v1-auth-local-logout1868317452:
       type: object
-      required: [email, password]
       properties:
-        email: { type: string, format: email }
-        password: { type: string }
-    RefreshRequest:
-      type: object
-      required: [refreshToken]
-      properties:
-        refreshToken: { type: string }
-    LogoutRequest:
-      type: object
-      properties:
-        refreshToken: { type: string, nullable: true }
-        logoutAll: { type: boolean }
-    WithdrawRequest:
-      type: object
-      properties:
-        reason: { type: string, nullable: true }
-    PhoneIssueRequest:
-      type: object
-      required: [phoneNumber]
-      properties:
-        phoneNumber: { type: string }
-    PhoneConfirmRequest:
-      type: object
-      required: [phoneNumber, verificationId, code]
-      properties:
-        phoneNumber: { type: string }
-        verificationId: { type: string }
-        code: { type: string }
-    PhoneSignUpRequest:
-      type: object
-      required: [phoneNumber, phoneVerificationToken]
-      properties:
-        phoneNumber: { type: string }
-        phoneVerificationToken: { type: string }
-    SignUpRequest:
-      type: object
-      required: [email, password, gender, phoneNumber, phoneVerificationToken]
-      properties:
-        email: { type: string }
-        password: { type: string }
-        name: { type: string, nullable: true }
-        nickname: { type: string, nullable: true }
-        gender: { type: string }
-        phoneNumber: { type: string }
-        phoneVerificationToken: { type: string }
-        locale: { type: string, nullable: true }
-        profileImageUrl: { type: string, nullable: true }
-        thumbnailImageUrl: { type: string, nullable: true }
-        birthyear: { type: string, nullable: true }
-        birthday: { type: string, nullable: true }
-    AdminUserUpdateRequest:
-      type: object
-      additionalProperties: true
-    AdminUserBlockRequest:
+        logoutAll:
+          type: boolean
+          description: 전체 로그아웃 여부
+          nullable: true
+        refreshToken:
+          type: string
+          description: 리프레시 토큰 (단건 로그아웃)
+          nullable: true
+    api-v1-auth-local-signup-108875888:
+      required:
+      - email
+      - gender
+      - password
+      - phoneNumber
+      - phoneVerificationToken
       type: object
       properties:
-        reason: { type: string, nullable: true }
-    AdminUserDeleteRequest:
+        birthday:
+          type: string
+          description: 생일 (MM-DD)
+          nullable: true
+        phoneVerificationToken:
+          type: string
+          description: 휴대폰 인증 완료 토큰
+        thumbnailImageUrl:
+          type: string
+          description: 썸네일 이미지 URL
+          nullable: true
+        password:
+          type: string
+          description: 비밀번호
+        phoneNumber:
+          type: string
+          description: 휴대폰 번호
+        birthyear:
+          type: string
+          description: 출생연도 (yyyy)
+          nullable: true
+        gender:
+          type: string
+          description: 성별 (MALE/FEMALE)
+        nickname:
+          type: string
+          description: 닉네임
+          nullable: true
+        name:
+          type: string
+          description: 이름
+          nullable: true
+        locale:
+          type: string
+          description: "로케일 (기본값: ko-KR)"
+          nullable: true
+        profileImageUrl:
+          type: string
+          description: 프로필 이미지 URL
+          nullable: true
+        email:
+          type: string
+          description: 이메일
+    api-v1-auth-local-phone-verifications-request271430078:
+      required:
+      - data
+      - result
       type: object
       properties:
-        reason: { type: string, nullable: true }
-    AdminUserPasswordResetRequest:
+        result:
+          type: string
+          description: 요청 처리 결과 (SUCCESS/ERROR)
+        data:
+          required:
+          - expiresInSec
+          - verificationId
+          type: object
+          properties:
+            expiresInSec:
+              type: number
+              description: 인증번호 만료까지 남은 시간(초)
+            verificationId:
+              type: string
+              description: 인증 요청 식별자
+          description: 인증 요청 결과
+        meta:
+          required:
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: string
+                  description: 쿼리 문자열 (없으면 null)
+                  nullable: true
+            requestId:
+              type: string
+              description: 요청 추적 ID (있을 때만 반환)
+              nullable: true
+            paging:
+              type: object
+              description: 페이징 메타 정보 (있을 때만 반환)
+              nullable: true
+            locale:
+              type: string
+              description: 응답 로케일 (있을 때만 반환)
+              nullable: true
+            durationMs:
+              type: number
+              description: 처리 시간(ms)
+              nullable: true
+            timestamp:
+              type: string
+              description: 응답 생성 시각 (서버 로컬 시간)
+        error:
+          type: object
+          description: 오류 정보 (에러 응답에서만 포함)
+          nullable: true
+    api-v1-auth-local-token-refresh-1150988368:
+      required:
+      - data
+      - result
       type: object
-      required: [newPassword]
       properties:
-        newPassword: { type: string }
-    AdminServiceCreateRequest:
+        result:
+          type: string
+          description: 요청 처리 결과 (SUCCESS/ERROR)
+        data:
+          required:
+          - accessExpiresInSec
+          - accessToken
+          - refreshExpiresInSec
+          - refreshToken
+          type: object
+          properties:
+            refreshExpiresInSec:
+              type: number
+              description: 리프레시 토큰 만료(초)
+            accessExpiresInSec:
+              type: number
+              description: 액세스 토큰 만료(초)
+            accessToken:
+              type: string
+              description: 액세스 토큰
+            refreshToken:
+              type: string
+              description: 리프레시 토큰
+          description: 토큰 정보
+        meta:
+          required:
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: string
+                  description: 쿼리 문자열 (없으면 null)
+                  nullable: true
+            requestId:
+              type: string
+              description: 요청 추적 ID (있을 때만 반환)
+              nullable: true
+            paging:
+              type: object
+              description: 페이징 메타 정보 (있을 때만 반환)
+              nullable: true
+            locale:
+              type: string
+              description: 응답 로케일 (있을 때만 반환)
+              nullable: true
+            durationMs:
+              type: number
+              description: 처리 시간(ms)
+              nullable: true
+            timestamp:
+              type: string
+              description: 응답 생성 시각 (서버 로컬 시간)
+        error:
+          type: object
+          description: 오류 정보 (에러 응답에서만 포함)
+          nullable: true
+    api-v1-auth-admin-users-userId1698032162:
+      required:
+      - data
+      - meta
+      - result
       type: object
-      required: [serviceCode, serviceName]
       properties:
-        serviceCode: { type: string }
-        serviceName: { type: string }
-    AdminSmsSendReq:
+        result:
+          type: string
+          description: 결과
+        data:
+          required:
+          - authProvider
+          - blocked
+          - email
+          - emailVerified
+          - gender
+          - phoneVerified
+          - role
+          - userId
+          - userStatus
+          type: object
+          properties:
+            birthday:
+              type: object
+              description: 생일
+              nullable: true
+            userStatus:
+              type: string
+              description: 상태
+            role:
+              type: string
+              description: 권한
+            birthyear:
+              type: object
+              description: 출생연도
+              nullable: true
+            gender:
+              type: string
+              description: 성별
+            locale:
+              type: object
+              description: 로케일
+              nullable: true
+            authProvider:
+              type: string
+              description: 인증 제공자
+            thumbnailImageUrl:
+              type: object
+              description: 썸네일 이미지 URL
+              nullable: true
+            blocked:
+              type: boolean
+              description: 차단 여부
+            nickname:
+              type: object
+              description: 닉네임
+              nullable: true
+            unblockedAt:
+              type: object
+              description: 차단 해제 시각
+              nullable: true
+            profileImageUrl:
+              type: object
+              description: 프로필 이미지 URL
+              nullable: true
+            email:
+              type: string
+              description: 이메일
+            deletionReason:
+              type: object
+              description: 삭제 사유
+              nullable: true
+            blockedByAdminId:
+              type: object
+              description: 차단 관리자 ID
+              nullable: true
+            retentionUntil:
+              type: object
+              description: 보관 만료 시각
+              nullable: true
+            blockedReason:
+              type: object
+              description: 차단 사유
+              nullable: true
+            phoneVerified:
+              type: boolean
+              description: 전화번호 인증 여부
+            oauthProviderUserId:
+              type: object
+              description: 소셜 사용자 ID
+              nullable: true
+            userId:
+              type: number
+              description: 사용자 ID
+            unblockedByAdminId:
+              type: object
+              description: 차단 해제 관리자 ID
+              nullable: true
+            emailVerified:
+              type: boolean
+              description: 이메일 인증 여부
+            deletedAt:
+              type: object
+              description: 삭제 시각
+              nullable: true
+            phoneNumber:
+              type: object
+              description: 전화번호
+              nullable: true
+            blockedAt:
+              type: object
+              description: 차단 시각
+              nullable: true
+            name:
+              type: object
+              description: 이름
+              nullable: true
+          description: 사용자 상세 정보
+        meta:
+          required:
+          - request
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: object
+                  description: 쿼리 스트링
+                  nullable: true
+              description: 요청 정보
+            timestamp:
+              type: string
+              description: 응답 생성 시각
+          description: 메타 정보
+        error:
+          type: object
+          description: 에러 정보
+          nullable: true
+    api-v1-auth-admin-users-userId-unblock-1556520031:
+      required:
+      - data
+      - meta
+      - result
       type: object
-      required: [to, text]
       properties:
-        to: { type: string }
-        text: { type: string }
+        result:
+          type: string
+          description: 결과
+        data:
+          required:
+          - blocked
+          - userId
+          - userStatus
+          type: object
+          properties:
+            unblockedByAdminId:
+              type: object
+              description: 차단 해제 관리자 ID
+              nullable: true
+            deletionReason:
+              type: object
+              description: 탈퇴 사유
+              nullable: true
+            blockedByAdminId:
+              type: object
+              description: 차단한 관리자 ID
+              nullable: true
+            deletedAt:
+              type: object
+              description: 탈퇴 시각
+              nullable: true
+            userStatus:
+              type: string
+              description: 사용자 상태(ACTIVE/BLOCKED/SOFT_DELETED)
+            blocked:
+              type: boolean
+              description: 차단 여부
+            retentionUntil:
+              type: object
+              description: 보관 만료 예정 시각
+              nullable: true
+            blockedReason:
+              type: object
+              description: 차단 사유
+              nullable: true
+            blockedAt:
+              type: object
+              description: 차단 시각
+              nullable: true
+            unblockedAt:
+              type: object
+              description: 차단 해제 시각
+              nullable: true
+            userId:
+              type: number
+              description: 사용자 식별자
+          description: 사용자 상태 정보
+        meta:
+          required:
+          - request
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: object
+                  description: 쿼리 스트링
+                  nullable: true
+              description: 요청 정보
+            timestamp:
+              type: string
+              description: 응답 생성 시각
+          description: 메타 정보
+        error:
+          type: object
+          description: 에러 정보
+          nullable: true
+    api-v1-auth-admin-users-userId-block1800099987:
+      type: object
+      properties:
+        reason:
+          type: string
+          description: 차단 사유
+          nullable: true
+    api-v1-auth-local-phone-verifications-confirm445202834:
+      required:
+      - data
+      - result
+      type: object
+      properties:
+        result:
+          type: string
+          description: 요청 처리 결과 (SUCCESS/ERROR)
+        data:
+          required:
+          - expiresInSec
+          - phoneVerificationToken
+          type: object
+          properties:
+            phoneVerificationToken:
+              type: string
+              description: 회원가입에 사용할 휴대폰 인증 토큰
+            expiresInSec:
+              type: number
+              description: 인증 토큰 만료까지 남은 시간(초)
+          description: 인증 확인 결과
+        meta:
+          required:
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: string
+                  description: 쿼리 문자열 (없으면 null)
+                  nullable: true
+            requestId:
+              type: string
+              description: 요청 추적 ID (있을 때만 반환)
+              nullable: true
+            paging:
+              type: object
+              description: 페이징 메타 정보 (있을 때만 반환)
+              nullable: true
+            locale:
+              type: string
+              description: 응답 로케일 (있을 때만 반환)
+              nullable: true
+            durationMs:
+              type: number
+              description: 처리 시간(ms)
+              nullable: true
+            timestamp:
+              type: string
+              description: 응답 생성 시각 (서버 로컬 시간)
+        error:
+          type: object
+          description: 오류 정보 (에러 응답에서만 포함)
+          nullable: true
+    api-v1-auth-local-token-refresh1056639717:
+      required:
+      - refreshToken
+      type: object
+      properties:
+        refreshToken:
+          type: string
+          description: 리프레시 토큰
+    api-v1-auth-local-login-788118888:
+      required:
+      - email
+      - password
+      type: object
+      properties:
+        password:
+          type: string
+          description: 비밀번호
+        email:
+          type: string
+          description: 이메일
+    api-v1-auth-admin-health553791584:
+      required:
+      - result
+      type: object
+      properties:
+        result:
+          type: string
+          description: 결과
+        data:
+          required:
+          - application
+          - profiles
+          - status
+          - uptimeSec
+          type: object
+          properties:
+            uptimeSec:
+              type: number
+              description: 업타임(초)
+            components:
+              type: object
+              properties:
+                database:
+                  required:
+                  - latencyMs
+                  - status
+                  type: object
+                  properties:
+                    latencyMs:
+                      type: number
+                      description: DB 응답시간(ms)
+                    status:
+                      type: string
+                      description: DB 상태
+                redis:
+                  required:
+                  - latencyMs
+                  - status
+                  type: object
+                  properties:
+                    latencyMs:
+                      type: number
+                      description: Redis 응답시간(ms)
+                    status:
+                      type: string
+                      description: Redis 상태
+            system:
+              type: object
+              properties:
+                jvm:
+                  required:
+                  - heapMaxBytes
+                  - heapUsedBytes
+                  - processors
+                  type: object
+                  properties:
+                    heapMaxBytes:
+                      type: number
+                      description: JVM 최대 Heap(bytes)
+                    processors:
+                      type: number
+                      description: 가용 CPU 코어 수
+                    heapUsedBytes:
+                      type: number
+                      description: JVM 사용 Heap(bytes)
+                disk:
+                  required:
+                  - totalBytes
+                  - usableBytes
+                  type: object
+                  properties:
+                    usableBytes:
+                      type: number
+                      description: 디스크 사용 가능 용량(bytes)
+                    totalBytes:
+                      type: number
+                      description: 디스크 전체 용량(bytes)
+            application:
+              type: string
+              description: 애플리케이션 이름
+            profiles:
+              type: array
+              description: 활성 프로파일 목록
+              items:
+                oneOf:
+                - type: object
+                - type: boolean
+                - type: string
+                - type: number
+            links:
+              type: object
+              properties:
+                docs:
+                  required:
+                  - docs
+                  - swagger
+                  type: object
+                  properties:
+                    docs:
+                      type: string
+                      description: API 문서 URL
+                    swagger:
+                      type: string
+                      description: Swagger UI URL
+                monitoring:
+                  required:
+                  - grafana
+                  - loki
+                  - prometheus
+                  type: object
+                  properties:
+                    loki:
+                      type: string
+                      description: Loki URL
+                    grafana:
+                      type: string
+                      description: Grafana URL
+                    prometheus:
+                      type: string
+                      description: Prometheus 메트릭 URL
+                logs:
+                  required:
+                  - grafanaExplore
+                  - lokiQuery
+                  type: object
+                  properties:
+                    lokiQuery:
+                      type: string
+                      description: Loki Query API URL
+                    grafanaExplore:
+                      type: string
+                      description: Grafana Explore URL
+            status:
+              type: string
+              description: 전체 헬스 상태
+        meta:
+          required:
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: 요청 메서드
+            timestamp:
+              type: string
+              description: 응답 생성 시각
+    api-v1-auth-admin-sms-send-1110343501:
+      required:
+      - text
+      - to
+      type: object
+      properties:
+        text:
+          type: string
+          description: 발송 메시지
+        to:
+          type: string
+          description: 수신 번호
+    api-v1-auth-admin-sms-logs1758979252:
+      required:
+      - data
+      - result
+      type: object
+      properties:
+        result:
+          type: string
+          description: 요청 처리 결과 (SUCCESS/ERROR)
+        data:
+          required:
+          - content
+          - empty
+          - first
+          - last
+          - number
+          - numberOfElements
+          - size
+          - totalElements
+          - totalPages
+          type: object
+          properties:
+            number:
+              type: number
+              description: 현재 페이지 번호
+            last:
+              type: boolean
+              description: 마지막 페이지 여부
+            numberOfElements:
+              type: number
+              description: 현재 페이지 요소 수
+            size:
+              type: number
+              description: 페이지 크기
+            totalPages:
+              type: number
+              description: 전체 페이지 수
+            first:
+              type: boolean
+              description: 첫 페이지 여부
+            content:
+              type: array
+              description: 문자 발송 이력 목록
+              items:
+                required:
+                - at
+                - from
+                - id
+                - ok
+                - provider
+                - text
+                - to
+                type: object
+                properties:
+                  msg:
+                    type: object
+                    description: 실패 메시지(없으면 null)
+                    nullable: true
+                  at:
+                    type: string
+                    description: 발송 시각
+                  code:
+                    type: object
+                    description: 실패 코드(없으면 null)
+                    nullable: true
+                  provider:
+                    type: string
+                    description: 발송 제공자
+                  from:
+                    type: string
+                    description: 발신 번호
+                  text:
+                    type: string
+                    description: 발송 메시지
+                  to:
+                    type: string
+                    description: 수신 번호
+                  id:
+                    type: number
+                    description: 이력 ID
+                  ok:
+                    type: boolean
+                    description: 성공 여부
+            empty:
+              type: boolean
+              description: 비어있는 페이지 여부
+            totalElements:
+              type: number
+              description: 전체 건수
+          description: 문자 발송 이력 페이지
+        meta:
+          required:
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: string
+                  description: 쿼리 문자열 (없으면 null)
+                  nullable: true
+            requestId:
+              type: string
+              description: 요청 추적 ID (있을 때만 반환)
+              nullable: true
+            paging:
+              type: object
+              description: 페이징 메타 정보 (있을 때만 반환)
+              nullable: true
+            locale:
+              type: string
+              description: 응답 로케일 (있을 때만 반환)
+              nullable: true
+            durationMs:
+              type: number
+              description: 처리 시간(ms)
+              nullable: true
+            timestamp:
+              type: string
+              description: 응답 생성 시각 (서버 로컬 시간)
+        error:
+          type: object
+          description: 오류 정보 (에러 응답에서만 포함)
+          nullable: true
+    api-v1-auth-admin-login-history-262485762:
+      required:
+      - data
+      - meta
+      - result
+      type: object
+      properties:
+        result:
+          type: string
+          description: 결과
+        data:
+          required:
+          - content
+          - empty
+          - first
+          - last
+          - number
+          - numberOfElements
+          - size
+          - totalElements
+          - totalPages
+          type: object
+          properties:
+            number:
+              type: number
+              description: 현재 페이지 번호
+            last:
+              type: boolean
+              description: 마지막 페이지 여부
+            numberOfElements:
+              type: number
+              description: 현재 페이지 요소 수
+            size:
+              type: number
+              description: 페이지 크기
+            totalPages:
+              type: number
+              description: 전체 페이지 수
+            first:
+              type: boolean
+              description: 첫 페이지 여부
+            content:
+              type: array
+              description: 로그인 이력 목록(Page.content)
+              items:
+                required:
+                - createdAt
+                - id
+                - loginType
+                - status
+                - userEmail
+                - userId
+                type: object
+                properties:
+                  createdAt:
+                    type: string
+                    description: 로그인 시각
+                  loginType:
+                    type: string
+                    description: 로그인 유형
+                  failureReason:
+                    type: object
+                    description: 실패 사유(없으면 null)
+                    nullable: true
+                  ipAddress:
+                    type: object
+                    description: IP 주소(없으면 null)
+                    nullable: true
+                  userAgent:
+                    type: object
+                    description: User-Agent(없으면 null)
+                    nullable: true
+                  userEmail:
+                    type: string
+                    description: 사용자 이메일
+                  id:
+                    type: number
+                    description: 이력 ID
+                  deviceId:
+                    type: object
+                    description: 디바이스 ID(없으면 null)
+                    nullable: true
+                  userId:
+                    type: number
+                    description: 사용자 ID
+                  status:
+                    type: string
+                    description: 로그인 상태
+            empty:
+              type: boolean
+              description: 비어있는 페이지 여부
+            totalElements:
+              type: number
+              description: 전체 건수
+          description: 로그인 이력 페이지(Page)
+        meta:
+          required:
+          - request
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: object
+                  description: "쿼리 스트링(있으면 문자열, 없으면 null)"
+                  nullable: true
+              description: 요청 정보
+            requestId:
+              type: object
+              description: 요청 ID(있으면 문자열)
+              nullable: true
+            paging:
+              type: object
+              description: 페이징 메타(있는 경우)
+              nullable: true
+            locale:
+              type: object
+              description: 로케일
+              nullable: true
+            durationMs:
+              type: object
+              description: 처리 시간(ms)
+              nullable: true
+            timestamp:
+              type: string
+              description: 응답 생성 시각
+          description: 메타 정보
+        error:
+          type: object
+          description: 에러 정보(실패 시에만 존재)
+          nullable: true
+    api-v1-auth-local-withdraw-1115063761:
+      type: object
+      properties:
+        reason:
+          type: string
+          description: 탈퇴 사유
+          nullable: true
+    api-v1-auth-oauth2-provider-authorize-url1616597692:
+      required:
+      - data
+      - result
+      type: object
+      properties:
+        result:
+          type: string
+          description: 요청 처리 결과 (SUCCESS/ERROR)
+        data:
+          type: string
+          description: "OAuth2 인가 URL 경로 (예: /oauth2/authorization/{provider})"
+        meta:
+          required:
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: string
+                  description: 쿼리 문자열 (없으면 null)
+                  nullable: true
+            requestId:
+              type: string
+              description: 요청 추적 ID (있을 때만 반환)
+              nullable: true
+            paging:
+              type: object
+              description: 페이징 메타 정보 (있을 때만 반환)
+              nullable: true
+            locale:
+              type: string
+              description: 응답 로케일 (있을 때만 반환)
+              nullable: true
+            durationMs:
+              type: number
+              description: 처리 시간(ms)
+              nullable: true
+            timestamp:
+              type: string
+              description: 응답 생성 시각 (서버 로컬 시간)
+        error:
+          type: object
+          description: 오류 정보 (에러 응답에서만 포함)
+          nullable: true
+    api-v1-auth-local-phone-verifications-request-394943525:
+      required:
+      - phoneNumber
+      type: object
+      properties:
+        phoneNumber:
+          type: string
+          description: 인증 요청할 휴대폰 번호
+    health-916046377:
+      required:
+      - result
+      type: object
+      properties:
+        result:
+          type: string
+          description: 결과
+        data:
+          required:
+          - application
+          - status
+          - uptimeSec
+          type: object
+          properties:
+            uptimeSec:
+              type: number
+              description: 업타임(초)
+            application:
+              type: string
+              description: 애플리케이션 이름
+            links:
+              type: object
+              properties:
+                docs:
+                  required:
+                  - docs
+                  - swagger
+                  type: object
+                  properties:
+                    docs:
+                      type: string
+                      description: API 문서 URL
+                    swagger:
+                      type: string
+                      description: Swagger UI URL
+            status:
+              type: string
+              description: 헬스 상태
+        meta:
+          required:
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: 요청 메서드
+            timestamp:
+              type: string
+              description: 응답 생성 시각
+    api-v1-auth-admin-users-userId-status-audits-1202361055:
+      required:
+      - data
+      - meta
+      - result
+      type: object
+      properties:
+        result:
+          type: string
+          description: 결과
+        data:
+          required:
+          - content
+          - empty
+          - first
+          - last
+          - number
+          - numberOfElements
+          - size
+          - totalElements
+          - totalPages
+          type: object
+          properties:
+            number:
+              type: number
+              description: 현재 페이지 번호
+            last:
+              type: boolean
+              description: 마지막 페이지 여부
+            numberOfElements:
+              type: number
+              description: 현재 페이지 요소 수
+            size:
+              type: number
+              description: 페이지 크기
+            totalPages:
+              type: number
+              description: 전체 페이지 수
+            first:
+              type: boolean
+              description: 첫 페이지 여부
+            content:
+              type: array
+              description: 상태 이력 목록
+              items:
+                required:
+                - actionAt
+                - actionType
+                - actorUserId
+                - id
+                - targetUserId
+                type: object
+                properties:
+                  actionAt:
+                    type: string
+                    description: 처리 시각
+                  reason:
+                    type: object
+                    description: 사유
+                    nullable: true
+                  actionType:
+                    type: string
+                    description: 상태 변경 액션(BLOCK/UNBLOCK/SOFT_DELETE)
+                  actorUserId:
+                    type: number
+                    description: 처리 관리자/사용자 ID
+                  targetUserId:
+                    type: number
+                    description: 대상 사용자 ID
+                  id:
+                    type: number
+                    description: 이력 ID
+            empty:
+              type: boolean
+              description: 비어있는 페이지 여부
+            totalElements:
+              type: number
+              description: 전체 건수
+          description: 상태 이력 페이지(Page)
+        meta:
+          required:
+          - request
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: object
+                  description: "쿼리 스트링(있으면 문자열, 없으면 null)"
+                  nullable: true
+              description: 요청 정보
+            timestamp:
+              type: string
+              description: 응답 생성 시각
+          description: 메타 정보
+        error:
+          type: object
+          description: 에러 정보
+          nullable: true
+    api-v1-auth-local-signup-phone1536767407:
+      required:
+      - phoneNumber
+      - phoneVerificationToken
+      type: object
+      properties:
+        phoneVerificationToken:
+          type: string
+          description: 휴대폰 인증 완료 토큰
+        phoneNumber:
+          type: string
+          description: 휴대폰 번호
+    api-v1-auth-admin-users-1322716065:
+      required:
+      - data
+      - meta
+      - result
+      type: object
+      properties:
+        result:
+          type: string
+          description: 결과
+        data:
+          required:
+          - content
+          - empty
+          - first
+          - last
+          - number
+          - numberOfElements
+          - size
+          - totalElements
+          - totalPages
+          type: object
+          properties:
+            number:
+              type: number
+              description: 현재 페이지 번호
+            last:
+              type: boolean
+              description: 마지막 페이지 여부
+            numberOfElements:
+              type: number
+              description: 현재 페이지 요소 수
+            size:
+              type: number
+              description: 페이지 크기
+            totalPages:
+              type: number
+              description: 전체 페이지 수
+            first:
+              type: boolean
+              description: 첫 페이지 여부
+            content:
+              type: array
+              description: 사용자 요약 목록
+              items:
+                required:
+                - authProvider
+                - blocked
+                - email
+                - role
+                - userId
+                - userStatus
+                type: object
+                properties:
+                  authProvider:
+                    type: string
+                    description: 인증 제공자
+                  deletedAt:
+                    type: object
+                    description: 삭제 시각
+                    nullable: true
+                  userStatus:
+                    type: string
+                    description: 상태
+                  role:
+                    type: string
+                    description: 권한
+                  blocked:
+                    type: boolean
+                    description: 차단 여부
+                  nickname:
+                    type: object
+                    description: 닉네임
+                    nullable: true
+                  name:
+                    type: object
+                    description: 이름
+                    nullable: true
+                  userId:
+                    type: number
+                    description: 사용자 ID
+                  email:
+                    type: string
+                    description: 이메일
+            empty:
+              type: boolean
+              description: 비어있는 페이지 여부
+            totalElements:
+              type: number
+              description: 전체 건수
+          description: 사용자 목록 페이지
+        meta:
+          required:
+          - request
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: object
+                  description: 쿼리 스트링
+                  nullable: true
+              description: 요청 정보
+            timestamp:
+              type: string
+              description: 응답 생성 시각
+          description: 메타 정보
+        error:
+          type: object
+          description: 에러 정보
+          nullable: true
+    api-v1-auth-admin-users-userId-password-reset-1938778681:
+      required:
+      - newPassword
+      type: object
+      properties:
+        newPassword:
+          type: string
+          description: 새 비밀번호
+    api-v1-auth-local-logout-2020253012:
+      required:
+      - data
+      - result
+      type: object
+      properties:
+        result:
+          type: string
+          description: 요청 처리 결과 (SUCCESS/ERROR)
+        data:
+          required:
+          - result
+          type: object
+          properties:
+            result:
+              type: string
+              description: OK
+          description: 결과
+        meta:
+          required:
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: string
+                  description: 쿼리 문자열 (없으면 null)
+                  nullable: true
+            requestId:
+              type: string
+              description: 요청 추적 ID (있을 때만 반환)
+              nullable: true
+            paging:
+              type: object
+              description: 페이징 메타 정보 (있을 때만 반환)
+              nullable: true
+            locale:
+              type: string
+              description: 응답 로케일 (있을 때만 반환)
+              nullable: true
+            durationMs:
+              type: number
+              description: 처리 시간(ms)
+              nullable: true
+            timestamp:
+              type: string
+              description: 응답 생성 시각 (서버 로컬 시간)
+        error:
+          type: object
+          description: 오류 정보 (에러 응답에서만 포함)
+          nullable: true
+    api-v1-auth-local-login1560895474:
+      required:
+      - data
+      - meta
+      - result
+      type: object
+      properties:
+        result:
+          type: string
+          description: 결과
+        data:
+          required:
+          - accessExpiresInSec
+          - accessToken
+          - refreshExpiresInSec
+          - refreshToken
+          type: object
+          properties:
+            refreshExpiresInSec:
+              type: number
+              description: 리프레시 토큰 만료(초)
+            accessExpiresInSec:
+              type: number
+              description: 액세스 토큰 만료(초)
+            accessToken:
+              type: string
+              description: 액세스 토큰
+            refreshToken:
+              type: string
+              description: 리프레시 토큰
+          description: 토큰 정보
+        meta:
+          required:
+          - request
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: object
+                  description: "쿼리 스트링(있으면 문자열, 없으면 null)"
+                  nullable: true
+              description: 요청 정보
+            timestamp:
+              type: string
+              description: 응답 생성 시각
+          description: 메타 정보
+    api-v1-auth-admin-users-userId-delete-795616532:
+      type: object
+      properties:
+        reason:
+          type: string
+          description: 삭제 사유
+          nullable: true

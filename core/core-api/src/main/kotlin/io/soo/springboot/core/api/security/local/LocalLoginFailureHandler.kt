@@ -1,13 +1,11 @@
 package io.soo.springboot.core.api.security.local
 
-import io.soo.springboot.core.api.security.response.SecurityErrorFields
 import io.soo.springboot.core.api.security.response.SecurityErrorResponseWriter
 import io.soo.springboot.core.support.error.AccountStatusDeniedException
 import io.soo.springboot.core.enums.LoginType
 import io.soo.springboot.core.enums.LoginDenyReason
 import io.soo.springboot.core.domain.local.LocalLoginPolicy
 import io.soo.springboot.core.domain.LoginHistoryService
-import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.storage.db.core.UserRepository
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse

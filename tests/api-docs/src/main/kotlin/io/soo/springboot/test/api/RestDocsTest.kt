@@ -34,15 +34,25 @@ abstract class RestDocsTest {
     }
 
     protected fun mockController(controller: Any, vararg filters: Filter): MockMvcRequestSpecification {
-        val mockMvc = createMockMvc(controller, *filters)
+        val mockMvc = createMockMvc(arrayOf(controller), *filters)
+        return RestAssuredMockMvc.given()
+            .mockMvc(mockMvc)
+    }
+
+    protected fun mockControllers(vararg controllers: Any): MockMvcRequestSpecification {
+        val mockMvc = createMockMvc(controllers)
         return RestAssuredMockMvc.given()
             .mockMvc(mockMvc)
     }
 
     private fun createMockMvc(controller: Any, vararg filters: Filter): MockMvc {
+        return createMockMvc(arrayOf(controller), *filters)
+    }
+
+    private fun createMockMvc(controllers: Array<out Any>, vararg filters: Filter): MockMvc {
         val converter = MappingJackson2HttpMessageConverter(objectMapper())
         val base: StandaloneMockMvcBuilder =
-            MockMvcBuilders.standaloneSetup(controller)
+            MockMvcBuilders.standaloneSetup(*controllers)
         val builder1: StandaloneMockMvcBuilder =
             base.apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation))
         val builder2: StandaloneMockMvcBuilder =

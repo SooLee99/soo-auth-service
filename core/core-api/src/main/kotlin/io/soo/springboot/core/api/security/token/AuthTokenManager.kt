@@ -35,10 +35,9 @@ class AuthTokenManager(
         userId: Long,
         deviceId: String,
         provider: AuthProvider,
-        serviceId: Long? = null,
     ): IssuedTokens {
-        val (access, accessExpSec) = accessTokenIssuer.issue(authentication, userId, serviceId)
-        val refresh = refreshTokenManager.issue(userId, deviceId, provider, serviceId)
+        val (access, accessExpSec) = accessTokenIssuer.issue(authentication, userId)
+        val refresh = refreshTokenManager.issue(userId, deviceId, provider)
 
         return IssuedTokens(
             accessToken = access,
@@ -52,13 +51,13 @@ class AuthTokenManager(
      * ✅ refresh rotate
      * - old refresh가 유효하면 새 access + 새 refresh 반환
      */
-    fun refresh(oldRefreshToken: String, deviceId: String, expectedServiceId: Long? = null): IssuedTokens{
-        val rotated = refreshTokenManager.rotate(oldRefreshToken, deviceId, expectedServiceId)
+    fun refresh(oldRefreshToken: String, deviceId: String): IssuedTokens{
+        val rotated = refreshTokenManager.rotate(oldRefreshToken, deviceId)
 
         val user: UserDetails = userPrincipalLoader.loadByUserId(rotated.userId)
         val auth = UsernamePasswordAuthenticationToken(user.username, null, user.authorities)
 
-        val (access, accessExpSec) = accessTokenIssuer.issue(auth, rotated.userId, rotated.serviceId)
+        val (access, accessExpSec) = accessTokenIssuer.issue(auth, rotated.userId)
 
         return IssuedTokens(
             accessToken = access,
@@ -78,7 +77,6 @@ class AuthTokenManager(
         deviceId: String,
         refreshToken: String?,
         logoutAll: Boolean,
-        serviceIdScope: Long? = null,
     ) {
         denyAccessToken(jwt)
 
@@ -86,7 +84,7 @@ class AuthTokenManager(
 
         if (logoutAll) {
             if (userId != null) {
-                if (serviceIdScope != null) revokeAllByService(userId, serviceIdScope) else revokeAll(userId)
+                revokeAll(userId)
             }
             return
         }
@@ -95,13 +93,13 @@ class AuthTokenManager(
 
         // 바디로 refreshToken 보내면 단건 revoke
         if (rt.isNotBlank()) {
-            revoke(rt, serviceIdScope)
+            revoke(rt)
             return
         }
 
         // refreshToken 없으면 현재 디바이스 기준 revoke
         if (userId != null && deviceId.isNotBlank()) {
-            revokeByDevice(userId, deviceId, serviceIdScope)
+            revokeByDevice(userId, deviceId)
         }
     }
 
@@ -121,8 +119,7 @@ class AuthTokenManager(
         return (jwt.claims["uid"] as? Number)?.toLong()
     }
 
-    fun revoke(token: String, expectedServiceId: Long? = null) = refreshTokenManager.revoke(token, expectedServiceId)
+    fun revoke(token: String) = refreshTokenManager.revoke(token)
     fun revokeAll(userId: Long) = refreshTokenManager.revokeAllByUser(userId)
-    fun revokeAllByService(userId: Long, serviceId: Long) = refreshTokenManager.revokeAllByUserAndService(userId, serviceId)
-    fun revokeByDevice(userId: Long, deviceId: String, serviceId: Long? = null) = refreshTokenManager.revokeByDevice(userId, deviceId, serviceId)
+    fun revokeByDevice(userId: Long, deviceId: String) = refreshTokenManager.revokeByDevice(userId, deviceId)
 }
