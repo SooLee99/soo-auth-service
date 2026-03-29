@@ -4,7 +4,7 @@ import io.soo.springboot.core.api.controller.v1.request.AdminUserBlockRequest
 import io.soo.springboot.core.api.controller.v1.response.AdminUserBlockResponse
 import io.soo.springboot.core.api.controller.v1.response.UserStatusAuditLogResponse
 import io.soo.springboot.core.api.security.auth.UserIdResolver
-import io.soo.springboot.core.domain.admin.UserBlock
+import io.soo.springboot.core.domain.admin.UserBlockService
 import io.soo.springboot.core.support.response.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/v1/auth/admin")
 class AdminUserStatusController(
     private val userIdResolver: UserIdResolver,
-    private val adminUserBlockService: UserBlock,
+    private val adminUserBlockServiceService: UserBlockService,
 ) {
 
     @GetMapping("/users/blocked", produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -35,7 +35,7 @@ class AdminUserStatusController(
         req: HttpServletRequest,
     ): ApiResponse<Page<AdminUserBlockResponse>> {
         val pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "blockedAt"))
-        val result = adminUserBlockService.blocked(pageable).map { AdminUserBlockResponse.from(it) }
+        val result = adminUserBlockServiceService.blocked(pageable).map { AdminUserBlockResponse.from(it) }
         return ApiResponse.success(req = req, data = result)
     }
 
@@ -47,7 +47,7 @@ class AdminUserStatusController(
         req: HttpServletRequest,
     ): ApiResponse<AdminUserBlockResponse> {
         val adminUserId = userIdResolver.resolve(authentication)
-        val blocked = adminUserBlockService.block(
+        val blocked = adminUserBlockServiceService.block(
             targetUserId = userId,
             adminUserId = adminUserId,
             reason = body.reason,
@@ -63,7 +63,7 @@ class AdminUserStatusController(
         req: HttpServletRequest,
     ): ApiResponse<AdminUserBlockResponse> {
         val adminUserId = userIdResolver.resolve(authentication)
-        val unblocked = adminUserBlockService.unblock(
+        val unblocked = adminUserBlockServiceService.unblock(
             targetUserId = userId,
             adminUserId = adminUserId,
         )
@@ -79,7 +79,7 @@ class AdminUserStatusController(
         req: HttpServletRequest,
     ): ApiResponse<Page<AdminUserBlockResponse>> {
         val pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "deletedAt"))
-        val result = adminUserBlockService.deleted(pageable).map { AdminUserBlockResponse.from(it) }
+        val result = adminUserBlockServiceService.deleted(pageable).map { AdminUserBlockResponse.from(it) }
         return ApiResponse.success(req = req, data = result)
     }
 
@@ -91,7 +91,7 @@ class AdminUserStatusController(
         req: HttpServletRequest,
     ): ApiResponse<Page<UserStatusAuditLogResponse>> {
         val pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "actionAt"))
-        val result = adminUserBlockService.logs(userId, pageable).map { UserStatusAuditLogResponse.from(it) }
+        val result = adminUserBlockServiceService.logs(userId, pageable).map { UserStatusAuditLogResponse.from(it) }
         return ApiResponse.success(req = req, data = result)
     }
 }

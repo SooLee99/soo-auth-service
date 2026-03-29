@@ -7,7 +7,7 @@ import io.soo.springboot.core.api.controller.v1.request.PhoneVerificationConfirm
 import io.soo.springboot.core.api.controller.v1.request.PhoneVerificationIssueRequest
 import io.soo.springboot.core.domain.local.phone.PhoneConfirm
 import io.soo.springboot.core.domain.local.phone.PhoneIssue
-import io.soo.springboot.core.domain.local.phone.PhoneVerify
+import io.soo.springboot.core.domain.local.phone.PhoneVerifyService
 import io.soo.springboot.test.api.RestDocsTest
 import io.soo.springboot.test.api.RestDocsUtils
 import io.soo.springboot.test.api.mockMvcDocument
@@ -21,7 +21,7 @@ import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
 
 class LocalPhoneVerificationControllerDocsTest : RestDocsTest() {
 
-    private val phoneVerificationService = mockk<PhoneVerify>()
+    private val phoneVerificationService = mockk<PhoneVerifyService>()
 
     @BeforeEach
     fun init() {

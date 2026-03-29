@@ -4,7 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.soo.springboot.core.api.controller.v1.AdminSmsController
 import io.soo.springboot.core.api.controller.v1.request.AdminSmsSendReq
-import io.soo.springboot.core.domain.SmsAdmin
+import io.soo.springboot.core.domain.SmsAdminService
 import io.soo.springboot.core.domain.SmsStat
 import io.soo.springboot.storage.db.core.SmsLog
 import io.soo.springboot.test.api.RestDocsTest
@@ -26,12 +26,12 @@ import java.time.LocalDateTime
 
 class AdminSmsControllerDocsTest : RestDocsTest() {
 
-    private val smsAdmin = mockk<SmsAdmin>()
+    private val smsAdminService = mockk<SmsAdminService>()
     private lateinit var controller: AdminSmsController
 
     @BeforeEach
     fun init() {
-        controller = AdminSmsController(smsAdmin)
+        controller = AdminSmsController(smsAdminService)
         mockMvc = mockController(controller)
     }
 
@@ -48,7 +48,7 @@ class AdminSmsControllerDocsTest : RestDocsTest() {
             msg = null,
             createdAt = LocalDateTime.of(2026, 3, 28, 13, 0),
         )
-        every { smsAdmin.send(any(), any()) } returns log
+        every { smsAdminService.send(any(), any()) } returns log
 
         given()
             .contentType("application/json")
@@ -89,7 +89,7 @@ class AdminSmsControllerDocsTest : RestDocsTest() {
             createdAt = LocalDateTime.of(2026, 3, 28, 12, 0),
         )
         val page = PageImpl(listOf(log), PageRequest.of(0, 20), 1)
-        every { smsAdmin.logs(any(), any(), any()) } returns page
+        every { smsAdminService.logs(any(), any(), any()) } returns page
 
         given()
             .header("Authorization", "Bearer token")
@@ -120,7 +120,7 @@ class AdminSmsControllerDocsTest : RestDocsTest() {
 
     @Test
     fun stats() {
-        every { smsAdmin.stat(any(), any()) } returns SmsStat(
+        every { smsAdminService.stat(any(), any()) } returns SmsStat(
             total = 100,
             ok = 95,
             fail = 5,

@@ -4,7 +4,7 @@ import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.Role
 import io.soo.springboot.core.enums.UserStatus
-import io.soo.springboot.core.domain.local.LocalAccount
+import io.soo.springboot.core.domain.local.LocalAccountService
 import io.soo.springboot.core.domain.token.TokenRevoke
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType
@@ -39,9 +39,9 @@ data class UserUpdateCmd(
 )
 
 @Service
-class UserAdmin(
+class UserAdminService(
     private val userRepository: UserRepository,
-    private val localAccountService: LocalAccount,
+    private val localAccountService: LocalAccountService,
     private val localCredentialRepository: LocalCredentialRepository,
     private val passwordEncoder: PasswordEncoder,
     private val tokenRevocationService: TokenRevoke,

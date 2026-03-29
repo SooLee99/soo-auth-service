@@ -7,7 +7,7 @@ import io.soo.springboot.core.api.controller.v1.response.AdminUserBlockResponse
 import io.soo.springboot.core.api.controller.v1.response.AdminUserDetailResponse
 import io.soo.springboot.core.api.controller.v1.response.AdminUserSummaryResponse
 import io.soo.springboot.core.api.security.auth.UserIdResolver
-import io.soo.springboot.core.domain.admin.UserAdmin
+import io.soo.springboot.core.domain.admin.UserAdminService
 import io.soo.springboot.core.domain.admin.UserUpdateCmd
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.Role
@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/v1/auth/admin")
 class AdminUsersController(
-    private val adminUserManagementService: UserAdmin,
+    private val adminUserManagementService: UserAdminService,
     private val userIdResolver: UserIdResolver,
 ) {
     @GetMapping("/users/{userId}", produces = [MediaType.APPLICATION_JSON_VALUE])

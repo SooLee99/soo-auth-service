@@ -6,10 +6,10 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 
-class PhoneVerifyTest {
+class PhoneVerifyServiceTest {
     private val store = InMemPhoneStore()
     private val notifier = CapturingNotifier()
-    private val service = PhoneVerify(store, notifier)
+    private val service = PhoneVerifyService(store, notifier)
 
     @Test
     fun `인증 요청 후 확인 성공 시 증명 토큰 발급`() {

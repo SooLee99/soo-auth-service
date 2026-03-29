@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 
 @Service
-class UserBlock(
+class UserBlockService(
     private val userRepository: UserRepository,
     private val userStatusAuditLogRepository: UserStatusAuditLogRepository,
 ) {

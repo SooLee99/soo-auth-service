@@ -1,6 +1,6 @@
 package io.soo.springboot.core.domain.local.phone
 
-import io.soo.springboot.core.domain.SmsAdmin
+import io.soo.springboot.core.domain.SmsAdminService
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 @Component
 @ConditionalOnProperty(prefix = "solapi.sms", name = ["enabled"], havingValue = "false", matchIfMissing = true)
 class LogPhoneNotifier(
-    private val smsAdmin: SmsAdmin,
+    private val smsAdminService: SmsAdminService,
 ) : PhoneNotifier {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -20,7 +20,7 @@ class LogPhoneNotifier(
             code,
             expiresInSec,
         )
-        smsAdmin.ok(
+        smsAdminService.ok(
             smsTo = phoneNumber,
             smsFrom = "LOG",
             smsText = text,

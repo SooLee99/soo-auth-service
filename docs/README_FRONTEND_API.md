@@ -1,112 +1,245 @@
-# 프론트엔드 API 개발 가이드
+# 프론트엔드 사용자 API 개발 가이드
 
-현재 인증 서버 API를 프론트엔드에서 어떻게 확인하고, 어떤 시퀀스로 붙이고, 어떤 방식으로 개발하면 되는지 정리한 문서입니다.
+이 문서는 **사용자 API만** 다룹니다.  
+관리자 API(`/api/v1/auth/admin/*`)는 본 문서에서 제외합니다.
 
-## 1) API는 어디서 확인하나요?
+## 1) API 확인 위치
 
-### 실시간 스펙(OpenAPI)
-- Redoc: `/docs/index.html`
-- Swagger: `/docs/swagger/index.html`
-- 원본 yaml: `/docs/openapi3.yaml`
+- Redoc: `http://localhost:8080/docs/index.html`
+- Swagger: `http://localhost:8080/docs/swagger/index.html`
+- OpenAPI 원본: `http://localhost:8080/docs/openapi3.yaml`
+- 사용자 요약 문서: [core/core-api/src/main/resources/static/docs/frontend-api-guide.md](../core/core-api/src/main/resources/static/docs/frontend-api-guide.md)
 
-예시(로컬):
-- `http://localhost:8080/docs/index.html`
-- `http://localhost:8080/docs/swagger/index.html`
+## 2) 사용자 API 카테고리
 
-### 프론트 요약 문서
-- [core/core-api/src/main/resources/static/docs/frontend-api-guide.md](../core/core-api/src/main/resources/static/docs/frontend-api-guide.md)
+### A. Health
+- `GET /health`
 
-### 호출 예시 파일
-- [core/core-api/src/test/http/local_auth.http](../core/core-api/src/test/http/local_auth.http)
-- [core/core-api/src/test/http/admin_auth.http](../core/core-api/src/test/http/admin_auth.http)
-- [core/core-api/src/test/http/README.md](../core/core-api/src/test/http/README.md)
+### B. Local Phone (휴대폰 인증)
+- `POST /api/v1/auth/local/phone-verifications/request`
+- `POST /api/v1/auth/local/phone-verifications/confirm`
 
-## 2) API 카테고리
+### C. Local Auth (회원가입/로그인/세션)
+- `POST /api/v1/auth/local/signup`
+- `POST /api/v1/auth/local/signup/phone`
+- `POST /api/v1/auth/local/login`
+- `POST /api/v1/auth/local/token/refresh`
+- `POST /api/v1/auth/local/logout`
+- `POST /api/v1/auth/local/withdraw`
 
-- `Health`: 상태 점검
-- `Local Auth`: 로그인/회원가입/토큰 재발급/로그아웃/탈퇴
-- `Local Phone`: 휴대폰 인증번호 발급/확인
-- `OAuth2`: 소셜 로그인 시작 URL 조회
-- `Admin Audit`: 관리자 로그인 이력
-- `Admin Users`: 관리자 사용자 조회/수정/삭제/보안
-- `Admin User Status`: 차단/해제/상태 이력
-- `Admin SMS`: 문자 발송/이력/통계
+### D. OAuth2 시작 URL
+- `GET /api/v1/auth/oauth2/{provider}/authorize-url`
 
-## 3) 사용자 인증 시퀀스
+## 3) 공통 규칙
 
-### A. 이메일 회원가입 + 로그인
-1. `POST /api/v1/auth/local/phone-verifications/request`
-2. `POST /api/v1/auth/local/phone-verifications/confirm`
-3. `POST /api/v1/auth/local/signup`
-4. `POST /api/v1/auth/local/login`
-5. accessToken은 메모리 보관, refreshToken은 보안 저장소 보관
+### 헤더
+- 사용자 인증: `Authorization: Bearer {accessToken}`
+- 디바이스 식별(필수 API): `X-Device-Id: {deviceId}`
 
-### B. 로그인 상태 유지(앱 재진입)
-1. refreshToken 존재 확인
-2. `POST /api/v1/auth/local/token/refresh` 호출 (`X-Device-Id` 필수)
-3. 성공 시 새 accessToken/refreshToken 교체
-4. 실패(401 등) 시 로그인 화면으로 이동
+### 공통 에러 처리
+- `401`: 토큰 만료/무효 -> refresh 시도 후 실패 시 로그인 화면 이동
+- `403`: 권한 없음
+- `400`: 요청 검증 실패(폼 에러 매핑)
 
-### C. 로그아웃
-1. `POST /api/v1/auth/local/logout` 호출 (`Authorization`, `X-Device-Id`)
-2. 로컬 토큰/세션 상태 삭제
+### 토큰 저장 권장
+- accessToken: 메모리 저장(상태관리)
+- refreshToken: 보안 저장소(HTTP-only 쿠키 또는 안전한 앱 저장소)
 
-### D. 회원 탈퇴
-1. `POST /api/v1/auth/local/withdraw` 호출
-2. 성공 시 로컬 상태 초기화 후 온보딩/로그인 화면 이동
+## 4) 시퀀스 다이어그램 (GitHub 렌더링용)
 
-## 4) 소셜 로그인(OAuth2) 시퀀스
+### 4-1) 휴대폰 인증 + 이메일 회원가입 + 로그인
 
-1. `GET /api/v1/auth/oauth2/{provider}/authorize-url?returnUrl=/your/callback`
-2. 응답 문자열 경로로 브라우저 이동
-3. 서버 OAuth2 로그인 완료 후 returnUrl로 복귀
-4. 프론트는 로그인 완료 상태를 확인하고 초기 데이터 로드
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as User
+    participant FE as Frontend
+    participant API as Auth API
 
-## 5) 관리자 기능 시퀀스
+    U->>FE: 전화번호 입력
+    FE->>API: POST /auth/local/phone-verifications/request
+    API-->>FE: verificationId, expiresInSec
 
-### 사용자 관리 화면 진입
-1. `GET /api/v1/auth/admin/users`
-2. 상세 모달 시 `GET /api/v1/auth/admin/users/{userId}`
+    U->>FE: 문자 인증번호 입력
+    FE->>API: POST /auth/local/phone-verifications/confirm
+    API-->>FE: phoneVerificationToken
 
-### 상태 관리
-1. 차단: `POST /api/v1/auth/admin/users/{userId}/block`
-2. 차단 해제: `POST /api/v1/auth/admin/users/{userId}/unblock`
-3. 상태 이력: `GET /api/v1/auth/admin/users/{userId}/status-audits`
+    U->>FE: 회원정보 입력(email/password 등)
+    FE->>API: POST /auth/local/signup
+    API-->>FE: 200 OK
 
-### 보안 운영
-1. 비밀번호 재설정: `POST /api/v1/auth/admin/users/{userId}/password/reset`
-2. 토큰 무효화: `POST /api/v1/auth/admin/users/{userId}/tokens/revoke`
+    FE->>API: POST /auth/local/login (X-Device-Id)
+    API-->>FE: accessToken, refreshToken
+```
 
-## 6) 프론트 구현 규칙
+### 4-2) 앱 재진입 시 토큰 재발급
 
-### 공통 헤더
-- 사용자 API: `Authorization: Bearer {accessToken}`
-- 관리자 API: `Authorization: Bearer {adminAccessToken}`
-- 토큰 재발급/로그아웃: `X-Device-Id` 필수
+```mermaid
+sequenceDiagram
+    autonumber
+    participant FE as Frontend
+    participant API as Auth API
 
-### 에러 처리
-- `401`: 토큰 만료/무효 -> refresh 시도 후 실패 시 로그인 이동
-- `403`: 권한 없음 -> 접근 차단 페이지
-- `400`: 필드 검증 실패 -> 폼 필드 메시지 매핑
+    FE->>FE: refreshToken 존재 확인
+    FE->>API: POST /auth/local/token/refresh (X-Device-Id)
+    alt 재발급 성공
+        API-->>FE: new accessToken, new refreshToken
+        FE->>FE: 토큰 교체 후 사용자 유지
+    else 재발급 실패(401)
+        API-->>FE: 401
+        FE->>FE: 토큰 삭제 후 로그인 화면 이동
+    end
+```
 
-### 토큰 처리
-- accessToken: 메모리(상태관리)
-- refreshToken: 보안 저장소(HTTP-only 쿠키 또는 안전한 스토리지 전략)
-- 동시 요청 401 폭주 방지: refresh 단일 비행(single flight) 처리
+### 4-3) 로그아웃
 
-## 7) 개발 순서 권장
+```mermaid
+sequenceDiagram
+    autonumber
+    participant FE as Frontend
+    participant API as Auth API
 
-1. `/docs/openapi3.yaml` 기준 타입 생성(openapi generator 등)
-2. API 클라이언트 레이어 작성
-3. 인증 상태 저장소(auth store) 작성
-4. 로그인/토큰재발급 인터셉터 작성
-5. 화면별 시퀀스 연결(Local -> OAuth2 -> Admin)
-6. `core/core-api/src/test/http/*.http`로 서버 동작 교차 검증
+    FE->>API: POST /auth/local/logout (Authorization, X-Device-Id)
+    API-->>FE: { result: "OK" }
+    FE->>FE: 로컬 토큰/세션 상태 삭제
+```
 
-## 8) 체크리스트
+### 4-4) 회원 탈퇴
 
-- 모든 요청/응답 DTO가 OpenAPI와 일치하는가
+```mermaid
+sequenceDiagram
+    autonumber
+    participant FE as Frontend
+    participant API as Auth API
+
+    FE->>API: POST /auth/local/withdraw (Authorization)
+    API-->>FE: { result: "OK" }
+    FE->>FE: 사용자 상태 초기화 및 온보딩 이동
+```
+
+### 4-5) 소셜 로그인 시작
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as User
+    participant FE as Frontend
+    participant API as Auth API
+    participant O as OAuth Provider
+
+    U->>FE: 카카오/네이버/구글 로그인 클릭
+    FE->>API: GET /auth/oauth2/{provider}/authorize-url?returnUrl=/callback
+    API-->>FE: "/oauth2/authorization/{provider}"
+    FE->>O: 인가 URL로 이동
+```
+
+## 5) API 상세 사용법
+
+### A. 휴대폰 인증번호 발급
+- `POST /api/v1/auth/local/phone-verifications/request`
+- Request
+```json
+{
+  "phoneNumber": "+821012345678"
+}
+```
+- Response `data`
+```json
+{
+  "verificationId": "uuid",
+  "expiresInSec": 180
+}
+```
+
+### B. 휴대폰 인증번호 확인
+- `POST /api/v1/auth/local/phone-verifications/confirm`
+- Request
+```json
+{
+  "phoneNumber": "+821012345678",
+  "verificationId": "uuid",
+  "code": "123456"
+}
+```
+- Response `data`
+```json
+{
+  "phoneVerificationToken": "uuid",
+  "expiresInSec": 600
+}
+```
+
+### C. 이메일 회원가입
+- `POST /api/v1/auth/local/signup`
+- 필수: `email`, `password`, `gender`, `phoneNumber`, `phoneVerificationToken`
+- 선택: `name`, `nickname`, `locale`, `profileImageUrl`, `thumbnailImageUrl`, `birthyear`, `birthday`
+
+### D. 휴대폰 간편 회원가입
+- `POST /api/v1/auth/local/signup/phone`
+- Request
+```json
+{
+  "phoneNumber": "+821012345678",
+  "phoneVerificationToken": "uuid"
+}
+```
+
+### E. 로그인
+- `POST /api/v1/auth/local/login`
+- Header: `X-Device-Id` 권장
+- Request
+```json
+{
+  "email": "user@example.com",
+  "password": "P@ssw0rd!"
+}
+```
+- Response `data`: `accessToken`, `refreshToken`, 만료 시간
+
+### F. 토큰 재발급
+- `POST /api/v1/auth/local/token/refresh`
+- Header: `X-Device-Id` 필수
+- Request
+```json
+{
+  "refreshToken": "..."
+}
+```
+
+### G. 로그아웃
+- `POST /api/v1/auth/local/logout`
+- Header: `Authorization`, `X-Device-Id`
+- Request(선택)
+```json
+{
+  "refreshToken": "...",
+  "logoutAll": false
+}
+```
+
+### H. 회원 탈퇴
+- `POST /api/v1/auth/local/withdraw`
+- Header: `Authorization`
+- Request(선택)
+```json
+{
+  "reason": "privacy"
+}
+```
+
+### I. OAuth2 인가 URL 조회
+- `GET /api/v1/auth/oauth2/{provider}/authorize-url`
+- Query: `returnUrl` (선택, 반드시 `/`로 시작)
+- Header: `X-Device-Id` (선택)
+- Response `data`
+```json
+"/oauth2/authorization/{provider}"
+```
+
+## 6) 프론트 구현 체크리스트
+
 - `X-Device-Id` 필요한 API에 누락이 없는가
-- 401 refresh 재시도 로직이 무한루프가 아닌가
-- 관리자 화면에서 403 대응이 되어 있는가
-- 로그아웃/탈퇴 후 토큰이 완전히 제거되는가
+- 401 처리에서 refresh 단일 비행(single flight) 제어가 되는가
+- refresh 실패 시 토큰 정리 + 로그인 이동이 되는가
+- 회원가입 전 휴대폰 인증 시퀀스를 강제하는가
+- OpenAPI 스펙과 타입/DTO가 일치하는가

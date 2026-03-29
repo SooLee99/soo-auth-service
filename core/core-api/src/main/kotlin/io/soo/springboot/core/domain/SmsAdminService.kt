@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
 @Service
-class SmsAdmin(
+class SmsAdminService(
     private val smsLogRepository: SmsLogRepository,
     private val smsSend: SmsSend,
 ) {

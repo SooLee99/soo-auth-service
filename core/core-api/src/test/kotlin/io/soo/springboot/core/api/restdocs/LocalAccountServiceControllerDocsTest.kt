@@ -10,7 +10,7 @@ import io.soo.springboot.core.api.controller.v1.request.WithdrawRequest
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.api.security.token.IssuedTokens
-import io.soo.springboot.core.domain.local.LocalAccount
+import io.soo.springboot.core.domain.local.LocalAccountService
 import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.test.api.RestDocsTest
 import io.soo.springboot.test.api.RestDocsUtils
@@ -29,9 +29,9 @@ import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import java.time.Instant
 
-class LocalAccountControllerDocsTest : RestDocsTest() {
+class LocalAccountServiceControllerDocsTest : RestDocsTest() {
 
-    private val localAccountService = mockk<LocalAccount>(relaxed = true)
+    private val localAccountService = mockk<LocalAccountService>(relaxed = true)
     private val authTokenManager = mockk<AuthTokenManager>()
     private lateinit var controller: LocalAccountController
 

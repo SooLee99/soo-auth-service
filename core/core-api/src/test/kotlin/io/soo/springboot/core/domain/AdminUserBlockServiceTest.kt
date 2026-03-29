@@ -3,7 +3,7 @@ package io.soo.springboot.core.domain
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import io.soo.springboot.core.domain.admin.UserBlock
+import io.soo.springboot.core.domain.admin.UserBlockService
 import io.soo.springboot.core.enums.AdminUserActionType
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.UserStatus
@@ -17,10 +17,10 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import java.time.Instant
 
-class UserBlockTest {
+class UserBlockServiceTest {
     private val userRepository = mockk<UserRepository>()
     private val auditRepository = mockk<UserStatusAuditLogRepository>()
-    private val service = UserBlock(userRepository, auditRepository)
+    private val service = UserBlockService(userRepository, auditRepository)
 
     @Test
     fun `관리자 차단 성공`() {

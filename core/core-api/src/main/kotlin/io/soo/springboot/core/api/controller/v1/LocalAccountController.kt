@@ -5,7 +5,7 @@ import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
 import io.soo.springboot.core.api.controller.v1.request.PhoneSignUpRequest
 import io.soo.springboot.core.api.controller.v1.request.WithdrawRequest
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
-import io.soo.springboot.core.domain.local.LocalAccount
+import io.soo.springboot.core.domain.local.LocalAccountService
 import io.soo.springboot.core.domain.local.LocalSignUpCmd
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.support.error.CoreException
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/v1/auth/local")
 class LocalAccountController(
-    private val localAccountService: LocalAccount,
+    private val localAccountService: LocalAccountService,
     private val authTokenManager: AuthTokenManager,
 ) {
     @PostMapping("/signup")

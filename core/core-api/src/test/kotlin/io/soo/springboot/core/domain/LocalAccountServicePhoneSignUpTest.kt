@@ -4,8 +4,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import io.soo.springboot.core.domain.local.LocalAccount
-import io.soo.springboot.core.domain.local.phone.PhoneVerify
+import io.soo.springboot.core.domain.local.LocalAccountService
+import io.soo.springboot.core.domain.local.phone.PhoneVerifyService
 import io.soo.springboot.core.domain.token.TokenRevoke
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.Gender
@@ -21,15 +21,15 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.security.crypto.password.PasswordEncoder
 
-class LocalAccountPhoneSignUpTest {
+class LocalAccountServicePhoneSignUpTest {
     private val userRepository = mockk<UserRepository>()
     private val localCredentialRepository = mockk<LocalCredentialRepository>()
     private val passwordEncoder = mockk<PasswordEncoder>()
     private val tokenRevocationService = mockk<TokenRevoke>(relaxed = true)
-    private val phoneVerificationService = mockk<PhoneVerify>(relaxed = true)
+    private val phoneVerificationService = mockk<PhoneVerifyService>(relaxed = true)
     private val auditRepository = mockk<UserStatusAuditLogRepository>(relaxed = true)
 
-    private val service = LocalAccount(
+    private val service = LocalAccountService(
         userRepository = userRepository,
         localAccountRepository = localCredentialRepository,
         passwordEncoder = passwordEncoder,

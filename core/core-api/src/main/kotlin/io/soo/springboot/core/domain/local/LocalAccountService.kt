@@ -13,7 +13,7 @@ import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.error.CoreException
 
 import io.soo.springboot.core.domain.token.TokenRevoke
-import io.soo.springboot.core.domain.local.phone.PhoneVerify
+import io.soo.springboot.core.domain.local.phone.PhoneVerifyService
 import io.soo.springboot.storage.db.core.LocalCredential
 import io.soo.springboot.storage.db.core.LocalCredentialRepository
 import io.soo.springboot.storage.db.core.User
@@ -41,12 +41,12 @@ data class LocalSignUpCmd(
 )
 
 @Service
-class LocalAccount(
+class LocalAccountService(
     private val userRepository: UserRepository,
     private val localAccountRepository: LocalCredentialRepository,
     private val passwordEncoder: PasswordEncoder,
     private val tokenRevocationService: TokenRevoke,
-    private val phoneVerificationService: PhoneVerify,
+    private val phoneVerificationService: PhoneVerifyService,
     private val userStatusAuditLogRepository: UserStatusAuditLogRepository,
 ) {
     private val secureRandom = SecureRandom()

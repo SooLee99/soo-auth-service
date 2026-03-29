@@ -4,7 +4,7 @@ import io.soo.springboot.core.api.controller.v1.request.AdminSmsSendReq
 import io.soo.springboot.core.api.controller.v1.response.AdminSmsLogRes
 import io.soo.springboot.core.api.controller.v1.response.AdminSmsSendRes
 import io.soo.springboot.core.api.controller.v1.response.AdminSmsStatRes
-import io.soo.springboot.core.domain.SmsAdmin
+import io.soo.springboot.core.domain.SmsAdminService
 import io.soo.springboot.core.support.response.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
@@ -24,7 +24,7 @@ import java.time.LocalDateTime
 @RestController
 @RequestMapping("/api/v1/auth/admin/sms")
 class AdminSmsController(
-    private val smsAdmin: SmsAdmin,
+    private val smsAdminService: SmsAdminService,
 ) {
 
     @PostMapping("/send", produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -32,7 +32,7 @@ class AdminSmsController(
         @RequestBody @Valid body: AdminSmsSendReq,
         req: HttpServletRequest,
     ): ApiResponse<AdminSmsSendRes> {
-        val result = smsAdmin.send(body.to, body.text)
+        val result = smsAdminService.send(body.to, body.text)
         return ApiResponse.success(req = req, data = AdminSmsSendRes.from(result))
     }
 
@@ -45,7 +45,7 @@ class AdminSmsController(
         req: HttpServletRequest,
     ): ApiResponse<Page<AdminSmsLogRes>> {
         val pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"))
-        val result = smsAdmin.logs(pageable, startDate, endDate).map { AdminSmsLogRes.from(it) }
+        val result = smsAdminService.logs(pageable, startDate, endDate).map { AdminSmsLogRes.from(it) }
         return ApiResponse.success(req = req, data = result)
     }
 
@@ -55,7 +55,7 @@ class AdminSmsController(
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) endDate: LocalDateTime?,
         req: HttpServletRequest,
     ): ApiResponse<AdminSmsStatRes> {
-        val result = smsAdmin.stat(startDate, endDate)
+        val result = smsAdminService.stat(startDate, endDate)
         return ApiResponse.success(req = req, data = AdminSmsStatRes.from(result))
     }
 }

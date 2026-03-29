@@ -9,7 +9,7 @@ import java.time.Instant
 import java.util.UUID
 
 @Service
-class PhoneVerify(
+class PhoneVerifyService(
     private val store: PhoneStore,
     private val notifier: PhoneNotifier,
 ) {
