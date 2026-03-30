@@ -9,7 +9,7 @@ import io.soo.springboot.core.api.security.userdetails.UserPrincipal
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
 import io.soo.springboot.core.domain.local.LocalAccountService
 import io.soo.springboot.core.domain.LoginHistoryService
-import io.soo.springboot.core.domain.local.LocalSignUpCmd
+import io.soo.springboot.core.domain.local.LocalSignUpCommand
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.enums.LoginType
 import io.soo.springboot.core.support.error.CoreException
@@ -33,7 +33,7 @@ class LocalAccountController(
     @PostMapping("/signup")
     fun signUp(@RequestBody @Valid request: SignUpRequest) {
         localAccountService.signup(
-            LocalSignUpCmd(
+            LocalSignUpCommand(
                 email = request.email,
                 password = request.password,
                 phoneNumber = request.phoneNumber,
@@ -130,7 +130,7 @@ class LocalAccountController(
         val userId = (principalJwt.claims["uid"] as? Number)?.toLong()
             ?: throw CoreException(ErrorType.UNAUTHORIZED, "uid claim is required")
 
-        localAccountService.deleteSoft(userId = userId, reason = body?.reason)
+        localAccountService.softDelete(userId = userId, reason = body?.reason)
         return ApiResponse.success(req = req, data = mapOf("result" to "OK"))
     }
 }

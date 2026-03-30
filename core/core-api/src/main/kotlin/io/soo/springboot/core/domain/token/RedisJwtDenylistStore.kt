@@ -8,9 +8,9 @@ import java.time.Instant
 
 @Service
 @Profile("local-dev", "dev", "staging", "live")
-class JwtDenyRedis(
+class RedisJwtDenylistStore(
     private val redisTemplate: StringRedisTemplate,
-) : JwtDenyStore {
+) : JwtDenylistStore {
 
     companion object {
         private const val KEY_PREFIX = "auth:denylist:jti:"

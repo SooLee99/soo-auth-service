@@ -7,15 +7,15 @@ import java.util.concurrent.ConcurrentHashMap
 
 @Component
 @Profile("local", "test")
-class InMemPhoneStore : PhoneStore {
-    private val challenges = ConcurrentHashMap<String, PhoneChallenge>()
-    private val proofs = ConcurrentHashMap<String, PhoneProof>()
+class InMemoryPhoneVerificationStore : PhoneVerificationStore {
+    private val challenges = ConcurrentHashMap<String, PhoneVerificationChallenge>()
+    private val proofs = ConcurrentHashMap<String, PhoneVerificationProof>()
 
-    override fun saveChallenge(challenge: PhoneChallenge) {
+    override fun saveChallenge(challenge: PhoneVerificationChallenge) {
         challenges[challenge.verificationId] = challenge
     }
 
-    override fun findChallenge(verificationId: String): PhoneChallenge? {
+    override fun findChallenge(verificationId: String): PhoneVerificationChallenge? {
         val challenge = challenges[verificationId] ?: return null
         if (challenge.expiresAt.isBefore(Instant.now())) {
             challenges.remove(verificationId)
@@ -28,11 +28,11 @@ class InMemPhoneStore : PhoneStore {
         challenges.remove(verificationId)
     }
 
-    override fun saveProof(proof: PhoneProof) {
+    override fun saveProof(proof: PhoneVerificationProof) {
         proofs[proof.proofToken] = proof
     }
 
-    override fun findProof(proofToken: String): PhoneProof? {
+    override fun findProof(proofToken: String): PhoneVerificationProof? {
         val proof = proofs[proofToken] ?: return null
         if (proof.expiresAt.isBefore(Instant.now())) {
             proofs.remove(proofToken)

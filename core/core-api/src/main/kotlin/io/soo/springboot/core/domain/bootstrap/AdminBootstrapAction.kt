@@ -11,24 +11,24 @@ import org.springframework.core.annotation.Order
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 
-data class AdminBootCtx(
-    val command: AdminBootCmd,
+data class AdminBootstrapState(
+    val command: AdminBootstrapCommand,
     val user: User?,
     val accountCreated: Boolean = false,
     val rolePromoted: Boolean = false,
     val credentialCreated: Boolean = false,
 )
 
-interface AdminBootStep {
-    fun apply(state: AdminBootCtx): AdminBootCtx
+interface AdminBootstrapAction {
+    fun apply(state: AdminBootstrapState): AdminBootstrapState
 }
 
 @Component
 @Order(100)
 class CreateAdminStep(
     private val userRepository: UserRepository,
-) : AdminBootStep {
-    override fun apply(state: AdminBootCtx): AdminBootCtx {
+) : AdminBootstrapAction {
+    override fun apply(state: AdminBootstrapState): AdminBootstrapState {
         if (state.user != null) return state
         val created = userRepository.save(
             User(
@@ -49,8 +49,8 @@ class CreateAdminStep(
 @Order(200)
 class PromoteRoleStep(
     private val userRepository: UserRepository,
-) : AdminBootStep {
-    override fun apply(state: AdminBootCtx): AdminBootCtx {
+) : AdminBootstrapAction {
+    override fun apply(state: AdminBootstrapState): AdminBootstrapState {
         val current = state.user ?: return state
         if (current.role == Role.ADMIN) return state
         val promoted = userRepository.save(current.copy(role = Role.ADMIN))
@@ -63,8 +63,8 @@ class PromoteRoleStep(
 class EnsureCredStep(
     private val localCredentialRepository: LocalCredentialRepository,
     private val passwordEncoder: PasswordEncoder,
-) : AdminBootStep {
-    override fun apply(state: AdminBootCtx): AdminBootCtx {
+) : AdminBootstrapAction {
+    override fun apply(state: AdminBootstrapState): AdminBootstrapState {
         val current = state.user ?: return state
         val credential = localCredentialRepository.findByUserId(current.id)
         if (credential != null) return state

@@ -5,8 +5,8 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import io.soo.springboot.core.domain.local.LocalAccountService
-import io.soo.springboot.core.domain.local.phone.PhoneVerifyService
-import io.soo.springboot.core.domain.token.TokenRevoke
+import io.soo.springboot.core.domain.local.phone.PhoneVerificationService
+import io.soo.springboot.core.domain.token.TokenRevocationService
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.core.support.error.CoreException
@@ -25,8 +25,8 @@ class LocalAccountServicePhoneSignUpTest {
     private val userRepository = mockk<UserRepository>()
     private val localCredentialRepository = mockk<LocalCredentialRepository>()
     private val passwordEncoder = mockk<PasswordEncoder>()
-    private val tokenRevocationService = mockk<TokenRevoke>(relaxed = true)
-    private val phoneVerificationService = mockk<PhoneVerifyService>(relaxed = true)
+    private val tokenRevocationService = mockk<TokenRevocationService>(relaxed = true)
+    private val phoneVerificationService = mockk<PhoneVerificationService>(relaxed = true)
     private val userStatusPolicy = mockk<UserStatusPolicy>(relaxed = true)
     private val auditRepository = mockk<UserStatusAuditLogRepository>(relaxed = true)
 

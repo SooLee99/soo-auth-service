@@ -3,17 +3,17 @@ package io.soo.springboot.core.domain.bootstrap
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 
-interface AdminPwRule {
-    fun match(command: AdminBootCmd): Boolean
-    fun check(command: AdminBootCmd)
+interface AdminPasswordPolicy {
+    fun match(command: AdminBootstrapCommand): Boolean
+    fun check(command: AdminBootstrapCommand)
 }
 
 @Component
 @Order(100)
-class StrongAdminPwRule : AdminPwRule {
-    override fun match(command: AdminBootCmd): Boolean = !command.allowWeakPassword
+class StrongAdminPasswordPolicy : AdminPasswordPolicy {
+    override fun match(command: AdminBootstrapCommand): Boolean = !command.allowWeakPassword
 
-    override fun check(command: AdminBootCmd) {
+    override fun check(command: AdminBootstrapCommand) {
         val username = command.username
         val password = command.rawPassword
 
@@ -37,8 +37,8 @@ class StrongAdminPwRule : AdminPwRule {
 
 @Component
 @Order(200)
-class NoopAdminPwRule : AdminPwRule {
-    override fun match(command: AdminBootCmd): Boolean = command.allowWeakPassword
+class NoopAdminPasswordPolicy : AdminPasswordPolicy {
+    override fun match(command: AdminBootstrapCommand): Boolean = command.allowWeakPassword
 
-    override fun check(command: AdminBootCmd) = Unit
+    override fun check(command: AdminBootstrapCommand) = Unit
 }

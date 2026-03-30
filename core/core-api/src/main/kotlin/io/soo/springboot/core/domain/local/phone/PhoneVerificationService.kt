@@ -9,9 +9,9 @@ import java.time.Instant
 import java.util.UUID
 
 @Service
-class PhoneVerifyService(
-    private val store: PhoneStore,
-    private val notifier: PhoneNotifier,
+class PhoneVerificationService(
+    private val store: PhoneVerificationStore,
+    private val notifier: PhoneVerificationNotifier,
 ) {
     private val random = SecureRandom()
 
@@ -20,14 +20,14 @@ class PhoneVerifyService(
         private val PROOF_TTL: Duration = Duration.ofMinutes(10)
     }
 
-    fun issue(phoneNumber: String): PhoneIssue {
+    fun issue(phoneNumber: String): PhoneVerificationIssueResult {
         val normalizedPhone = normalizePhone(phoneNumber)
         val verificationId = UUID.randomUUID().toString()
         val code = generateCode()
         val expiresAt = Instant.now().plus(CHALLENGE_TTL)
 
         store.saveChallenge(
-            PhoneChallenge(
+            PhoneVerificationChallenge(
                 verificationId = verificationId,
                 phoneNumber = normalizedPhone,
                 code = code,
@@ -37,13 +37,13 @@ class PhoneVerifyService(
 
         notifier.sendCode(normalizedPhone, code, CHALLENGE_TTL.seconds)
 
-        return PhoneIssue(
+        return PhoneVerificationIssueResult(
             verificationId = verificationId,
             expiresInSec = CHALLENGE_TTL.seconds,
         )
     }
 
-    fun confirm(phoneNumber: String, verificationId: String, code: String): PhoneConfirm {
+    fun confirm(phoneNumber: String, verificationId: String, code: String): PhoneVerificationConfirmResult {
         val normalizedPhone = normalizePhone(phoneNumber)
         val challenge = store.findChallenge(verificationId)
             ?: throw CoreException(ErrorType.INVALID_PHONE_VERIFICATION)
@@ -64,14 +64,14 @@ class PhoneVerifyService(
         val proofToken = UUID.randomUUID().toString()
         val expiresAt = Instant.now().plus(PROOF_TTL)
         store.saveProof(
-            PhoneProof(
+            PhoneVerificationProof(
                 proofToken = proofToken,
                 phoneNumber = normalizedPhone,
                 expiresAt = expiresAt,
             )
         )
 
-        return PhoneConfirm(
+        return PhoneVerificationConfirmResult(
             proofToken = proofToken,
             expiresInSec = PROOF_TTL.seconds,
         )

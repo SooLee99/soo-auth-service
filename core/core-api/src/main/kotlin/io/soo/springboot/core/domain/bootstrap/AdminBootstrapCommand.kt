@@ -1,6 +1,6 @@
 package io.soo.springboot.core.domain.bootstrap
 
-data class AdminBootCmd(
+data class AdminBootstrapCommand(
     val username: String,
     val rawPassword: String,
     val activeProfiles: List<String>,
@@ -8,8 +8,8 @@ data class AdminBootCmd(
     val allowWeakPassword: Boolean,
 ) {
     companion object {
-        fun of(properties: AdminBootProps, activeProfiles: List<String>): AdminBootCmd {
-            return AdminBootCmd(
+        fun of(properties: AdminBootstrapProperties, activeProfiles: List<String>): AdminBootstrapCommand {
+            return AdminBootstrapCommand(
                 username = properties.username.trim().lowercase(),
                 rawPassword = properties.password.trim(),
                 activeProfiles = activeProfiles,

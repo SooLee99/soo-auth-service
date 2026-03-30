@@ -1,5 +1,5 @@
 package io.soo.springboot.core.domain.local.phone
 
-interface PhoneNotifier {
+interface PhoneVerificationNotifier {
     fun sendCode(phoneNumber: String, code: String, expiresInSec: Long)
 }

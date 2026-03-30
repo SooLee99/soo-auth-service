@@ -14,24 +14,24 @@ import org.springframework.stereotype.Component
     havingValue = "true",
     matchIfMissing = true,
 )
-class AdminBootRunner(
-    private val properties: AdminBootProps,
+class AdminAccountBootstrapRunner(
+    private val properties: AdminBootstrapProperties,
     private val environment: Environment,
-    private val adminAccountBootstrapService: AdminBoot,
+    private val adminAccountBootstrapService: AdminAccountBootstrapService,
 ) : ApplicationRunner {
 
     override fun run(args: ApplicationArguments) {
-        val command = AdminBootCmd.of(
+        val command = AdminBootstrapCommand.of(
             properties = properties,
             activeProfiles = environment.activeProfiles.toList(),
         )
 
-        when (val result = adminAccountBootstrapService.run(command)) {
-            is AdminBootResult.Skipped -> {
+        when (val result = adminAccountBootstrapService.bootstrap(command)) {
+            is AdminBootstrapResult.Skipped -> {
                 log.info("admin bootstrap skipped: {}", result.reason)
             }
 
-            is AdminBootResult.Applied -> {
+            is AdminBootstrapResult.Applied -> {
                 log.info(
                     "admin bootstrap applied: username={}, accountCreated={}, rolePromoted={}, credentialCreated={}",
                     command.username,
@@ -44,6 +44,6 @@ class AdminBootRunner(
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(AdminBootRunner::class.java)
+        private val log = LoggerFactory.getLogger(AdminAccountBootstrapRunner::class.java)
     }
 }

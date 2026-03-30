@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component
 
 @Component
 @ConditionalOnProperty(prefix = "solapi.sms", name = ["enabled"], havingValue = "false", matchIfMissing = true)
-class LogPhoneNotifier(
+class LoggingPhoneVerificationNotifier(
     private val smsAdminService: SmsAdminService,
-) : PhoneNotifier {
+) : PhoneVerificationNotifier {
     private val log = LoggerFactory.getLogger(javaClass)
 
     override fun sendCode(phoneNumber: String, code: String, expiresInSec: Long) {

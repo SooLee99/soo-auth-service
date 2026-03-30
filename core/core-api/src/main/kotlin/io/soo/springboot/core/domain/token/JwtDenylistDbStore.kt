@@ -13,10 +13,10 @@ import io.soo.springboot.storage.db.core.JwtDenylistRepository
 
 @Service
 @Profile("local", "test")
-class JwtDenyDb(
+class JwtDenylistDbStore(
     private val repo: JwtDenylistRepository,
     private val clock: Clock = Clock.systemUTC(),
-) : JwtDenyStore {
+) : JwtDenylistStore {
 
     @Transactional
     override fun deny(jti: String, ttl: Duration) {

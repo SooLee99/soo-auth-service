@@ -5,9 +5,9 @@ import io.mockk.mockk
 import io.soo.springboot.core.api.controller.v1.LocalPhoneVerificationController
 import io.soo.springboot.core.api.controller.v1.request.PhoneVerificationConfirmRequest
 import io.soo.springboot.core.api.controller.v1.request.PhoneVerificationIssueRequest
-import io.soo.springboot.core.domain.local.phone.PhoneConfirm
-import io.soo.springboot.core.domain.local.phone.PhoneIssue
-import io.soo.springboot.core.domain.local.phone.PhoneVerifyService
+import io.soo.springboot.core.domain.local.phone.PhoneVerificationConfirmResult
+import io.soo.springboot.core.domain.local.phone.PhoneVerificationIssueResult
+import io.soo.springboot.core.domain.local.phone.PhoneVerificationService
 import io.soo.springboot.test.api.RestDocsTest
 import io.soo.springboot.test.api.RestDocsUtils
 import io.soo.springboot.test.api.mockMvcDocument
@@ -21,7 +21,7 @@ import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
 
 class LocalPhoneVerificationControllerDocsTest : RestDocsTest() {
 
-    private val phoneVerificationService = mockk<PhoneVerifyService>()
+    private val phoneVerificationService = mockk<PhoneVerificationService>()
 
     @BeforeEach
     fun init() {
@@ -30,7 +30,7 @@ class LocalPhoneVerificationControllerDocsTest : RestDocsTest() {
 
     @Test
     fun requestVerification() {
-        every { phoneVerificationService.issue(any()) } returns PhoneIssue(
+        every { phoneVerificationService.issue(any()) } returns PhoneVerificationIssueResult(
             verificationId = "verification-id-001",
             expiresInSec = 180,
         )
@@ -64,7 +64,7 @@ class LocalPhoneVerificationControllerDocsTest : RestDocsTest() {
 
     @Test
     fun confirmVerification() {
-        every { phoneVerificationService.confirm(any(), any(), any()) } returns PhoneConfirm(
+        every { phoneVerificationService.confirm(any(), any(), any()) } returns PhoneVerificationConfirmResult(
             proofToken = "verified-phone-token",
             expiresInSec = 600,
         )

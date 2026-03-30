@@ -5,8 +5,8 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import io.soo.springboot.core.domain.local.LocalAccountService
-import io.soo.springboot.core.domain.local.phone.PhoneVerifyService
-import io.soo.springboot.core.domain.token.TokenRevoke
+import io.soo.springboot.core.domain.local.phone.PhoneVerificationService
+import io.soo.springboot.core.domain.token.TokenRevocationService
 import io.soo.springboot.core.enums.AdminUserActionType
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.UserStatus
@@ -27,8 +27,8 @@ class LocalAccountServiceSoftDeleteTest {
     private val userRepository = mockk<UserRepository>()
     private val localCredentialRepository = mockk<LocalCredentialRepository>()
     private val passwordEncoder = mockk<PasswordEncoder>()
-    private val tokenRevocationService = mockk<TokenRevoke>(relaxed = true)
-    private val phoneVerificationService = mockk<PhoneVerifyService>(relaxed = true)
+    private val tokenRevocationService = mockk<TokenRevocationService>(relaxed = true)
+    private val phoneVerificationService = mockk<PhoneVerificationService>(relaxed = true)
     private val userStatusPolicy = mockk<UserStatusPolicy>(relaxed = true)
     private val auditRepository = mockk<UserStatusAuditLogRepository>()
 
@@ -52,7 +52,7 @@ class LocalAccountServiceSoftDeleteTest {
             auditRepository.save(1L, 1L, AdminUserActionType.SOFT_DELETE, any())
         } returns UserStatusAuditLog(1L, 1L, 1L, AdminUserActionType.SOFT_DELETE, "privacy", Instant.now())
 
-        service.deleteSoft(1L, "privacy")
+        service.softDelete(1L, "privacy")
 
         val saved = saveSlot.captured
         assertEquals(UserStatus.SOFT_DELETED, saved.userStatus)
@@ -60,7 +60,7 @@ class LocalAccountServiceSoftDeleteTest {
         assertEquals("privacy", saved.deletionReason)
         assertNotNull(saved.retentionUntil)
         verify(exactly = 1) { localCredentialRepository.deleteByUserId(1L) }
-        verify(exactly = 1) { tokenRevocationService.revokeAll(1L) }
+        verify(exactly = 1) { tokenRevocationService.revokeAllByUserId(1L) }
     }
 
     @Test
@@ -73,7 +73,7 @@ class LocalAccountServiceSoftDeleteTest {
             auditRepository.save(1L, 1L, AdminUserActionType.SOFT_DELETE, any())
         } returns UserStatusAuditLog(1L, 1L, 1L, AdminUserActionType.SOFT_DELETE, null, Instant.now())
 
-        service.deleteSoft(1L, null)
+        service.softDelete(1L, null)
 
         val saved = saveSlot.captured
         assertTrue(saved.email.startsWith("deleted+1."))

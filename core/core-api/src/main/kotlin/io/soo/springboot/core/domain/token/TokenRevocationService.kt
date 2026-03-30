@@ -6,11 +6,11 @@ import java.time.Duration
 import java.time.Instant
 
 @Service
-class TokenRevoke(
-    private val refreshTokenManager: RefreshTokenSvc,
-    private val denylistStore: JwtDenyStore,
+class TokenRevocationService(
+    private val refreshTokenManager: RefreshTokenManager,
+    private val denylistStore: JwtDenylistStore,
 ) {
-    fun invalidate(jwt: Jwt, deviceId: String, refreshToken: String?, logoutAll: Boolean) {
+    fun revokeOnLogout(jwt: Jwt, deviceId: String, refreshToken: String?, logoutAll: Boolean) {
         val exp = jwt.expiresAt
         if (jwt.id.isNullOrBlank() || exp == null) return
 
@@ -21,7 +21,7 @@ class TokenRevoke(
 
         val userId = extractUserId(jwt)
         if (logoutAll) {
-            if (userId != null) revokeAll(userId)
+            if (userId != null) revokeAllByUserId(userId)
             return
         }
 
@@ -32,13 +32,13 @@ class TokenRevoke(
         }
 
         if (userId != null && deviceId.isNotBlank()) {
-            revokeByDevice(userId, deviceId)
+            revokeByUserIdAndDeviceId(userId, deviceId)
         }
     }
 
     fun revoke(token: String) = refreshTokenManager.revoke(token)
-    fun revokeAll(userId: Long) = refreshTokenManager.revokeAllByUser(userId)
-    fun revokeByDevice(userId: Long, deviceId: String) = refreshTokenManager.revokeByDevice(userId, deviceId)
+    fun revokeAllByUserId(userId: Long) = refreshTokenManager.revokeAllByUserId(userId)
+    fun revokeByUserIdAndDeviceId(userId: Long, deviceId: String) = refreshTokenManager.revokeByUserIdAndDeviceId(userId, deviceId)
 
     private fun extractUserId(jwt: Jwt): Long? {
         return (jwt.claims["uid"] as? Number)?.toLong()

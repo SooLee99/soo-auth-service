@@ -12,18 +12,18 @@ import java.security.SecureRandom
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
-data class RefreshIssued(
+data class RefreshTokenIssueResult(
     val token: String,
     val expiresInSec: Long,
 )
 
-data class RefreshRotate(
+data class RefreshTokenRotateResult(
     val userId: Long,
-    val issued: RefreshIssued,
+    val issued: RefreshTokenIssueResult,
 )
 
 @Service
-class RefreshTokenSvc(
+class RefreshTokenManager(
     private val repository: RefreshTokenRepository,
 ) {
     companion object {
@@ -47,7 +47,7 @@ class RefreshTokenSvc(
     }
 
     @Transactional
-    fun issue(userId: Long, deviceId: String, provider: AuthProvider): RefreshIssued {
+    fun issue(userId: Long, deviceId: String, provider: AuthProvider): RefreshTokenIssueResult {
         val now = now()
         repository.revokeAllActiveByUserIdAndDeviceId(userId, deviceId, now)
 
@@ -66,11 +66,11 @@ class RefreshTokenSvc(
             )
         )
 
-        return RefreshIssued(token = raw, expiresInSec = ChronoUnit.SECONDS.between(now, expiresAt))
+        return RefreshTokenIssueResult(token = raw, expiresInSec = ChronoUnit.SECONDS.between(now, expiresAt))
     }
 
     @Transactional
-    fun rotate(oldRefreshTokenRaw: String, deviceId: String): RefreshRotate {
+    fun rotate(oldRefreshTokenRaw: String, deviceId: String): RefreshTokenRotateResult {
         val now = now()
 
         if (oldRefreshTokenRaw.isBlank()) {
@@ -122,12 +122,12 @@ class RefreshTokenSvc(
             )
         )
 
-        val issued = RefreshIssued(
+        val issued = RefreshTokenIssueResult(
             token = newRaw,
             expiresInSec = ChronoUnit.SECONDS.between(now, newExpiresAt),
         )
 
-        return RefreshRotate(
+        return RefreshTokenRotateResult(
             userId = old.userId,
             issued = issued,
         )
@@ -152,12 +152,12 @@ class RefreshTokenSvc(
     }
 
     @Transactional
-    fun revokeAllByUser(userId: Long) {
+    fun revokeAllByUserId(userId: Long) {
         repository.revokeAllActiveByUserId(userId, now())
     }
 
     @Transactional
-    fun revokeByDevice(userId: Long, deviceId: String) {
+    fun revokeByUserIdAndDeviceId(userId: Long, deviceId: String) {
         if (deviceId.isBlank()) return
         repository.revokeAllActiveByUserIdAndDeviceId(userId, deviceId, now())
     }

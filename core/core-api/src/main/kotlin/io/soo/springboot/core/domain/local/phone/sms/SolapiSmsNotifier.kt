@@ -4,7 +4,7 @@ import com.solapi.sdk.SolapiClient
 import com.solapi.sdk.message.model.Message
 import com.solapi.sdk.message.service.DefaultMessageService
 import io.soo.springboot.core.domain.SmsAdminService
-import io.soo.springboot.core.domain.local.phone.PhoneNotifier
+import io.soo.springboot.core.domain.local.phone.PhoneVerificationNotifier
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component
 class SolapiSmsNotifier(
     private val props: SolapiProps,
     private val smsAdminService: SmsAdminService,
-) : PhoneNotifier {
+) : PhoneVerificationNotifier {
     @Volatile
     private var messageService: DefaultMessageService? = null
 

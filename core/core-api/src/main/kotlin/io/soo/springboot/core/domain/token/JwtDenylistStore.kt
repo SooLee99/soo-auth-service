@@ -3,7 +3,7 @@ package io.soo.springboot.core.domain.token
 import java.time.Duration
 import java.time.Instant
 
-interface JwtDenyStore {
+interface JwtDenylistStore {
     /**
      * jti를 denylist에 추가 (ttl 동안)
      */

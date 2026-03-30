@@ -228,7 +228,7 @@ class AdminUserApiDocsTest : RestDocsTest() {
 
     @Test
     fun userDetail() {
-        every { adminUserManagementService.get(1L) } returns sampleAdminManagedUser()
+        every { adminUserManagementService.getById(1L) } returns sampleAdminManagedUser()
 
         val authentication = TestingAuthenticationToken("admin", "password", "ROLE_ADMIN")
 
@@ -258,7 +258,7 @@ class AdminUserApiDocsTest : RestDocsTest() {
     @Test
     fun update() {
         every { userIdResolver.resolve(any()) } returns 100L
-        every { adminUserManagementService.update(1L, any(), 100L) } returns sampleAdminManagedUser().copy(
+        every { adminUserManagementService.updateUser(1L, any(), 100L) } returns sampleAdminManagedUser().copy(
             nickname = "updated-nickname",
             role = Role.ADMIN,
         )
@@ -317,7 +317,7 @@ class AdminUserApiDocsTest : RestDocsTest() {
     @Test
     fun delete() {
         every { userIdResolver.resolve(any()) } returns 100L
-        every { adminUserManagementService.delete(1L, "admin-delete", 100L) } returns sampleSoftDeletedUser()
+        every { adminUserManagementService.softDeleteUser(1L, "admin-delete", 100L) } returns sampleSoftDeletedUser()
 
         val authentication = TestingAuthenticationToken("admin", "password", "ROLE_ADMIN")
 
@@ -392,7 +392,7 @@ class AdminUserApiDocsTest : RestDocsTest() {
 
     @Test
     fun resetUserPassword() {
-        every { adminUserManagementService.resetPw(1L, any()) } returns sampleAdminManagedUser()
+        every { adminUserManagementService.updatePassword(1L, any()) } returns sampleAdminManagedUser()
 
         val authentication = TestingAuthenticationToken("admin", "password", "ROLE_ADMIN")
 

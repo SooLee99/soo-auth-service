@@ -1,8 +1,8 @@
 package io.soo.springboot.core.api.security.token
 
 import io.soo.springboot.core.api.security.userdetails.UserPrincipalLoader
-import io.soo.springboot.core.domain.token.JwtDenyStore
-import io.soo.springboot.core.domain.token.RefreshTokenSvc
+import io.soo.springboot.core.domain.token.JwtDenylistStore
+import io.soo.springboot.core.domain.token.RefreshTokenManager
 import io.soo.springboot.core.enums.AuthProvider
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -23,9 +23,9 @@ data class IssuedTokens(
 @Service
 class AuthTokenManager(
     private val accessTokenIssuer: AccessTokenIssuer,
-    private val refreshTokenManager: RefreshTokenSvc,
+    private val refreshTokenManager: RefreshTokenManager,
     private val userPrincipalLoader: UserPrincipalLoader,
-    private val denylistStore: JwtDenyStore,
+    private val denylistStore: JwtDenylistStore,
 ) {
     /**
      * ✅ 토큰 발급
@@ -84,7 +84,7 @@ class AuthTokenManager(
 
         if (logoutAll) {
             if (userId != null) {
-                revokeAll(userId)
+                revokeAllByUserId(userId)
             }
             return
         }
@@ -99,7 +99,7 @@ class AuthTokenManager(
 
         // refreshToken 없으면 현재 디바이스 기준 revoke
         if (userId != null && deviceId.isNotBlank()) {
-            revokeByDevice(userId, deviceId)
+            revokeByUserIdAndDeviceId(userId, deviceId)
         }
     }
 
@@ -120,6 +120,6 @@ class AuthTokenManager(
     }
 
     fun revoke(token: String) = refreshTokenManager.revoke(token)
-    fun revokeAll(userId: Long) = refreshTokenManager.revokeAllByUser(userId)
-    fun revokeByDevice(userId: Long, deviceId: String) = refreshTokenManager.revokeByDevice(userId, deviceId)
+    fun revokeAllByUserId(userId: Long) = refreshTokenManager.revokeAllByUserId(userId)
+    fun revokeByUserIdAndDeviceId(userId: Long, deviceId: String) = refreshTokenManager.revokeByUserIdAndDeviceId(userId, deviceId)
 }

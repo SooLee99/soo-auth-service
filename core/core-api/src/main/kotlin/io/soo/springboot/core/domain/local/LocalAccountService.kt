@@ -13,8 +13,8 @@ import io.soo.springboot.core.domain.UserStatusPolicy
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.error.CoreException
 
-import io.soo.springboot.core.domain.token.TokenRevoke
-import io.soo.springboot.core.domain.local.phone.PhoneVerifyService
+import io.soo.springboot.core.domain.token.TokenRevocationService
+import io.soo.springboot.core.domain.local.phone.PhoneVerificationService
 import io.soo.springboot.storage.db.core.LocalCredential
 import io.soo.springboot.storage.db.core.LocalCredentialRepository
 import io.soo.springboot.storage.db.core.User
@@ -26,7 +26,7 @@ import java.security.MessageDigest
 import java.security.SecureRandom
 
 
-data class LocalSignUpCmd(
+data class LocalSignUpCommand(
     val email: String,
     val password: String,
     val phoneNumber: String,
@@ -46,15 +46,15 @@ class LocalAccountService(
     private val userRepository: UserRepository,
     private val localAccountRepository: LocalCredentialRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val tokenRevocationService: TokenRevoke,
-    private val phoneVerificationService: PhoneVerifyService,
+    private val tokenRevocationService: TokenRevocationService,
+    private val phoneVerificationService: PhoneVerificationService,
     private val userStatusPolicy: UserStatusPolicy,
     private val userStatusAuditLogRepository: UserStatusAuditLogRepository,
 ) {
     private val secureRandom = SecureRandom()
 
     @Transactional
-    fun signup(cmd: LocalSignUpCmd): User {
+    fun signup(cmd: LocalSignUpCommand): User {
         phoneVerificationService.consume(cmd.phoneNumber, cmd.phoneVerificationToken)
         val normalizedPhone = normalizePhoneNumber(cmd.phoneNumber)
 
@@ -160,7 +160,7 @@ class LocalAccountService(
      */
     @Transactional
     fun logout(jwt: Jwt, deviceId: String, refreshToken: String?, logoutAll: Boolean) {
-        tokenRevocationService.invalidate(
+        tokenRevocationService.revokeOnLogout(
             jwt = jwt,
             deviceId = deviceId,
             refreshToken = refreshToken,
@@ -175,7 +175,7 @@ class LocalAccountService(
      * - 탈퇴 즉시 로그인 불가
      */
     @Transactional
-    fun deleteSoft(userId: Long, reason: String?, actorUserId: Long? = null) {
+    fun softDelete(userId: Long, reason: String?, actorUserId: Long? = null) {
         val user = userRepository.findByIdIncludingDeleted(userId)
             ?: throw CoreException(ErrorType.NOT_FOUND, mapOf("userId" to userId))
         if (user.userStatus == UserStatus.SOFT_DELETED) return
@@ -220,7 +220,7 @@ class LocalAccountService(
         )
 
         localAccountRepository.deleteByUserId(userId)
-        tokenRevocationService.revokeAll(userId)
+        tokenRevocationService.revokeAllByUserId(userId)
         userStatusAuditLogRepository.save(
             targetUserId = userId,
             actorUserId = actorUserId ?: userId,

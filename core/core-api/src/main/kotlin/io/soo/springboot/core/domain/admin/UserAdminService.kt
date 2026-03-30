@@ -5,7 +5,7 @@ import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.Role
 import io.soo.springboot.core.enums.UserStatus
 import io.soo.springboot.core.domain.local.LocalAccountService
-import io.soo.springboot.core.domain.token.TokenRevoke
+import io.soo.springboot.core.domain.token.TokenRevocationService
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.storage.db.core.LocalCredential
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 
-data class UserUpdateCmd(
+data class UserUpdateCommand(
     val email: String? = null,
     val phoneNumber: String? = null,
     val name: String? = null,
@@ -44,7 +44,7 @@ class UserAdminService(
     private val localAccountService: LocalAccountService,
     private val localCredentialRepository: LocalCredentialRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val tokenRevocationService: TokenRevoke,
+    private val tokenRevocationService: TokenRevocationService,
 ) {
     @Transactional(readOnly = true)
     fun list(
@@ -64,13 +64,13 @@ class UserAdminService(
     }
 
     @Transactional(readOnly = true)
-    fun get(userId: Long): User {
+    fun getById(userId: Long): User {
         return userRepository.findByIdIncludingDeleted(userId)
             ?: throw CoreException(ErrorType.NOT_FOUND, data = mapOf("userId" to userId))
     }
 
     @Transactional
-    fun update(userId: Long, command: UserUpdateCmd, adminUserId: Long): User {
+    fun updateUser(userId: Long, command: UserUpdateCommand, adminUserId: Long): User {
         val current = userRepository.findByIdIncludingDeleted(userId)
             ?: throw CoreException(ErrorType.NOT_FOUND, data = mapOf("userId" to userId))
         if (command.userStatus == UserStatus.SOFT_DELETED) {
@@ -137,14 +137,14 @@ class UserAdminService(
     }
 
     @Transactional
-    fun delete(userId: Long, reason: String?, adminUserId: Long): User {
-        localAccountService.deleteSoft(userId = userId, reason = reason, actorUserId = adminUserId)
+    fun softDeleteUser(userId: Long, reason: String?, adminUserId: Long): User {
+        localAccountService.softDelete(userId = userId, reason = reason, actorUserId = adminUserId)
         return userRepository.findByIdIncludingDeleted(userId)
             ?: throw CoreException(ErrorType.NOT_FOUND, data = mapOf("userId" to userId))
     }
 
     @Transactional
-    fun resetPw(userId: Long, newPassword: String): User {
+    fun updatePassword(userId: Long, newPassword: String): User {
         val user = userRepository.findByIdIncludingDeleted(userId)
             ?: throw CoreException(ErrorType.NOT_FOUND, data = mapOf("userId" to userId))
         if (user.userStatus == UserStatus.SOFT_DELETED) {
@@ -162,7 +162,7 @@ class UserAdminService(
                 passwordHash = passwordEncoder.encode(newPassword),
             )
         )
-        tokenRevocationService.revokeAll(userId)
+        tokenRevocationService.revokeAllByUserId(userId)
         return user
     }
 
@@ -170,7 +170,7 @@ class UserAdminService(
     fun revokeTokens(userId: Long): User {
         val user = userRepository.findByIdIncludingDeleted(userId)
             ?: throw CoreException(ErrorType.NOT_FOUND, data = mapOf("userId" to userId))
-        tokenRevocationService.revokeAll(userId)
+        tokenRevocationService.revokeAllByUserId(userId)
         return user
     }
 

@@ -5,24 +5,24 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class AdminBoot(
+class AdminAccountBootstrapService(
     private val userRepository: UserRepository,
-    private val passwordPolicies: List<AdminPwRule>,
-    private val bootstrapActions: List<AdminBootStep>,
+    private val passwordPolicies: List<AdminPasswordPolicy>,
+    private val bootstrapActions: List<AdminBootstrapAction>,
 ) {
     @Transactional
-    fun run(command: AdminBootCmd): AdminBootResult {
+    fun bootstrap(command: AdminBootstrapCommand): AdminBootstrapResult {
         validateRequiredCredentials(command)
 
         if (!isAllowedProfile(command.activeProfiles, command.allowedProfiles)) {
-            return AdminBootResult.Skipped(
+            return AdminBootstrapResult.Skipped(
                 reason = "activeProfiles=${command.activeProfiles}, allowedProfiles=${command.allowedProfiles}",
             )
         }
 
         passwordPolicies.firstOrNull { it.match(command) }?.check(command)
 
-        var state = AdminBootCtx(
+        var state = AdminBootstrapState(
             command = command,
             user = userRepository.findByEmail(command.username),
         )
@@ -31,14 +31,14 @@ class AdminBoot(
             state = action.apply(state)
         }
 
-        return AdminBootResult.Applied(
+        return AdminBootstrapResult.Applied(
             accountCreated = state.accountCreated,
             rolePromoted = state.rolePromoted,
             credentialCreated = state.credentialCreated,
         )
     }
 
-    private fun validateRequiredCredentials(command: AdminBootCmd) {
+    private fun validateRequiredCredentials(command: AdminBootstrapCommand) {
         if (command.username.isBlank() || command.rawPassword.isBlank()) {
             throw IllegalStateException(
                 "admin bootstrap enabled but username/password is blank. " +

@@ -8,7 +8,7 @@ import io.soo.springboot.core.api.controller.v1.response.AdminUserDetailResponse
 import io.soo.springboot.core.api.controller.v1.response.AdminUserSummaryResponse
 import io.soo.springboot.core.api.security.auth.UserIdResolver
 import io.soo.springboot.core.domain.admin.UserAdminService
-import io.soo.springboot.core.domain.admin.UserUpdateCmd
+import io.soo.springboot.core.domain.admin.UserUpdateCommand
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.Role
 import io.soo.springboot.core.enums.UserStatus
@@ -41,7 +41,7 @@ class AdminUsersController(
         @PathVariable userId: Long,
         req: HttpServletRequest,
     ): ApiResponse<AdminUserDetailResponse> {
-        val found = adminUserManagementService.get(userId)
+        val found = adminUserManagementService.getById(userId)
         return ApiResponse.success(req = req, data = AdminUserDetailResponse.from(found))
     }
 
@@ -74,9 +74,9 @@ class AdminUsersController(
         req: HttpServletRequest,
     ): ApiResponse<AdminUserDetailResponse> {
         val adminUserId = userIdResolver.resolve(authentication)
-        val updated = adminUserManagementService.update(
+        val updated = adminUserManagementService.updateUser(
             userId = userId,
-            command = UserUpdateCmd(
+            command = UserUpdateCommand(
                 email = body.email,
                 phoneNumber = body.phoneNumber,
                 name = body.name,
@@ -105,7 +105,7 @@ class AdminUsersController(
         @RequestBody @Valid body: AdminUserPasswordResetRequest,
         req: HttpServletRequest,
     ): ApiResponse<AdminUserDetailResponse> {
-        val user = adminUserManagementService.resetPw(userId = userId, newPassword = body.newPassword)
+        val user = adminUserManagementService.updatePassword(userId = userId, newPassword = body.newPassword)
         return ApiResponse.success(req = req, data = AdminUserDetailResponse.from(user))
     }
 
@@ -117,7 +117,7 @@ class AdminUsersController(
         req: HttpServletRequest,
     ): ApiResponse<AdminUserBlockResponse> {
         val adminUserId = userIdResolver.resolve(authentication)
-        val deleted = adminUserManagementService.delete(
+        val deleted = adminUserManagementService.softDeleteUser(
             userId = userId,
             reason = body?.reason,
             adminUserId = adminUserId,
