@@ -50,9 +50,13 @@
 2. Business 흐름은 `core-api/domain`에서 오케스트레이션
 3. 상세 구현은 구현 레이어로 분리하고 재사용 가능한 단위로 작성
 4. 저장소 접근은 `storage:db-core`로 격리
-5. 레이어 참조는 상위 -> 하위 단방향 유지
-6. 메서드명은 “동작 + 대상”이 드러나게 작성
-   - 예: `listUsers`, `revokeUserTokens`, `issueVerification`
+5. 레이어 참조는 상위 -> 하위 단방향 유지 
+6. 클래스명은 대상(도메인/역할/책임)을 나타낸다. 
+7. 메서드명은 해당 클래스 맥락에서 수행하는 동작을 나타낸다. 
+8. 클래스가 대상을 충분히 설명하는 경우, 메서드명은 `list`, `create`, `update`처럼 행위 중심으로 작성할 수 있다. 
+9. 단, 의미가 모호해지는 경우에는 `getById`, `listActive`, `createAdmin`, `reissueToken`처럼 조건/목적/대상을 보강한다. 
+10. 저장소 계층은 `findBy...`, `existsBy...`, `save`, `deleteBy...` 등 조회/저장 의도가 드러나는 이름을 사용한다. 
+11. 구현 레이어는 재사용 가능한 역할이 드러나도록 `UserFinder`, `UserAppender`, `SmsSender`와 같이 작성한다.
 
 ## 종속성 관리
 
