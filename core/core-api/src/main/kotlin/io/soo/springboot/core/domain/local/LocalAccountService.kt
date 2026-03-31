@@ -65,10 +65,10 @@ class LocalAccountService(
 
         // 2) 사용자 정보 저장
         val user = userRepository.save(
-            User(
+            User.createLocal(
                 email = cmd.email,
-                emailVerified = false,
                 phoneNumber = normalizedPhone,
+                emailVerified = false,
                 phoneVerified = false,
                 name = cmd.name,
                 nickname = cmd.nickname,
@@ -78,7 +78,6 @@ class LocalAccountService(
                 birthday = cmd.birthday,
                 profileImageUrl = cmd.profileImageUrl,
                 thumbnailImageUrl = cmd.thumbnailImageUrl,
-                authProvider = AuthProvider.LOCAL,
             )
         )
 
@@ -103,16 +102,15 @@ class LocalAccountService(
         val encodedPassword = passwordEncoder.encode(generateInternalPassword())
 
         val user = userRepository.save(
-            User(
+            User.createLocal(
                 email = internalEmail,
-                emailVerified = false,
                 phoneNumber = normalizedPhone,
+                emailVerified = false,
                 phoneVerified = false,
                 name = null,
                 nickname = null,
                 gender = Gender.UNKNOWN,
                 locale = "ko-KR",
-                authProvider = AuthProvider.LOCAL,
             )
         )
 
@@ -187,35 +185,12 @@ class LocalAccountService(
         val anonymizedPhone = buildAnonymizedPhone(userId, now)
 
         userRepository.save(
-            user.copy(
-                email = anonymizedEmail,
-                emailVerified = false,
-                phoneNumber = anonymizedPhone,
-                phoneNumberE164 = null,
-                phoneVerified = false,
-                name = null,
-                nickname = null,
-                gender = Gender.UNKNOWN,
-                locale = null,
-                birthyear = null,
-                birthday = null,
-                ageRange = null,
-                profileImageUrl = null,
-                thumbnailImageUrl = null,
-                oauthProviderUserId = null,
-                oauthConnectedAt = null,
-                oauthExtraJson = null,
-                oauthRawJson = null,
-                userStatus = UserStatus.SOFT_DELETED,
-                blocked = false,
-                blockedReason = null,
-                blockedAt = null,
-                blockedByAdminId = null,
-                unblockedAt = null,
-                unblockedByAdminId = null,
-                deletedAt = now,
-                deletionReason = trimmedReason,
+            user.softDelete(
+                at = now,
                 retentionUntil = retentionUntil,
+                reason = trimmedReason,
+                anonymizedEmail = anonymizedEmail,
+                anonymizedPhone = anonymizedPhone,
             )
         )
 

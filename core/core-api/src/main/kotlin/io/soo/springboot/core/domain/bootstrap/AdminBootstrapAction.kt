@@ -1,8 +1,6 @@
 package io.soo.springboot.core.domain.bootstrap
 
-import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.Role
-import io.soo.springboot.core.enums.UserStatus
 import io.soo.springboot.storage.db.core.LocalCredential
 import io.soo.springboot.storage.db.core.LocalCredentialRepository
 import io.soo.springboot.storage.db.core.User
@@ -31,14 +29,12 @@ class CreateAdminStep(
     override fun apply(state: AdminBootstrapState): AdminBootstrapState {
         if (state.user != null) return state
         val created = userRepository.save(
-            User(
+            User.createLocal(
                 email = state.command.username,
                 phoneNumber = null,
                 name = null,
                 nickname = null,
-                authProvider = AuthProvider.LOCAL,
                 role = Role.ADMIN,
-                userStatus = UserStatus.ACTIVE,
             ),
         )
         return state.copy(user = created, accountCreated = true)
@@ -53,7 +49,7 @@ class PromoteRoleStep(
     override fun apply(state: AdminBootstrapState): AdminBootstrapState {
         val current = state.user ?: return state
         if (current.role == Role.ADMIN) return state
-        val promoted = userRepository.save(current.copy(role = Role.ADMIN))
+        val promoted = userRepository.save(current.promoteToAdmin())
         return state.copy(user = promoted, rolePromoted = true)
     }
 }

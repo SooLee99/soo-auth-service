@@ -63,7 +63,24 @@ class OAuth2AccountService(
 
         if (existing != null) {
             userStatusPolicy.validateLoginAllowed(existing)
-            val updated = existing.merge(info, objectMapper)
+            val updated = existing.mergeOAuth2Profile(
+                email = info.email,
+                emailVerified = info.emailVerified,
+                name = info.name,
+                nickname = info.nickname,
+                locale = info.locale,
+                profileImageUrl = info.profileImageUrl,
+                thumbnailImageUrl = info.thumbnailImageUrl,
+                gender = info.gender,
+                birthday = info.birthday,
+                birthyear = info.birthyear,
+                ageRange = info.ageRange,
+                phoneNumber = info.phoneNumber,
+                phoneNumberE164 = info.phoneNumberE164,
+                connectedAt = info.connectedAt,
+                extraJson = info.extra.takeIf { it.isNotEmpty() }?.let { objectMapper.writeValueAsString(it) },
+                rawJson = info.raw.takeIf { it.isNotEmpty() }?.let { objectMapper.writeValueAsString(it) },
+            )
             userRepository.save(updated)
             return existing.id
         }
@@ -71,12 +88,13 @@ class OAuth2AccountService(
         val emailToSave = info.email?.takeIf { it.isNotBlank() }
             ?: "${info.provider.name.lowercase()}_${info.providerUserId}@oauth.local"
 
-        val user = User(
+        val user = User.createOAuth2(
+            provider = info.provider,
+            providerUserId = info.providerUserId,
             email = emailToSave,
             emailVerified = info.emailVerified ?: false,
             phoneNumber = info.phoneNumber,
             phoneNumberE164 = info.phoneNumberE164,
-            phoneVerified = false,
             nickname = info.nickname ?: info.name,
             name = info.name ?: info.nickname,
             locale = info.locale ?: "ko-KR",
@@ -86,34 +104,11 @@ class OAuth2AccountService(
             ageRange = info.ageRange,
             profileImageUrl = info.profileImageUrl,
             thumbnailImageUrl = info.thumbnailImageUrl,
-            authProvider = info.provider,
-            oauthProviderUserId = info.providerUserId,
-            oauthConnectedAt = info.connectedAt,
-            oauthExtraJson = info.extra.takeIf { it.isNotEmpty() }?.let { objectMapper.writeValueAsString(it) },
-            oauthRawJson = info.raw.takeIf { it.isNotEmpty() }?.let { objectMapper.writeValueAsString(it) },
+            connectedAt = info.connectedAt,
+            extraJson = info.extra.takeIf { it.isNotEmpty() }?.let { objectMapper.writeValueAsString(it) },
+            rawJson = info.raw.takeIf { it.isNotEmpty() }?.let { objectMapper.writeValueAsString(it) },
         )
 
         return userRepository.save(user).id
-    }
-
-    private fun User.merge(info: OAuth2Profile, om: ObjectMapper): User {
-        return copy(
-            email = info.email?.takeIf { it.isNotBlank() } ?: email,
-            emailVerified = info.emailVerified ?: emailVerified,
-            name = info.name?.takeIf { it.isNotBlank() } ?: name,
-            nickname = info.nickname?.takeIf { it.isNotBlank() } ?: nickname,
-            locale = info.locale?.takeIf { it.isNotBlank() } ?: locale,
-            profileImageUrl = info.profileImageUrl?.takeIf { it.isNotBlank() } ?: profileImageUrl,
-            thumbnailImageUrl = info.thumbnailImageUrl?.takeIf { it.isNotBlank() } ?: thumbnailImageUrl,
-            gender = info.gender ?: gender,
-            birthday = info.birthday?.takeIf { it.isNotBlank() } ?: birthday,
-            birthyear = info.birthyear?.takeIf { it.isNotBlank() } ?: birthyear,
-            ageRange = info.ageRange?.takeIf { it.isNotBlank() } ?: ageRange,
-            phoneNumber = info.phoneNumber?.takeIf { it.isNotBlank() } ?: phoneNumber,
-            phoneNumberE164 = info.phoneNumberE164?.takeIf { it.isNotBlank() } ?: phoneNumberE164,
-            oauthConnectedAt = info.connectedAt ?: oauthConnectedAt,
-            oauthExtraJson = if (info.extra.isNotEmpty()) om.writeValueAsString(info.extra) else oauthExtraJson,
-            oauthRawJson = if (info.raw.isNotEmpty()) om.writeValueAsString(info.raw) else oauthRawJson,
-        )
     }
 }

@@ -30,15 +30,7 @@ class UserBlockService(
 
         val now = Instant.now()
         val trimmedReason = reason?.trim()?.takeIf { it.isNotBlank() }
-        val updated = user.copy(
-            userStatus = UserStatus.BLOCKED,
-            blocked = true,
-            blockedReason = trimmedReason,
-            blockedAt = now,
-            blockedByAdminId = adminUserId,
-            unblockedAt = null,
-            unblockedByAdminId = null,
-        )
+        val updated = user.block(byAdminId = adminUserId, at = now, reason = trimmedReason)
 
         val saved = userRepository.save(updated)
         userStatusAuditLogRepository.save(
@@ -59,12 +51,7 @@ class UserBlockService(
         }
 
         val now = Instant.now()
-        val updated = user.copy(
-            userStatus = UserStatus.ACTIVE,
-            blocked = false,
-            unblockedAt = now,
-            unblockedByAdminId = adminUserId,
-        )
+        val updated = user.unblock(byAdminId = adminUserId, at = now)
 
         val saved = userRepository.save(updated)
         userStatusAuditLogRepository.save(
