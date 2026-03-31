@@ -5,6 +5,7 @@ import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.Role
 import io.soo.springboot.core.enums.UserStatus
 import io.soo.springboot.core.domain.local.LocalAccountService
+import io.soo.springboot.core.domain.local.policy.UserUniquenessPolicy
 import io.soo.springboot.core.domain.token.TokenRevocationService
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType
@@ -45,6 +46,7 @@ class UserAdminService(
     private val localCredentialRepository: LocalCredentialRepository,
     private val passwordEncoder: PasswordEncoder,
     private val tokenRevocationService: TokenRevocationService,
+    private val userUniquenessPolicy: UserUniquenessPolicy,
 ) {
     @Transactional(readOnly = true)
     fun list(
@@ -83,8 +85,8 @@ class UserAdminService(
         val updatedEmail = command.email?.trim()?.lowercase() ?: current.email
         val updatedPhone = command.phoneNumber?.trim() ?: current.phoneNumber
 
-        validateUniqueEmail(current.id, current.email, updatedEmail)
-        validateUniquePhone(current.id, current.phoneNumber, updatedPhone)
+        userUniquenessPolicy.validateUpdateEmail(current.id, current.email, updatedEmail)
+        userUniquenessPolicy.validateUpdatePhone(current.id, current.phoneNumber, updatedPhone)
 
         val saved = userRepository.save(
             current.updateByAdmin(
@@ -148,22 +150,5 @@ class UserAdminService(
             ?: throw CoreException(ErrorType.NOT_FOUND, data = mapOf("userId" to userId))
         tokenRevocationService.revokeAllByUserId(userId)
         return user
-    }
-
-    private fun validateUniqueEmail(currentUserId: Long, currentEmail: String, targetEmail: String) {
-        if (targetEmail == currentEmail) return
-        val existed = userRepository.findByEmail(targetEmail)
-        if (existed != null && existed.id != currentUserId) {
-            throw CoreException(ErrorType.DUPLICATE_EMAIL, data = mapOf("email" to targetEmail))
-        }
-    }
-
-    private fun validateUniquePhone(currentUserId: Long, currentPhone: String?, targetPhone: String?) {
-        if (currentUserId <= 0) return
-        if (targetPhone == null || targetPhone == currentPhone) return
-        val duplicated = userRepository.existsByPhoneNumber(targetPhone)
-        if (duplicated) {
-            throw CoreException(ErrorType.DUPLICATE_PHONE_NUMBER, data = mapOf("phoneNumber" to targetPhone))
-        }
     }
 }

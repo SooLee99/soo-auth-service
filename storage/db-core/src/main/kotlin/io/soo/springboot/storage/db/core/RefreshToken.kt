@@ -15,4 +15,20 @@ data class RefreshToken(
     val usedAt: Instant? = null,
     val revokedAt: Instant? = null,
     val replacedByHash: String? = null,
-)
+) {
+    fun markUsed(at: Instant, nextTokenHash: String): RefreshToken {
+        return copy(
+            usedAt = at,
+            replacedByHash = nextTokenHash,
+            lastAccessedAt = at,
+        )
+    }
+
+    fun revoke(at: Instant): RefreshToken {
+        if (revokedAt != null) return this
+        return copy(
+            revokedAt = at,
+            lastAccessedAt = at,
+        )
+    }
+}

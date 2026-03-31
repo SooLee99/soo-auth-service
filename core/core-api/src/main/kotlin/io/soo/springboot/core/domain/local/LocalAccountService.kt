@@ -7,11 +7,14 @@ import org.springframework.security.crypto.password.PasswordEncoder
 
 import io.soo.springboot.core.enums.AdminUserActionType
 import io.soo.springboot.core.enums.Gender
-import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.UserStatus
-import io.soo.springboot.core.domain.UserStatusPolicy
-import io.soo.springboot.core.support.error.ErrorType
+import io.soo.springboot.core.domain.local.phone.login.PhoneLoginContext
+import io.soo.springboot.core.domain.local.phone.login.PhoneLoginResolver
+import io.soo.springboot.core.domain.local.policy.UserUniquenessPolicy
+import io.soo.springboot.core.domain.local.support.PhoneNumberNormalizer
+import io.soo.springboot.core.domain.local.support.PhoneAccountFactory
 import io.soo.springboot.core.support.error.CoreException
+import io.soo.springboot.core.support.error.ErrorType
 
 import io.soo.springboot.core.domain.token.TokenRevocationService
 import io.soo.springboot.core.domain.local.phone.PhoneVerificationService
@@ -22,8 +25,6 @@ import io.soo.springboot.storage.db.core.UserRepository
 import io.soo.springboot.storage.db.core.UserStatusAuditLogRepository
 import java.time.Instant
 import java.time.ZoneOffset
-import java.security.MessageDigest
-import java.security.SecureRandom
 
 
 data class LocalSignUpCommand(
@@ -48,20 +49,22 @@ class LocalAccountService(
     private val passwordEncoder: PasswordEncoder,
     private val tokenRevocationService: TokenRevocationService,
     private val phoneVerificationService: PhoneVerificationService,
-    private val userStatusPolicy: UserStatusPolicy,
     private val userStatusAuditLogRepository: UserStatusAuditLogRepository,
+    private val userUniquenessPolicy: UserUniquenessPolicy,
+    private val phoneNumberNormalizer: PhoneNumberNormalizer,
+    private val phoneAccountFactory: PhoneAccountFactory,
+    private val phoneLoginResolver: PhoneLoginResolver,
 ) {
-    private val secureRandom = SecureRandom()
-
     @Transactional
     fun signup(cmd: LocalSignUpCommand): User {
         phoneVerificationService.consume(cmd.phoneNumber, cmd.phoneVerificationToken)
-        val normalizedPhone = normalizePhoneNumber(cmd.phoneNumber)
+        val normalizedPhone = phoneNumberNormalizer.normalize(cmd.phoneNumber)
 
-        // 1) 중복 이메일/전화번호 검사
-        if (userRepository.existsByEmail(cmd.email))
-            throw CoreException(ErrorType.DUPLICATE_EMAIL, data = mapOf("email" to cmd.email))
-        validatePhoneDuplicated(cmd.phoneNumber, normalizedPhone)
+        userUniquenessPolicy.validateSignUp(
+            email = cmd.email,
+            rawPhone = cmd.phoneNumber,
+            normalizedPhone = normalizedPhone,
+        )
 
         // 2) 사용자 정보 저장
         val user = userRepository.save(
@@ -95,15 +98,14 @@ class LocalAccountService(
     @Transactional
     fun signupPhone(phoneNumber: String, phoneVerificationToken: String): User {
         phoneVerificationService.consume(phoneNumber, phoneVerificationToken)
-        val normalizedPhone = normalizePhoneNumber(phoneNumber)
-        validatePhoneDuplicated(phoneNumber, normalizedPhone)
-
-        val internalEmail = issueUniqueInternalEmail(normalizedPhone)
-        val encodedPassword = passwordEncoder.encode(generateInternalPassword())
+        val normalizedPhone = phoneNumberNormalizer.normalize(phoneNumber)
+        userUniquenessPolicy.validatePhoneAvailable(phoneNumber, normalizedPhone)
+        val internalAccount = phoneAccountFactory.create(normalizedPhone)
+        val encodedPassword = passwordEncoder.encode(internalAccount.rawPassword)
 
         val user = userRepository.save(
             User.createLocal(
-                email = internalEmail,
+                email = internalAccount.email,
                 phoneNumber = normalizedPhone,
                 emailVerified = false,
                 phoneVerified = false,
@@ -117,7 +119,7 @@ class LocalAccountService(
         localAccountRepository.save(
             LocalCredential(
                 userId = user.id,
-                userEmail = internalEmail,
+                userEmail = internalAccount.email,
                 passwordHash = encodedPassword,
             )
         )
@@ -127,28 +129,19 @@ class LocalAccountService(
     @Transactional
     fun loginByPhone(phoneNumber: String, phoneVerificationToken: String): User {
         phoneVerificationService.consume(phoneNumber, phoneVerificationToken)
-        val normalizedPhone = normalizePhoneNumber(phoneNumber)
+        val normalizedPhone = phoneNumberNormalizer.normalize(phoneNumber)
 
         val activeUser = userRepository.findByPhoneNumber(normalizedPhone)
-        if (activeUser != null) {
-            userStatusPolicy.validateLoginAllowed(activeUser)
+        val userIncludingDeleted = if (activeUser == null) {
+            userRepository.findByPhoneNumberIncludingDeleted(normalizedPhone)
+        } else null
 
-            if (activeUser.authProvider != AuthProvider.LOCAL) {
-                throw CoreException(ErrorType.INVALID_CREDENTIALS)
-            }
-
-            return activeUser
-        }
-
-        val maybeDeletedUser = userRepository.findByPhoneNumberIncludingDeleted(normalizedPhone)
-            ?: throw CoreException(ErrorType.INVALID_CREDENTIALS)
-        userStatusPolicy.validateLoginAllowed(maybeDeletedUser)
-
-        if (maybeDeletedUser.authProvider != AuthProvider.LOCAL) {
-            throw CoreException(ErrorType.INVALID_CREDENTIALS)
-        }
-
-        throw CoreException(ErrorType.INVALID_CREDENTIALS)
+        return phoneLoginResolver.resolve(
+            PhoneLoginContext(
+                activeUser = activeUser,
+                userIncludingDeleted = userIncludingDeleted,
+            )
+        )
     }
 
     /**
@@ -211,66 +204,4 @@ class LocalAccountService(
     private fun buildAnonymizedPhone(userId: Long, at: Instant): String {
         return "deleted-${userId}-${at.epochSecond}"
     }
-
-    private fun validatePhoneDuplicated(rawPhone: String, normalizedPhone: String) {
-        val duplicated = userRepository.existsByPhoneNumber(rawPhone) ||
-            (normalizedPhone != rawPhone && userRepository.existsByPhoneNumber(normalizedPhone))
-        if (duplicated) {
-            throw CoreException(ErrorType.DUPLICATE_PHONE_NUMBER, data = mapOf("phoneNumber" to rawPhone))
-        }
-    }
-
-    private fun normalizePhoneNumber(phoneNumber: String): String {
-        val trimmed = phoneNumber.trim()
-        val hasPlusPrefix = trimmed.startsWith("+")
-        val digits = trimmed.filter { it.isDigit() }
-        return if (hasPlusPrefix) "+$digits" else digits
-    }
-
-    private fun issueUniqueInternalEmail(normalizedPhone: String): String {
-        var candidate = buildInternalEmail(normalizedPhone)
-        var attempt = 0
-        while (userRepository.existsByEmail(candidate) && attempt < 5) {
-            attempt += 1
-            candidate = buildInternalEmail("$normalizedPhone#$attempt")
-        }
-        if (userRepository.existsByEmail(candidate)) {
-            throw CoreException(ErrorType.INVALID_REQUEST, data = mapOf("reason" to "failed to allocate internal email"))
-        }
-        return candidate
-    }
-
-    private fun buildInternalEmail(seed: String): String {
-        val digestBytes = MessageDigest.getInstance("SHA-256").digest(seed.toByteArray(Charsets.UTF_8))
-        val hash = digestBytes.joinToString("") { "%02x".format(it) }.take(40)
-        return "phone-$hash@local.internal"
-    }
-
-    private fun generateInternalPassword(length: Int = 32): String {
-        val lower = "abcdefghjkmnpqrstuvwxyz"
-        val upper = "ABCDEFGHJKMNPQRSTUVWXYZ"
-        val digits = "23456789"
-        val symbols = "!@#$%^&*()-_=+[]{}"
-
-        val required = mutableListOf(
-            lower.random(secureRandom),
-            upper.random(secureRandom),
-            digits.random(secureRandom),
-            symbols.random(secureRandom),
-        )
-
-        val all = lower + upper + digits + symbols
-        repeat((length - required.size).coerceAtLeast(0)) {
-            required += all.random(secureRandom)
-        }
-        for (i in required.lastIndex downTo 1) {
-            val j = secureRandom.nextInt(i + 1)
-            val tmp = required[i]
-            required[i] = required[j]
-            required[j] = tmp
-        }
-        return required.joinToString("")
-    }
-
-    private fun String.random(random: SecureRandom): Char = this[random.nextInt(this.length)]
 }

@@ -103,11 +103,7 @@ class RefreshTokenManager(
 
         // old 토큰 used 처리
         repository.save(
-            old.copy(
-                usedAt = now,
-                replacedByHash = newHash,
-                lastAccessedAt = now,
-            )
+            old.markUsed(at = now, nextTokenHash = newHash)
         )
 
         // 새 토큰 저장
@@ -142,12 +138,7 @@ class RefreshTokenManager(
         val token = repository.findByTokenHash(hash) ?: return
 
         if (token.revokedAt == null) {
-            repository.save(
-                token.copy(
-                    revokedAt = now,
-                    lastAccessedAt = now,
-                )
-            )
+            repository.save(token.revoke(at = now))
         }
     }
 

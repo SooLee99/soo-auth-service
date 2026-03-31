@@ -5,6 +5,10 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import io.soo.springboot.core.domain.local.LocalAccountService
+import io.soo.springboot.core.domain.local.phone.login.PhoneLoginResolver
+import io.soo.springboot.core.domain.local.policy.UserUniquenessPolicy
+import io.soo.springboot.core.domain.local.support.PhoneNumberNormalizer
+import io.soo.springboot.core.domain.local.support.PhoneAccountFactory
 import io.soo.springboot.core.domain.local.phone.PhoneVerificationService
 import io.soo.springboot.core.domain.token.TokenRevocationService
 import io.soo.springboot.core.enums.AdminUserActionType
@@ -29,8 +33,11 @@ class LocalAccountServiceSoftDeleteTest {
     private val passwordEncoder = mockk<PasswordEncoder>()
     private val tokenRevocationService = mockk<TokenRevocationService>(relaxed = true)
     private val phoneVerificationService = mockk<PhoneVerificationService>(relaxed = true)
-    private val userStatusPolicy = mockk<UserStatusPolicy>(relaxed = true)
     private val auditRepository = mockk<UserStatusAuditLogRepository>()
+    private val userUniquenessPolicy = mockk<UserUniquenessPolicy>(relaxed = true)
+    private val phoneNumberNormalizer = PhoneNumberNormalizer()
+    private val phoneAccountFactory = mockk<PhoneAccountFactory>(relaxed = true)
+    private val phoneLoginResolver = mockk<PhoneLoginResolver>(relaxed = true)
 
     private val service = LocalAccountService(
         userRepository = userRepository,
@@ -38,8 +45,11 @@ class LocalAccountServiceSoftDeleteTest {
         passwordEncoder = passwordEncoder,
         tokenRevocationService = tokenRevocationService,
         phoneVerificationService = phoneVerificationService,
-        userStatusPolicy = userStatusPolicy,
         userStatusAuditLogRepository = auditRepository,
+        userUniquenessPolicy = userUniquenessPolicy,
+        phoneNumberNormalizer = phoneNumberNormalizer,
+        phoneAccountFactory = phoneAccountFactory,
+        phoneLoginResolver = phoneLoginResolver,
     )
 
     @Test
