@@ -7,6 +7,8 @@ networks:
 volumes:
   mariadb_data:
   redis_data:
+  loki_data:
+  grafana_data:
 
 services:
   mariadb:
@@ -56,11 +58,9 @@ services:
       retries: 20
       start_period: 5s
 
-  # 운영에서는 보통 제외(필요할 때만 profile로 띄우기)
   phpmyadmin:
     image: phpmyadmin:latest
     restart: unless-stopped
-    profiles: ["debug"]
     environment:
       TZ: Asia/Seoul
       PMA_HOST: mariadb
@@ -75,23 +75,31 @@ services:
 
   loki:
     image: grafana/loki:2.9.8
+    restart: unless-stopped
     command: -config.file=/etc/loki/config.yml
     ports:
       - "3100:3100"
     volumes:
       - ./monitoring/loki/config.yml:/etc/loki/config.yml:ro
+      - loki_data:/tmp/loki
+    networks:
+      - backend
 
   promtail:
     image: grafana/promtail:2.9.8
+    restart: unless-stopped
     command: -config.file=/etc/promtail/config.yml
     depends_on:
       - loki
     volumes:
       - ./monitoring/promtail/config.yml:/etc/promtail/config.yml:ro
       - ./logs:/workspace/logs:ro
+    networks:
+      - backend
 
   grafana:
     image: grafana/grafana:11.1.0
+    restart: unless-stopped
     depends_on:
       - loki
     ports:
@@ -102,6 +110,9 @@ services:
       GF_AUTH_ANONYMOUS_ENABLED: "false"
     volumes:
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana_data:/var/lib/grafana
+    networks:
+      - backend
 
   app:
     build:
@@ -113,7 +124,7 @@ services:
       TZ: Asia/Seoul
 
       # 운영에서 사용할 프로파일로 지정
-      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-live}
 
       # Spring의 ${storage.database.core-db.*} 와 매핑되는 ENV (Relaxed binding)
       # (기존 설정 유지하되, 호스트를 "mariadb"로 고정)
@@ -148,6 +159,12 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      loki:
+        condition: service_started
+      promtail:
+        condition: service_started
+      grafana:
+        condition: service_started
 
     networks:
       - backend

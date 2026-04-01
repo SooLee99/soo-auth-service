@@ -47,10 +47,14 @@ spring:
     import:
       - monitoring.yml
       - logging.yml
-#      - redis.yml
+      - redis.yml
       - db-core.yml
       - client-example.yml
       - optional:file:.env[.properties]
+
+  session:
+    jdbc:
+      initialize-schema: never
 
   web:
     resources:
@@ -61,14 +65,12 @@ spring:
     oauth2:
       client:
         registration:
-          # ✅ Google (기본 provider 내장)
           google:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
             scope: [openid, profile, email]
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
 
-          # ✅ Kakao
           kakao:
             client-id: ${KAKAO_CLIENT_ID}
             client-secret: ${KAKAO_CLIENT_SECRET:}
@@ -78,7 +80,6 @@ spring:
             scope: [profile_nickname, account_email]
             client-name: Kakao
 
-          # ✅ Naver
           naver:
             client-id: ${NAVER_CLIENT_ID}
             client-secret: ${NAVER_CLIENT_SECRET}
@@ -88,7 +89,6 @@ spring:
             client-name: Naver
 
         provider:
-          # ✅ Kakao endpoints
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
             token-uri: https://kauth.kakao.com/oauth/token
@@ -96,7 +96,6 @@ spring:
             user-name-attribute: id
             user-info-authentication-method: header
 
-          # ✅ Naver endpoints
           naver:
             authorization-uri: https://nid.naver.com/oauth2.0/authorize
             token-uri: https://nid.naver.com/oauth2.0/token
@@ -116,6 +115,9 @@ spring:
   config:
     activate:
       on-profile: local
+  session:
+    jdbc:
+      initialize-schema: always
 app:
   bootstrap:
     admin:
@@ -129,6 +131,9 @@ spring:
   config:
     activate:
       on-profile: local-dev
+  session:
+    jdbc:
+      initialize-schema: always
 app:
   bootstrap:
     admin:
@@ -142,15 +147,24 @@ spring:
   config:
     activate:
       on-profile: dev
+  session:
+    jdbc:
+      initialize-schema: always
 
 ---
 spring:
   config:
     activate:
       on-profile: staging
+  session:
+    jdbc:
+      initialize-schema: always
 
 ---
 spring:
   config:
     activate:
       on-profile: live
+  session:
+    jdbc:
+      initialize-schema: always

@@ -107,7 +107,7 @@ spring:
       on-profile: live
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
 
 storage:
   datasource:
