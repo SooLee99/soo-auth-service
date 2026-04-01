@@ -124,6 +124,7 @@ class ApiSecurityConfig(
         http.sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) }
 
         http.authorizeHttpRequests { auth ->
+            auth.requestMatchers("/favicon.ico").permitAll()
             auth.requestMatchers(*PUBLIC_ENDPOINTS).permitAll()
             auth.requestMatchers(ADMIN_API).hasRole("ADMIN")
             auth.requestMatchers("/docs/**").permitAll()
