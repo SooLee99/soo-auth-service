@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.servlet.NoHandlerFoundException
 import org.springframework.web.multipart.MaxUploadSizeExceededException
+import org.springframework.web.servlet.resource.NoResourceFoundException
 import java.nio.file.AccessDeniedException as FileAccessDeniedException
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
@@ -345,6 +346,13 @@ class ApiControllerAdvice {
     ): ResponseEntity<ApiResponse<Nothing>> {
         val msg = "필수 파라미터 '${e.parameterName}'(${e.parameterType})이(가) 누락되었습니다."
         return respond(ErrorType.INVALID_PARAMETER, req, msg, e.message)
+    }
+
+    @ExceptionHandler(NoResourceFoundException::class)
+    fun ignoreNoResource(
+        e: NoResourceFoundException
+    ): ResponseEntity<Void> {
+        return ResponseEntity.notFound().build()
     }
 
     @ExceptionHandler(Exception::class)
