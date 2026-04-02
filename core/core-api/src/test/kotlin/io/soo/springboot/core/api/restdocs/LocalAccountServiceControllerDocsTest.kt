@@ -11,17 +11,16 @@ import io.soo.springboot.core.api.controller.v1.request.WithdrawRequest
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.api.security.token.IssuedTokens
-import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.core.domain.local.LocalAccountService
+import io.soo.springboot.core.domain.local.login.LocalIssuedTokens
+import io.soo.springboot.core.domain.local.login.LocalPhoneLoginService
 import io.soo.springboot.core.enums.Gender
-import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.test.api.RestDocsTest
 import io.soo.springboot.test.api.RestDocsUtils
 import io.soo.springboot.test.api.mockMvcDocument
 import io.soo.springboot.test.api.requestFields
 import io.soo.springboot.test.api.requestHeaders
 import io.soo.springboot.test.api.responseFields
-import io.soo.springboot.storage.db.core.User
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
@@ -36,13 +35,13 @@ import java.time.Instant
 class LocalAccountServiceControllerDocsTest : RestDocsTest() {
 
     private val localAccountService = mockk<LocalAccountService>(relaxed = true)
+    private val localPhoneLoginService = mockk<LocalPhoneLoginService>()
     private val authTokenManager = mockk<AuthTokenManager>()
-    private val loginHistoryService = mockk<LoginHistoryService>(relaxed = true)
     private lateinit var controller: LocalAccountController
 
     @BeforeEach
     fun init() {
-        controller = LocalAccountController(localAccountService, authTokenManager, loginHistoryService)
+        controller = LocalAccountController(localAccountService, localPhoneLoginService, authTokenManager)
         mockMvc = mockController(controller)
     }
 
@@ -164,15 +163,7 @@ class LocalAccountServiceControllerDocsTest : RestDocsTest() {
 
     @Test
     fun loginWithPhone() {
-        every { localAccountService.loginByPhone(any(), any()) } returns User(
-            id = 1L,
-            email = "phone-user@local.internal",
-            phoneNumber = "+821012345678",
-            name = null,
-            nickname = null,
-            authProvider = AuthProvider.LOCAL,
-        )
-        every { authTokenManager.issue(any(), any(), any(), any()) } returns IssuedTokens(
+        every { localPhoneLoginService.login(any()) } returns LocalIssuedTokens(
             accessToken = "access-token",
             accessExpiresInSec = 3600,
             refreshToken = "refresh-token",

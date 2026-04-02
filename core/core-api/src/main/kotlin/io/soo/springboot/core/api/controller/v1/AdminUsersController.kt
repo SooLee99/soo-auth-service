@@ -7,7 +7,8 @@ import io.soo.springboot.core.api.controller.v1.response.AdminUserBlockResponse
 import io.soo.springboot.core.api.controller.v1.response.AdminUserDetailResponse
 import io.soo.springboot.core.api.controller.v1.response.AdminUserSummaryResponse
 import io.soo.springboot.core.api.security.auth.UserIdResolver
-import io.soo.springboot.core.domain.admin.UserAdminService
+import io.soo.springboot.core.domain.admin.AdminUserCommandUseCase
+import io.soo.springboot.core.domain.admin.AdminUserQueryUseCase
 import io.soo.springboot.core.domain.admin.UserUpdateCommand
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.Role
@@ -29,11 +30,11 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
-
 @RestController
 @RequestMapping("/api/v1/auth/admin")
 class AdminUsersController(
-    private val adminUserManagementService: UserAdminService,
+    private val adminUserQueryUseCase: AdminUserQueryUseCase,
+    private val adminUserCommandUseCase: AdminUserCommandUseCase,
     private val userIdResolver: UserIdResolver,
 ) {
     @GetMapping("/users/{userId}", produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -41,7 +42,7 @@ class AdminUsersController(
         @PathVariable userId: Long,
         req: HttpServletRequest,
     ): ApiResponse<AdminUserDetailResponse> {
-        val found = adminUserManagementService.getById(userId)
+        val found = adminUserQueryUseCase.getById(userId)
         return ApiResponse.success(req = req, data = AdminUserDetailResponse.from(found))
     }
 
@@ -56,7 +57,7 @@ class AdminUsersController(
         req: HttpServletRequest,
     ): ApiResponse<Page<AdminUserSummaryResponse>> {
         val pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"))
-        val result = adminUserManagementService.list(
+        val result = adminUserQueryUseCase.list(
             keyword = keyword,
             userStatus = userStatus,
             role = role,
@@ -74,7 +75,7 @@ class AdminUsersController(
         req: HttpServletRequest,
     ): ApiResponse<AdminUserDetailResponse> {
         val adminUserId = userIdResolver.resolve(authentication)
-        val updated = adminUserManagementService.updateUser(
+        val updated = adminUserCommandUseCase.update(
             userId = userId,
             command = UserUpdateCommand(
                 email = body.email,
@@ -105,7 +106,7 @@ class AdminUsersController(
         @RequestBody @Valid body: AdminUserPasswordResetRequest,
         req: HttpServletRequest,
     ): ApiResponse<AdminUserDetailResponse> {
-        val user = adminUserManagementService.updatePassword(userId = userId, newPassword = body.newPassword)
+        val user = adminUserCommandUseCase.updatePassword(userId = userId, newPassword = body.newPassword)
         return ApiResponse.success(req = req, data = AdminUserDetailResponse.from(user))
     }
 
@@ -117,7 +118,7 @@ class AdminUsersController(
         req: HttpServletRequest,
     ): ApiResponse<AdminUserBlockResponse> {
         val adminUserId = userIdResolver.resolve(authentication)
-        val deleted = adminUserManagementService.softDeleteUser(
+        val deleted = adminUserCommandUseCase.softDelete(
             userId = userId,
             reason = body?.reason,
             adminUserId = adminUserId,
@@ -130,8 +131,7 @@ class AdminUsersController(
         @PathVariable userId: Long,
         req: HttpServletRequest,
     ): ApiResponse<AdminUserDetailResponse> {
-        val user = adminUserManagementService.revokeTokens(userId = userId)
+        val user = adminUserCommandUseCase.revokeTokens(userId = userId)
         return ApiResponse.success(req = req, data = AdminUserDetailResponse.from(user))
     }
-
 }

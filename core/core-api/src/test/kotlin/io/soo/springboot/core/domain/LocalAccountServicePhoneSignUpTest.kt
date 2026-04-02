@@ -11,6 +11,7 @@ import io.soo.springboot.core.domain.local.support.PhoneNumberNormalizer
 import io.soo.springboot.core.domain.local.support.PhoneAccountFactory
 import io.soo.springboot.core.domain.local.phone.PhoneVerificationService
 import io.soo.springboot.core.domain.token.TokenRevocationService
+import io.soo.springboot.core.domain.user.UserLifecycleService
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.core.support.error.CoreException
@@ -19,7 +20,6 @@ import io.soo.springboot.storage.db.core.LocalCredential
 import io.soo.springboot.storage.db.core.LocalCredentialRepository
 import io.soo.springboot.storage.db.core.User
 import io.soo.springboot.storage.db.core.UserRepository
-import io.soo.springboot.storage.db.core.UserStatusAuditLogRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -31,23 +31,23 @@ class LocalAccountServicePhoneSignUpTest {
     private val passwordEncoder = mockk<PasswordEncoder>()
     private val tokenRevocationService = mockk<TokenRevocationService>(relaxed = true)
     private val phoneVerificationService = mockk<PhoneVerificationService>(relaxed = true)
-    private val auditRepository = mockk<UserStatusAuditLogRepository>(relaxed = true)
     private val userUniquenessPolicy = UserUniquenessPolicy(userRepository)
     private val phoneNumberNormalizer = PhoneNumberNormalizer()
     private val phoneAccountFactory = PhoneAccountFactory(userRepository)
     private val phoneLoginResolver = mockk<PhoneLoginResolver>(relaxed = true)
+    private val userLifecycleService = mockk<UserLifecycleService>(relaxed = true)
 
     private val service = LocalAccountService(
         userRepository = userRepository,
-        localAccountRepository = localCredentialRepository,
+        localCredentialRepository = localCredentialRepository,
         passwordEncoder = passwordEncoder,
         tokenRevocationService = tokenRevocationService,
         phoneVerificationService = phoneVerificationService,
-        userStatusAuditLogRepository = auditRepository,
         userUniquenessPolicy = userUniquenessPolicy,
         phoneNumberNormalizer = phoneNumberNormalizer,
         phoneAccountFactory = phoneAccountFactory,
         phoneLoginResolver = phoneLoginResolver,
+        userLifecycleService = userLifecycleService,
     )
 
     @Test

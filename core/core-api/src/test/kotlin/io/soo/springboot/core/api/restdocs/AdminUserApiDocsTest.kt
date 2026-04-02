@@ -10,7 +10,8 @@ import io.soo.springboot.core.api.controller.v1.request.AdminUserDeleteRequest
 import io.soo.springboot.core.api.controller.v1.request.AdminUserPasswordResetRequest
 import io.soo.springboot.core.api.controller.v1.request.AdminUserUpdateRequest
 import io.soo.springboot.core.api.security.auth.UserIdResolver
-import io.soo.springboot.core.domain.admin.UserAdminService
+import io.soo.springboot.core.domain.admin.AdminUserCommandUseCase
+import io.soo.springboot.core.domain.admin.AdminUserQueryUseCase
 import io.soo.springboot.core.domain.admin.UserBlockService
 import io.soo.springboot.core.domain.LoginHistoryService
 import io.soo.springboot.core.enums.AdminUserActionType
@@ -49,14 +50,15 @@ class AdminUserApiDocsTest : RestDocsTest() {
     private val loginHistoryService = mockk<LoginHistoryService>()
     private val userIdResolver = mockk<UserIdResolver>()
     private val adminUserBlockServiceService = mockk<UserBlockService>()
-    private val adminUserManagementService = mockk<UserAdminService>(relaxed = true)
+    private val adminUserQueryUseCase = mockk<AdminUserQueryUseCase>(relaxed = true)
+    private val adminUserCommandUseCase = mockk<AdminUserCommandUseCase>(relaxed = true)
     private lateinit var userController: AdminUsersController
     private lateinit var statusController: AdminUserStatusController
     private lateinit var historyController: AdminLoginHistoryController
 
     @BeforeEach
     fun init() {
-        userController = AdminUsersController(adminUserManagementService, userIdResolver)
+        userController = AdminUsersController(adminUserQueryUseCase, adminUserCommandUseCase, userIdResolver)
         statusController = AdminUserStatusController(userIdResolver, adminUserBlockServiceService)
         historyController = AdminLoginHistoryController(loginHistoryService, userIdResolver)
         mockMvc = mockControllers(userController, statusController, historyController)
@@ -228,7 +230,7 @@ class AdminUserApiDocsTest : RestDocsTest() {
 
     @Test
     fun userDetail() {
-        every { adminUserManagementService.getById(1L) } returns sampleAdminManagedUser()
+        every { adminUserQueryUseCase.getById(1L) } returns sampleAdminManagedUser()
 
         val authentication = TestingAuthenticationToken("admin", "password", "ROLE_ADMIN")
 
@@ -258,7 +260,7 @@ class AdminUserApiDocsTest : RestDocsTest() {
     @Test
     fun update() {
         every { userIdResolver.resolve(any()) } returns 100L
-        every { adminUserManagementService.updateUser(1L, any(), 100L) } returns sampleAdminManagedUser().copy(
+        every { adminUserCommandUseCase.update(1L, any(), 100L) } returns sampleAdminManagedUser().copy(
             nickname = "updated-nickname",
             role = Role.ADMIN,
         )
@@ -317,7 +319,7 @@ class AdminUserApiDocsTest : RestDocsTest() {
     @Test
     fun delete() {
         every { userIdResolver.resolve(any()) } returns 100L
-        every { adminUserManagementService.softDeleteUser(1L, "admin-delete", 100L) } returns sampleSoftDeletedUser()
+        every { adminUserCommandUseCase.softDelete(1L, "admin-delete", 100L) } returns sampleSoftDeletedUser()
 
         val authentication = TestingAuthenticationToken("admin", "password", "ROLE_ADMIN")
 
@@ -352,7 +354,7 @@ class AdminUserApiDocsTest : RestDocsTest() {
     @Test
     fun list() {
         val page = PageImpl(listOf(sampleAdminManagedUser()), PageRequest.of(0, 20), 1)
-        every { adminUserManagementService.list(any(), any(), any(), any(), any()) } returns page
+        every { adminUserQueryUseCase.list(any(), any(), any(), any(), any()) } returns page
 
         val authentication = TestingAuthenticationToken("admin", "password", "ROLE_ADMIN")
 
@@ -392,7 +394,7 @@ class AdminUserApiDocsTest : RestDocsTest() {
 
     @Test
     fun resetUserPassword() {
-        every { adminUserManagementService.updatePassword(1L, any()) } returns sampleAdminManagedUser()
+        every { adminUserCommandUseCase.updatePassword(1L, any()) } returns sampleAdminManagedUser()
 
         val authentication = TestingAuthenticationToken("admin", "password", "ROLE_ADMIN")
 
@@ -426,7 +428,7 @@ class AdminUserApiDocsTest : RestDocsTest() {
 
     @Test
     fun revokeTokens() {
-        every { adminUserManagementService.revokeTokens(1L) } returns sampleAdminManagedUser()
+        every { adminUserCommandUseCase.revokeTokens(1L) } returns sampleAdminManagedUser()
 
         val authentication = TestingAuthenticationToken("admin", "password", "ROLE_ADMIN")
 

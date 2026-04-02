@@ -1,78 +1,31 @@
 package io.soo.springboot.core.domain.admin
 
-import io.soo.springboot.core.enums.Gender
-import io.soo.springboot.core.enums.AuthProvider
-import io.soo.springboot.core.enums.Role
-import io.soo.springboot.core.enums.UserStatus
-import io.soo.springboot.core.domain.local.LocalAccountService
 import io.soo.springboot.core.domain.local.policy.UserUniquenessPolicy
 import io.soo.springboot.core.domain.token.TokenRevocationService
+import io.soo.springboot.core.domain.user.UserLifecycleService
+import io.soo.springboot.core.enums.UserStatus
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.storage.db.core.LocalCredential
 import io.soo.springboot.storage.db.core.LocalCredentialRepository
 import io.soo.springboot.storage.db.core.User
 import io.soo.springboot.storage.db.core.UserRepository
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 
-data class UserUpdateCommand(
-    val email: String? = null,
-    val phoneNumber: String? = null,
-    val name: String? = null,
-    val nickname: String? = null,
-    val gender: Gender? = null,
-    val locale: String? = null,
-    val birthyear: String? = null,
-    val birthday: String? = null,
-    val profileImageUrl: String? = null,
-    val thumbnailImageUrl: String? = null,
-    val role: Role? = null,
-    val userStatus: UserStatus? = null,
-    val blocked: Boolean? = null,
-    val blockedReason: String? = null,
-    val emailVerified: Boolean? = null,
-    val phoneVerified: Boolean? = null,
-)
-
 @Service
-class UserAdminService(
+class UserAdminCommandService(
     private val userRepository: UserRepository,
-    private val localAccountService: LocalAccountService,
     private val localCredentialRepository: LocalCredentialRepository,
     private val passwordEncoder: PasswordEncoder,
     private val tokenRevocationService: TokenRevocationService,
     private val userUniquenessPolicy: UserUniquenessPolicy,
-) {
-    @Transactional(readOnly = true)
-    fun list(
-        keyword: String?,
-        userStatus: UserStatus?,
-        role: Role?,
-        authProvider: AuthProvider?,
-        pageable: Pageable,
-    ): Page<User> {
-        return userRepository.searchUsers(
-            keyword = keyword,
-            userStatus = userStatus,
-            role = role,
-            authProvider = authProvider,
-            pageable = pageable,
-        )
-    }
-
-    @Transactional(readOnly = true)
-    fun getById(userId: Long): User {
-        return userRepository.findByIdIncludingDeleted(userId)
-            ?: throw CoreException(ErrorType.NOT_FOUND, data = mapOf("userId" to userId))
-    }
-
+    private val userLifecycleService: UserLifecycleService,
+) : AdminUserCommandUseCase {
     @Transactional
-    fun updateUser(userId: Long, command: UserUpdateCommand, adminUserId: Long): User {
+    override fun update(userId: Long, command: UserUpdateCommand, adminUserId: Long): User {
         val current = userRepository.findByIdIncludingDeleted(userId)
             ?: throw CoreException(ErrorType.NOT_FOUND, data = mapOf("userId" to userId))
         if (command.userStatus == UserStatus.SOFT_DELETED) {
@@ -82,13 +35,13 @@ class UserAdminService(
             )
         }
 
-        val updatedEmail = command.email?.trim()?.lowercase() ?: current.email
-        val updatedPhone = command.phoneNumber?.trim() ?: current.phoneNumber
+        val nextEmail = command.email?.trim()?.lowercase() ?: current.email
+        val nextPhone = command.phoneNumber?.trim() ?: current.phoneNumber
 
-        userUniquenessPolicy.validateUpdateEmail(current.id, current.email, updatedEmail)
-        userUniquenessPolicy.validateUpdatePhone(current.id, current.phoneNumber, updatedPhone)
+        userUniquenessPolicy.validateUpdateEmail(current.id, current.email, nextEmail)
+        userUniquenessPolicy.validateUpdatePhone(current.id, current.phoneNumber, nextPhone)
 
-        val saved = userRepository.save(
+        return userRepository.save(
             current.updateByAdmin(
                 email = command.email,
                 phoneNumber = command.phoneNumber,
@@ -110,19 +63,17 @@ class UserAdminService(
                 now = Instant.now(),
             )
         )
-
-        return saved
     }
 
     @Transactional
-    fun softDeleteUser(userId: Long, reason: String?, adminUserId: Long): User {
-        localAccountService.softDelete(userId = userId, reason = reason, actorUserId = adminUserId)
+    override fun softDelete(userId: Long, reason: String?, adminUserId: Long): User {
+        userLifecycleService.softDelete(userId = userId, reason = reason, actorUserId = adminUserId)
         return userRepository.findByIdIncludingDeleted(userId)
             ?: throw CoreException(ErrorType.NOT_FOUND, data = mapOf("userId" to userId))
     }
 
     @Transactional
-    fun updatePassword(userId: Long, newPassword: String): User {
+    override fun updatePassword(userId: Long, newPassword: String): User {
         val user = userRepository.findByIdIncludingDeleted(userId)
             ?: throw CoreException(ErrorType.NOT_FOUND, data = mapOf("userId" to userId))
         if (user.userStatus == UserStatus.SOFT_DELETED) {
@@ -145,7 +96,7 @@ class UserAdminService(
     }
 
     @Transactional
-    fun revokeTokens(userId: Long): User {
+    override fun revokeTokens(userId: Long): User {
         val user = userRepository.findByIdIncludingDeleted(userId)
             ?: throw CoreException(ErrorType.NOT_FOUND, data = mapOf("userId" to userId))
         tokenRevocationService.revokeAllByUserId(userId)

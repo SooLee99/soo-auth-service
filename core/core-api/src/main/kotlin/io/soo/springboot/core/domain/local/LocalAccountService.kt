@@ -1,31 +1,22 @@
 package io.soo.springboot.core.domain.local
 
-import org.springframework.security.oauth2.jwt.Jwt
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
-import org.springframework.security.crypto.password.PasswordEncoder
-
-import io.soo.springboot.core.enums.AdminUserActionType
-import io.soo.springboot.core.enums.Gender
-import io.soo.springboot.core.enums.UserStatus
+import io.soo.springboot.core.domain.local.phone.PhoneVerificationService
 import io.soo.springboot.core.domain.local.phone.login.PhoneLoginContext
 import io.soo.springboot.core.domain.local.phone.login.PhoneLoginResolver
 import io.soo.springboot.core.domain.local.policy.UserUniquenessPolicy
-import io.soo.springboot.core.domain.local.support.PhoneNumberNormalizer
 import io.soo.springboot.core.domain.local.support.PhoneAccountFactory
-import io.soo.springboot.core.support.error.CoreException
-import io.soo.springboot.core.support.error.ErrorType
-
+import io.soo.springboot.core.domain.local.support.PhoneNumberNormalizer
 import io.soo.springboot.core.domain.token.TokenRevocationService
-import io.soo.springboot.core.domain.local.phone.PhoneVerificationService
+import io.soo.springboot.core.domain.user.UserLifecycleService
+import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.storage.db.core.LocalCredential
 import io.soo.springboot.storage.db.core.LocalCredentialRepository
 import io.soo.springboot.storage.db.core.User
 import io.soo.springboot.storage.db.core.UserRepository
-import io.soo.springboot.storage.db.core.UserStatusAuditLogRepository
-import java.time.Instant
-import java.time.ZoneOffset
-
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.oauth2.jwt.Jwt
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 data class LocalSignUpCommand(
     val email: String,
@@ -45,61 +36,60 @@ data class LocalSignUpCommand(
 @Service
 class LocalAccountService(
     private val userRepository: UserRepository,
-    private val localAccountRepository: LocalCredentialRepository,
+    private val localCredentialRepository: LocalCredentialRepository,
     private val passwordEncoder: PasswordEncoder,
     private val tokenRevocationService: TokenRevocationService,
     private val phoneVerificationService: PhoneVerificationService,
-    private val userStatusAuditLogRepository: UserStatusAuditLogRepository,
     private val userUniquenessPolicy: UserUniquenessPolicy,
     private val phoneNumberNormalizer: PhoneNumberNormalizer,
     private val phoneAccountFactory: PhoneAccountFactory,
     private val phoneLoginResolver: PhoneLoginResolver,
+    private val userLifecycleService: UserLifecycleService,
 ) {
     @Transactional
-    fun signup(cmd: LocalSignUpCommand): User {
-        phoneVerificationService.consume(cmd.phoneNumber, cmd.phoneVerificationToken)
-        val normalizedPhone = phoneNumberNormalizer.normalize(cmd.phoneNumber)
+    fun signUp(command: LocalSignUpCommand): User {
+        phoneVerificationService.consume(command.phoneNumber, command.phoneVerificationToken)
+        val normalizedPhone = phoneNumberNormalizer.normalize(command.phoneNumber)
 
         userUniquenessPolicy.validateSignUp(
-            email = cmd.email,
-            rawPhone = cmd.phoneNumber,
+            email = command.email,
+            rawPhone = command.phoneNumber,
             normalizedPhone = normalizedPhone,
         )
 
-        // 2) 사용자 정보 저장
         val user = userRepository.save(
             User.createLocal(
-                email = cmd.email,
+                email = command.email,
                 phoneNumber = normalizedPhone,
                 emailVerified = false,
                 phoneVerified = false,
-                name = cmd.name,
-                nickname = cmd.nickname,
-                gender = cmd.gender,
-                locale = cmd.locale,
-                birthyear = cmd.birthyear,
-                birthday = cmd.birthday,
-                profileImageUrl = cmd.profileImageUrl,
-                thumbnailImageUrl = cmd.thumbnailImageUrl,
+                name = command.name,
+                nickname = command.nickname,
+                gender = command.gender,
+                locale = command.locale,
+                birthyear = command.birthyear,
+                birthday = command.birthday,
+                profileImageUrl = command.profileImageUrl,
+                thumbnailImageUrl = command.thumbnailImageUrl,
             )
         )
 
-        // 3) 로컬 자격증명 저장
-        localAccountRepository.save(
+        localCredentialRepository.save(
             LocalCredential(
                 userId = user.id,
-                userEmail = cmd.email,
-                passwordHash = passwordEncoder.encode(cmd.password),
+                userEmail = command.email,
+                passwordHash = passwordEncoder.encode(command.password),
             )
         )
         return user
     }
 
     @Transactional
-    fun signupPhone(phoneNumber: String, phoneVerificationToken: String): User {
+    fun signUpWithPhone(phoneNumber: String, phoneVerificationToken: String): User {
         phoneVerificationService.consume(phoneNumber, phoneVerificationToken)
         val normalizedPhone = phoneNumberNormalizer.normalize(phoneNumber)
         userUniquenessPolicy.validatePhoneAvailable(phoneNumber, normalizedPhone)
+
         val internalAccount = phoneAccountFactory.create(normalizedPhone)
         val encodedPassword = passwordEncoder.encode(internalAccount.rawPassword)
 
@@ -116,7 +106,7 @@ class LocalAccountService(
             )
         )
 
-        localAccountRepository.save(
+        localCredentialRepository.save(
             LocalCredential(
                 userId = user.id,
                 userEmail = internalAccount.email,
@@ -127,14 +117,16 @@ class LocalAccountService(
     }
 
     @Transactional
-    fun loginByPhone(phoneNumber: String, phoneVerificationToken: String): User {
+    fun loginWithPhone(phoneNumber: String, phoneVerificationToken: String): User {
         phoneVerificationService.consume(phoneNumber, phoneVerificationToken)
         val normalizedPhone = phoneNumberNormalizer.normalize(phoneNumber)
 
         val activeUser = userRepository.findByPhoneNumber(normalizedPhone)
         val userIncludingDeleted = if (activeUser == null) {
             userRepository.findByPhoneNumberIncludingDeleted(normalizedPhone)
-        } else null
+        } else {
+            null
+        }
 
         return phoneLoginResolver.resolve(
             PhoneLoginContext(
@@ -144,11 +136,6 @@ class LocalAccountService(
         )
     }
 
-    /**
-     * ✅ logout
-     * - access token denylist(jti)
-     * - refresh token revoke (단건 or device or all)
-     */
     @Transactional
     fun logout(jwt: Jwt, deviceId: String, refreshToken: String?, logoutAll: Boolean) {
         tokenRevocationService.revokeOnLogout(
@@ -159,49 +146,21 @@ class LocalAccountService(
         )
     }
 
-    /**
-     * 소프트 회원 탈퇴:
-     * - 물리 삭제 없이 상태를 SOFT_DELETED로 변경
-     * - retentionUntil = 탈퇴 시각 + 5년
-     * - 탈퇴 즉시 로그인 불가
-     */
     @Transactional
-    fun softDelete(userId: Long, reason: String?, actorUserId: Long? = null) {
-        val user = userRepository.findByIdIncludingDeleted(userId)
-            ?: throw CoreException(ErrorType.NOT_FOUND, mapOf("userId" to userId))
-        if (user.userStatus == UserStatus.SOFT_DELETED) return
-
-        val now = Instant.now()
-        val retentionUntil = now.atOffset(ZoneOffset.UTC).plusYears(5).toInstant()
-        val trimmedReason = reason?.trim()?.takeIf { it.isNotBlank() }
-        val anonymizedEmail = buildAnonymizedEmail(userId, now)
-        val anonymizedPhone = buildAnonymizedPhone(userId, now)
-
-        userRepository.save(
-            user.softDelete(
-                at = now,
-                retentionUntil = retentionUntil,
-                reason = trimmedReason,
-                anonymizedEmail = anonymizedEmail,
-                anonymizedPhone = anonymizedPhone,
-            )
-        )
-
-        localAccountRepository.deleteByUserId(userId)
-        tokenRevocationService.revokeAllByUserId(userId)
-        userStatusAuditLogRepository.save(
-            targetUserId = userId,
-            actorUserId = actorUserId ?: userId,
-            actionType = AdminUserActionType.SOFT_DELETE,
-            reason = trimmedReason,
-        )
+    fun softDeleteUser(userId: Long, reason: String?, actorUserId: Long? = null) {
+        userLifecycleService.softDelete(userId = userId, reason = reason, actorUserId = actorUserId)
     }
 
-    private fun buildAnonymizedEmail(userId: Long, at: Instant): String {
-        return "deleted+${userId}.${at.epochSecond}@deleted.local"
-    }
+    // backward compatibility while endpoints/tests are being migrated
+    @Transactional
+    fun signup(cmd: LocalSignUpCommand): User = signUp(cmd)
 
-    private fun buildAnonymizedPhone(userId: Long, at: Instant): String {
-        return "deleted-${userId}-${at.epochSecond}"
-    }
+    @Transactional
+    fun signupPhone(phoneNumber: String, phoneVerificationToken: String): User = signUpWithPhone(phoneNumber, phoneVerificationToken)
+
+    @Transactional
+    fun loginByPhone(phoneNumber: String, phoneVerificationToken: String): User = loginWithPhone(phoneNumber, phoneVerificationToken)
+
+    @Transactional
+    fun softDelete(userId: Long, reason: String?, actorUserId: Long? = null) = softDeleteUser(userId, reason, actorUserId)
 }
