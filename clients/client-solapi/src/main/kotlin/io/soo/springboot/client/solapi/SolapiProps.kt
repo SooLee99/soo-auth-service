@@ -1,4 +1,4 @@
-package io.soo.springboot.core.domain.local.phone.sms
+package io.soo.springboot.client.solapi
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component

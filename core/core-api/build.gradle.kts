@@ -11,6 +11,7 @@ dependencies {
     implementation(project(":support:logging"))
     implementation(project(":storage:db-core"))
     implementation(project(":clients:client-example"))
+    implementation(project(":clients:client-solapi"))
     testImplementation(project(":tests:api-docs"))
 
     testImplementation("com.epages:restdocs-api-spec-mockmvc")
@@ -21,7 +22,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
-    implementation("com.solapi:sdk:${property("solapiSdkVersion")}")
 
     implementation("org.springframework.session:spring-session-core")
     implementation("org.springframework.session:spring-session-jdbc")
