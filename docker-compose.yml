@@ -22,18 +22,10 @@ services:
       MARIADB_PASSWORD: ${MARIADB_PASSWORD}
     volumes:
       - mariadb_data:/var/lib/mysql
-
-    # 운영에서는 보통 DB 포트를 외부에 열지 않습니다.
-    # 필요하면 아래처럼 로컬호스트로만 바인딩 권장:
-    # ports:
-    #   - "127.0.0.1:3306:3306"
-
     networks:
       backend:
         aliases:
           - mariadb
-
-    # DB 준비 완료 대기
     healthcheck:
       test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -uroot -p$$MARIADB_ROOT_PASSWORD --silent"]
       interval: 5s
@@ -64,9 +56,9 @@ services:
     environment:
       TZ: Asia/Seoul
       PMA_HOST: mariadb
-      PMA_ARBITRARY: 1
+      PMA_ARBITRARY: 0
     ports:
-      - "8081:80"
+      - "127.0.0.1:8081:80"
     depends_on:
       mariadb:
         condition: service_healthy
@@ -78,7 +70,7 @@ services:
     restart: unless-stopped
     command: -config.file=/etc/loki/config.yml
     ports:
-      - "3100:3100"
+      - "127.0.0.1:3100:3100"
     volumes:
       - ./monitoring/loki/config.yml:/etc/loki/config.yml:ro
       - loki_data:/tmp/loki
@@ -103,11 +95,12 @@ services:
     depends_on:
       - loki
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     environment:
-      GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
       GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_USERS_ALLOW_SIGN_UP: "false"
     volumes:
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
       - grafana_data:/var/lib/grafana
@@ -122,19 +115,13 @@ services:
     restart: unless-stopped
     environment:
       TZ: Asia/Seoul
-
-      # 운영에서 사용할 프로파일로 지정
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-live}
-
-      # Spring의 ${storage.database.core-db.*} 와 매핑되는 ENV (Relaxed binding)
-      # (기존 설정 유지하되, 호스트를 "mariadb"로 고정)
       STORAGE_DATABASE_CORE_DB_URL: mariadb:3306/${MARIADB_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true
       STORAGE_DATABASE_CORE_DB_USERNAME: ${MARIADB_USER}
       STORAGE_DATABASE_CORE_DB_PASSWORD: ${MARIADB_PASSWORD}
       REDIS_HOST: ${REDIS_HOST:-redis}
       REDIS_PORT: ${REDIS_PORT:-6379}
       REDIS_PASSWORD: ${REDIS_PASSWORD:-}
-
       JWT_KEYSTORE_PASSWORD: ${JWT_KEYSTORE_PASSWORD}
       JWT_KEY_ALIAS: ${JWT_KEY_ALIAS}
       JWT_KEY_PASSWORD: ${JWT_KEY_PASSWORD}
@@ -143,17 +130,14 @@ services:
       ADMIN_BOOTSTRAP_PASSWORD: ${ADMIN_BOOTSTRAP_PASSWORD:-}
       ADMIN_BOOTSTRAP_ALLOWED_PROFILES: ${ADMIN_BOOTSTRAP_ALLOWED_PROFILES:-local,local-dev}
       ADMIN_BOOTSTRAP_ALLOW_WEAK_PASSWORD: ${ADMIN_BOOTSTRAP_ALLOW_WEAK_PASSWORD:-false}
-
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID}
       KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET}
       NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
       NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
-
-    ports:
-      - "8080:8080"
-
+    expose:
+      - "8080"
     depends_on:
       mariadb:
         condition: service_healthy
@@ -165,6 +149,21 @@ services:
         condition: service_started
       grafana:
         condition: service_started
+    networks:
+      - backend
 
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/logs:/var/log/nginx
     networks:
       - backend

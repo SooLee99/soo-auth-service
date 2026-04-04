@@ -12,3 +12,14 @@ build/
 out/
 
 */*/src/main/resources/*.yml
+
+# nginx ssl / private keys
+nginx/ssl/*
+!nginx/ssl/.gitkeep
+
+# logs
+logs/*
+!logs/.gitkeep
+
+nginx/logs/*
+!nginx/logs/.gitkeep
