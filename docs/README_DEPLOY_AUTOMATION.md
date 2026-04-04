@@ -147,6 +147,8 @@ sudo su - deploy
 
 ```bash
 sudo passwd deploy
+
+exit
 ```
 
 * `root` 대신 배포 전용 계정을 사용합니다.
@@ -201,11 +203,11 @@ cd /opt/soo-auth-service
 # 6. 디렉터리 생성
 
 ```bash
-mkdir -p nginx/conf.d
-mkdir -p nginx/ssl
-mkdir -p nginx/logs
-mkdir -p keys
-mkdir -p logs
+sudo mkdir -p nginx/conf.d
+sudo mkdir -p nginx/ssl
+sudo mkdir -p nginx/logs
+sudo mkdir -p keys
+sudo mkdir -p logs
 ```
 
 * nginx 설정, 인증서, 로그, keystore 위치를 미리 만듭니다.
@@ -216,7 +218,7 @@ mkdir -p logs
 # 7. compose.yaml 작성
 
 ```bash
-nano /opt/soo-auth-service/compose.yaml
+sudo nano /opt/soo-auth-service/compose.yaml
 ```
 
 ```yaml
@@ -362,7 +364,7 @@ services:
 # 8. nginx.conf 작성
 
 ```bash
-nano /opt/soo-auth-service/nginx/nginx.conf
+sudo nano /opt/soo-auth-service/nginx/nginx.conf
 ```
 
 ```nginx
@@ -399,7 +401,7 @@ http {
 # 9. default.conf 작성
 
 ```bash
-nano /opt/soo-auth-service/nginx/conf.d/default.conf
+sudo nano /opt/soo-auth-service/nginx/conf.d/default.conf
 ```
 
 인증서 적용 전 HTTP 설정:
@@ -456,7 +458,7 @@ server {
 # 10. .env 작성
 
 ```bash
-nano /opt/soo-auth-service/.env
+sudo nano /opt/soo-auth-service/.env
 ```
 
 * `.env` 에는 실제 운영 환경값을 넣습니다.
@@ -484,8 +486,8 @@ scp private.key deploy@SERVER:/opt/soo-auth-service/nginx/ssl/
 권한 설정:
 
 ```bash
-chmod 600 /opt/soo-auth-service/nginx/ssl/private.key
-chmod 644 /opt/soo-auth-service/nginx/ssl/fullchain.crt
+sudo chmod 600 /opt/soo-auth-service/nginx/ssl/private.key
+sudo chmod 644 /opt/soo-auth-service/nginx/ssl/fullchain.crt
 ```
 
 * 인증서와 개인키는 nginx가 읽을 수 있는 위치에 둡니다.
@@ -496,7 +498,7 @@ chmod 644 /opt/soo-auth-service/nginx/ssl/fullchain.crt
 # 13. deploy.sh 작성
 
 ```bash
-nano /opt/soo-auth-service/deploy.sh
+sudo nano /opt/soo-auth-service/deploy.sh
 ```
 
 ```bash
@@ -513,7 +515,7 @@ docker image prune -f
 권한 부여:
 
 ```bash
-chmod +x /opt/soo-auth-service/deploy.sh
+sudo chmod +x /opt/soo-auth-service/deploy.sh
 ```
 
 * 최신 이미지를 pull 하고
@@ -526,7 +528,7 @@ chmod +x /opt/soo-auth-service/deploy.sh
 
 ```bash
 cd /opt/soo-auth-service
-docker compose up -d
+sudo docker compose up -d
 ```
 
 * 자동배포 연결 전, 서버에서 직접 한 번 실행해 정상 구동을 확인합니다.
@@ -536,15 +538,15 @@ docker compose up -d
 # 15. 상태 확인
 
 ```bash
-docker compose ps
+sudo docker compose ps
 ```
 
 ```bash
-docker compose logs -f app
+sudo docker compose logs -f app
 ```
 
 ```bash
-docker compose logs -f nginx
+sudo docker compose logs -f nginx
 ```
 
 * `ps` 는 컨테이너 상태 확인
