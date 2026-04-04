@@ -23,7 +23,7 @@ COPY core/core-enum/build.gradle.kts core/core-enum/
 COPY storage/db-core/build.gradle.kts storage/db-core/
 COPY support/logging/build.gradle.kts support/logging/
 COPY support/monitoring/build.gradle.kts support/monitoring/
-COPY clients/client-example/build.gradle.kts clients/client-example/
+COPY clients/client-solapi/build.gradle.kts clients/client-solapi/
 COPY tests/api-docs/build.gradle.kts tests/api-docs/
 
 # 의존성 캐시

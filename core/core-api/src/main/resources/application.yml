@@ -49,7 +49,6 @@ spring:
       - logging.yml
       - redis.yml
       - db-core.yml
-      - client-example.yml
       - optional:file:.env[.properties]
 
   session:
