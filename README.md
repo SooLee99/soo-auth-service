@@ -9,6 +9,7 @@
 - 로깅/모니터링: [docs/README_LOG_MONITORING.md](docs/README_LOG_MONITORING.md)
 - 자동화 배포(CI/CD): [docs/README_DEPLOY_AUTOMATION.md](docs/README_DEPLOY_AUTOMATION.md)
 
+---
 ## 모듈 구성
 
 ### Core
@@ -43,7 +44,7 @@
 - 이 모듈의 하위 모듈은 테스트 코드를 작성하는 데 편리함을 제공합니다.
 - `tests:api-docs`
   - 이 모듈은 spring-rest-docs를 편리하게 작성할 수 있도록 지원합니다.
-
+---
 ## 코드 작성 규칙(요약)
 
 1. Controller는 요청/응답 변환과 인증 정보 추출만 담당
@@ -62,12 +63,12 @@
 14. Domain Service는 유스케이스 오케스트레이션과 트랜잭션 경계에 집중하고, 엔티티가 표현 가능한 규칙은 엔티티에 위임한다.
 15. 외부 시스템/DB/프레임워크 의존 로직은 도메인 모델 밖(Repository/Adapter)으로 분리한다.
 16. 도메인 용어(유비쿼터스 언어)를 클래스/메서드명에 일관되게 반영한다.
-
+---
 ## 종속성 관리
 
 - 모든 종속성 버전 관리는 `gradle.properties` 파일을 통해 수행됩니다.
 - 새로운 종속성을 추가하려면 `gradle.properties`에 버전을 추가하고, 이를 `build.gradle`에서 로드하면 됩니다.
-
+---
 ## 실행 프로필
 
 - `local`: 로컬 독립 개발
@@ -75,7 +76,7 @@
 - `dev`: 개발 서버 배포
 - `staging`: 스테이징 배포
 - `live`: 운영 배포
-
+---
 ## 테스트 작업/태그
 
 - `test`
@@ -90,7 +91,14 @@
 - `developTest`
   - 이 작업은 CI에서 실행되지 않아야 하는 테스트 작업입니다.
   - 테스트 작성에 익숙하지 않다면 이 태그를 사용하는 것이 좋습니다.
+---
 
+## 문서 재생성
+```bash
+./gradlew :core:core-api:generateApiDocs
+```
+
+---
 ## 권장 설정
 
 ### Git Hook
@@ -110,92 +118,4 @@ Build, Execution, Deployment > Build Tools > Gradle > Run tests using > IntelliJ
 
 - IntelliJ IDEA의 포맷에 lint 설정을 적용하려면 아래 가이드를 참조하십시오.
 - Spring Java Format IntelliJ IDEA: https://github.com/spring-io/spring-javaformat#intellij-idea
-
-## 신규 서버 배포 가이드 (Docker Compose)
-
-### 1) 서버 준비
-```bash
-# Ubuntu 기준
-sudo apt-get update
-sudo apt-get install -y ca-certificates curl git
-
-# Docker 설치
-curl -fsSL https://get.docker.com | sudo sh
-sudo usermod -aG docker $USER
-
-# 재로그인 후 확인
-docker --version
-docker compose version
-```
-
-### 2) 소스 배포 디렉터리 준비
-```bash
-sudo mkdir -p /opt/soo-auth-service
-sudo chown -R $USER:$USER /opt/soo-auth-service
-cd /opt/soo-auth-service
-git clone <YOUR_REPO_URL> .
-```
-
-### 3) 환경 변수 파일(.env) 작성
-```bash
-cat > .env <<'EOF'
-DOCKER_HUB_USERNAME=your-dockerhub-id
-```
-
-### 4) 첫 배포
-```bash
-cd /opt/soo-auth-service
-docker compose pull
-docker compose up -d --build
-```
-
-### 5) 상태 확인
-```bash
-docker compose ps
-docker compose logs -f app
-curl -i http://127.0.0.1:8080/health
-```
-
-### 6) 운영 배포(업데이트)
-```bash
-cd /opt/soo-auth-service
-git pull
-docker compose up -d --build
-docker compose ps
-```
-
-### 7) 재시작/중지
-```bash
-docker compose restart app
-docker compose stop
-docker compose start
-```
-
-### 8) 완전 종료(주의)
-```bash
-# 컨테이너만 내림 (데이터 유지)
-docker compose down
-
-# 컨테이너 + 볼륨 삭제 (DB/Redis 데이터 삭제)
-docker compose down -v
-```
-
-## 로컬 개발 실행
-```bash
-./gradlew :core:core-api:bootRun
-```
-
-## 문서 재생성
-```bash
-./gradlew :core:core-api:generateApiDocs
-```
-
-## 자동화 배포 요약
-
-권장 방식:
-1. `main` 머지 시 GitHub Actions가 Docker 이미지를 빌드/푸시
-2. Actions가 배포 서버에 SSH 접속
-3. 서버에서 `docker compose pull && docker compose up -d` 실행
-
-상세 절차/시크릿/워크플로 파일 예시는 아래 문서를 참고하세요.
-- [docs/README_DEPLOY_AUTOMATION.md](docs/README_DEPLOY_AUTOMATION.md)
+---
