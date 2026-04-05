@@ -2,6 +2,7 @@
 
 이 문서는 **서버가 완전히 비어있는 상태부터**
 `soo-auth-service`를 **Docker Hub + GitHub Actions + SSH + Docker Compose + Nginx** 방식으로 자동 배포하는 전체 과정을 설명합니다.
+이미 운영 중인 서버 업데이트 절차는 [README_SERVER_UPDATE.md](./README_SERVER_UPDATE.md)를 참고하십시오.
 
 <br>
 

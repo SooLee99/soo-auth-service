@@ -1,7 +1,7 @@
 # soo-auth-service Docker Hub 릴리즈 가이드 (개발 PC 전용)
 
 이 문서는 **개발 컴퓨터에서 Docker Hub에 이미지를 올리고 `latest` 태그로 항상 최신 버전을 릴리즈하는 방법**만 다룹니다.
-서버 초기 세팅/배포 자동화는 [README_DEPLOY_AUTOMATION.md](./README_DEPLOY_AUTOMATION.md)를 참고하십시오.
+기존 서버 업데이트 절차는 [README_SERVER_UPDATE.md](./README_SERVER_UPDATE.md), 서버 초기 세팅/배포 자동화는 [README_DEPLOY_AUTOMATION.md](./README_DEPLOY_AUTOMATION.md)를 참고하십시오.
 
 ---
 

@@ -9,6 +9,7 @@
 - 로깅/모니터링: [docs/README_LOG_MONITORING.md](docs/README_LOG_MONITORING.md)
 - 자동화 배포(CI/CD): [docs/README_DEPLOY_AUTOMATION.md](docs/README_DEPLOY_AUTOMATION.md)
 - Docker Hub 릴리즈(개발 PC): [docs/README_DOCKER_RELEASE.md](docs/README_DOCKER_RELEASE.md)
+- 기존 서버 업데이트(운영 반영 + CI/CD): [docs/README_SERVER_UPDATE.md](docs/README_SERVER_UPDATE.md)
 
 ---
 ## 모듈 구성
