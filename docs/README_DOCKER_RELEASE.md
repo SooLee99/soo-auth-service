@@ -1,6 +1,6 @@
 # soo-auth-service Docker Hub 릴리즈 가이드 (개발 PC 전용)
 
-이 문서는 **개발 컴퓨터에서 Docker Hub에 이미지를 올리고 릴리즈 태그를 갱신하는 방법**만 다룹니다.
+이 문서는 **개발 컴퓨터에서 Docker Hub에 이미지를 올리고 `latest` 태그로 항상 최신 버전을 릴리즈하는 방법**만 다룹니다.
 서버 초기 세팅/배포 자동화는 [README_DEPLOY_AUTOMATION.md](./README_DEPLOY_AUTOMATION.md)를 참고하십시오.
 
 ---
@@ -8,8 +8,7 @@
 ## 대상
 
 - 로컬(개발 PC)에서 직접 이미지 빌드/푸시가 필요한 경우
-- 특정 버전 태그(예: `v1.2.0`, `2026.04.05`)를 수동으로 릴리즈하는 경우
-- `latest` 태그를 새 버전으로 갱신하는 경우
+- Docker Hub의 `latest` 태그를 **항상 최신 버전으로 유지**해야 하는 경우
 
 ---
 
@@ -36,69 +35,37 @@ docker login
 
 ---
 
-## 2) 이미지 빌드
-
-아래 `<tag>`에는 원하는 릴리즈 태그를 넣습니다.
+## 2) 최신 이미지 빌드 (`latest`)
 
 ```bash
-docker build -t <dockerhub-username>/soo-auth-service:<tag> .
-```
-
-예시:
-
-```bash
-docker build -t myname/soo-auth-service:v1.0.3 .
+docker build -t <dockerhub-username>/soo-auth-service:latest .
 ```
 
 ---
 
-## 3) 버전 태그 푸시
+## 3) 최신 이미지 푸시 (`latest`)
 
 ```bash
-docker push <dockerhub-username>/soo-auth-service:<tag>
-```
-
-예시:
-
-```bash
-docker push myname/soo-auth-service:v1.0.3
-```
-
----
-
-## 4) latest 태그 업데이트(선택)
-
-운영에서 `latest`를 사용 중이라면, 릴리즈 태그를 `latest`로도 갱신합니다.
-
-```bash
-docker tag <dockerhub-username>/soo-auth-service:<tag> <dockerhub-username>/soo-auth-service:latest
 docker push <dockerhub-username>/soo-auth-service:latest
 ```
 
-예시:
-
-```bash
-docker tag myname/soo-auth-service:v1.0.3 myname/soo-auth-service:latest
-docker push myname/soo-auth-service:latest
-```
-
 ---
 
-## 5) 푸시 확인
+## 4) 푸시 확인
 
 ```bash
 docker image ls | findstr soo-auth-service
 ```
 
-- Docker Hub 웹 리포지토리에서 `<tag>`, `latest`가 반영되었는지 확인합니다.
+- Docker Hub 웹 리포지토리에서 `latest`가 방금 빌드한 이미지로 반영되었는지 확인합니다.
 
 ---
 
-## 권장 태그 전략
+## 운영 권장사항
 
-- 고정 버전 태그를 기본으로 사용: `v1.0.3`, `v2026.04.05`
-- `latest`는 선택적으로만 갱신
-- 롤백을 위해 의미 있는 태그를 유지
+- 이 가이드는 `latest` 고정 운영 전제입니다.
+- 배포 시 항상 최신 이미지가 내려받아지도록 `docker compose pull` 또는 재배포 절차를 포함하십시오.
+- 롤백이 필요할 수 있다면 별도 버전 태그 전략을 추가로 운영하십시오.
 
 ---
 
@@ -125,8 +92,6 @@ docker image ls | findstr soo-auth-service
 
 ```bash
 docker login
-docker build -t myname/soo-auth-service:v1.0.3 .
-docker push myname/soo-auth-service:v1.0.3
-docker tag myname/soo-auth-service:v1.0.3 myname/soo-auth-service:latest
+docker build -t myname/soo-auth-service:latest .
 docker push myname/soo-auth-service:latest
 ```
