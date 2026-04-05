@@ -50,14 +50,17 @@ storage:
       jdbc-url: jdbc:mariadb://${storage.database.core-db.url}
       username: ${storage.database.core-db.username}
       password: ${storage.database.core-db.password}
-      maximum-pool-size: 5
-      connection-timeout: 1100
+      minimum-idle: 2
+      maximum-pool-size: 10
+      connection-timeout: 10000
+      validation-timeout: 5000
+      initialization-fail-timeout: 60000
       keepalive-time: 30000
-      validation-timeout: 1000
       max-lifetime: 600000
       pool-name: core-db-pool
       data-source-properties:
-        socketTimeout: 3000
+        connectTimeout: 10000
+        socketTimeout: 30000
         cachePrepStmts: true
         prepStmtCacheSize: 250
         prepStmtCacheSqlLimit: 2048
@@ -112,4 +115,11 @@ spring:
 storage:
   datasource:
     core:
+      minimum-idle: 5
       maximum-pool-size: 25
+      connection-timeout: 10000
+      validation-timeout: 5000
+      initialization-fail-timeout: 60000
+      data-source-properties:
+        connectTimeout: 10000
+        socketTimeout: 30000
