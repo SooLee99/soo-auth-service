@@ -8,6 +8,7 @@
 - 로컬 HTTP 테스트 가이드: [core/core-api/src/test/http/README.md](core/core-api/src/test/http/README.md)
 - 로깅/모니터링: [docs/README_LOG_MONITORING.md](docs/README_LOG_MONITORING.md)
 - 자동화 배포(CI/CD): [docs/README_DEPLOY_AUTOMATION.md](docs/README_DEPLOY_AUTOMATION.md)
+- Docker Hub 릴리즈(개발 PC): [docs/README_DOCKER_RELEASE.md](docs/README_DOCKER_RELEASE.md)
 
 ---
 ## 모듈 구성
