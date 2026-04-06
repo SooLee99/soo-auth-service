@@ -65,7 +65,7 @@ paths:
               examples:
                 auth-admin-health:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:51.680751332\",\n    \"request\" : {\n\
+                    \ : \"2026-04-06T14:00:06.102762649\",\n    \"request\" : {\n\
                     \      \"path\" : \"/api/v1/auth/admin/health\",\n      \"method\"\
                     \ : \"GET\"\n    }\n  },\n  \"data\" : {\n    \"status\" : \"\
                     UP\",\n    \"application\" : \"core-api\",\n    \"profiles\" :\
@@ -162,7 +162,7 @@ paths:
               examples:
                 auth-admin-login-history:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:51.065282843\",\n    \"request\" : {\n\
+                    \ : \"2026-04-06T14:00:05.571530882\",\n    \"request\" : {\n\
                     \      \"path\" : \"/api/v1/auth/admin/login-history\",\n    \
                     \  \"method\" : \"GET\",\n      \"query\" : \"page=0&size=20\"\
                     \n    }\n  },\n  \"data\" : {\n    \"content\" : [ {\n      \"\
@@ -380,8 +380,8 @@ paths:
               examples:
                 auth-admin-users-list:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:50.99890261\",\n    \"request\" : {\n \
-                    \     \"path\" : \"/api/v1/auth/admin/users\",\n      \"method\"\
+                    \ : \"2026-04-06T14:00:05.503802866\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/admin/users\",\n      \"method\"\
                     \ : \"GET\",\n      \"query\" : \"page=0&size=20&keyword=user&userStatus=ACTIVE&role=USER&authProvider=LOCAL\"\
                     \n    }\n  },\n  \"data\" : {\n    \"content\" : [ {\n      \"\
                     userId\" : 1,\n      \"email\" : \"user@example.com\",\n     \
@@ -426,7 +426,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/api-v1-auth-email-login-788118888'
+              $ref: '#/components/schemas/api-v1-auth-local-login-788118888'
             examples:
               auth-email-login:
                 value: "{\n  \"email\" : \"user@example.com\",\n  \"password\" : \"\
@@ -437,11 +437,11 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-email-login1560895474'
+                $ref: '#/components/schemas/api-v1-auth-local-login1560895474'
               examples:
                 auth-email-login:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:51.877166644\",\n    \"request\" : {\n\
+                    \ : \"2026-04-06T14:00:06.276029449\",\n    \"request\" : {\n\
                     \      \"path\" : \"/api/v1/auth/email/login\",\n      \"method\"\
                     \ : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"accessToken\"\
                     \ : \"access-token\",\n    \"accessExpiresInSec\" : 3600,\n  \
@@ -518,11 +518,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-phone-login-1150988368'
+                $ref: '#/components/schemas/api-v1-auth-id-login-1150988368'
               examples:
                 auth-id-login:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:51.476006794\",\n    \"request\" : {\n\
+                    \ : \"2026-04-06T14:00:05.939237841\",\n    \"request\" : {\n\
                     \      \"path\" : \"/api/v1/auth/id/login\",\n      \"method\"\
                     \ : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"accessToken\"\
                     \ : \"access-token\",\n    \"accessExpiresInSec\" : 3600,\n  \
@@ -580,7 +580,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/api-v1-auth-email-login-788118888'
+              $ref: '#/components/schemas/api-v1-auth-local-login-788118888'
             examples:
               auth-local-login:
                 value: "{\n  \"email\" : \"user@example.com\",\n  \"password\" : \"\
@@ -591,7 +591,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-email-login1560895474'
+                $ref: '#/components/schemas/api-v1-auth-local-login1560895474'
               examples:
                 auth-local-login:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
@@ -648,11 +648,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-local-logout-2020253012'
+                $ref: '#/components/schemas/api-v1-auth-local-withdraw-2020253012'
               examples:
                 auth-local-logout:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:51.725674715\",\n    \"request\" : {\n\
+                    \ : \"2026-04-06T14:00:06.152117926\",\n    \"request\" : {\n\
                     \      \"path\" : \"/api/v1/auth/local/logout\",\n      \"method\"\
                     \ : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"result\" : \"\
                     OK\"\n  }\n}"
@@ -726,12 +726,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-local-logout-2020253012'
+                $ref: '#/components/schemas/api-v1-auth-local-withdraw-2020253012'
               examples:
                 auth-local-withdraw:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:51.75535614\",\n    \"request\" : {\n \
-                    \     \"path\" : \"/api/v1/auth/local/withdraw\",\n      \"method\"\
+                    \ : \"2026-04-06T14:00:06.171829809\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/local/withdraw\",\n      \"method\"\
                     \ : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"result\" : \"\
                     OK\"\n  }\n}"
   /api/v1/auth/phone/login:
@@ -765,7 +765,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/api-v1-auth-phone-login1536767407'
+              $ref: '#/components/schemas/api-v1-auth-local-signup-phone1536767407'
             examples:
               auth-phone-login:
                 value: "{\n  \"phoneNumber\" : \"+821012345678\",\n  \"phoneVerificationToken\"\
@@ -776,11 +776,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-phone-login-1150988368'
+                $ref: '#/components/schemas/api-v1-auth-id-login-1150988368'
               examples:
                 auth-phone-login:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:51.351754666\",\n    \"request\" : {\n\
+                    \ : \"2026-04-06T14:00:05.830683104\",\n    \"request\" : {\n\
                     \      \"path\" : \"/api/v1/auth/phone/login\",\n      \"method\"\
                     \ : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"accessToken\"\
                     \ : \"access-token\",\n    \"accessExpiresInSec\" : 3600,\n  \
@@ -801,7 +801,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/api-v1-auth-phone-login1536767407'
+              $ref: '#/components/schemas/api-v1-auth-local-signup-phone1536767407'
             examples:
               auth-phone-signup:
                 value: "{\n  \"phoneNumber\" : \"+82 10-1234-5678\",\n  \"phoneVerificationToken\"\
@@ -839,7 +839,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/api-v1-auth-local-token-refresh1056639717'
+              $ref: '#/components/schemas/api-v1-services-serviceCode-auth-local-token-refresh1056639717'
             examples:
               auth-token-refresh:
                 value: "{\n  \"refreshToken\" : \"refresh-token\"\n}"
@@ -849,11 +849,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-phone-login-1150988368'
+                $ref: '#/components/schemas/api-v1-auth-id-login-1150988368'
               examples:
                 auth-token-refresh:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:51.448222228\",\n    \"request\" : {\n\
+                    \ : \"2026-04-06T14:00:05.916773287\",\n    \"request\" : {\n\
                     \      \"path\" : \"/api/v1/auth/token/refresh\",\n      \"method\"\
                     \ : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"accessToken\"\
                     \ : \"access-token\",\n    \"accessExpiresInSec\" : 3600,\n  \
@@ -927,7 +927,7 @@ paths:
               examples:
                 auth-admin-sms-logs:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:49.566815875\",\n    \"request\" : {\n\
+                    \ : \"2026-04-06T14:00:04.188811594\",\n    \"request\" : {\n\
                     \      \"path\" : \"/api/v1/auth/admin/sms/logs\",\n      \"method\"\
                     \ : \"GET\",\n      \"query\" : \"page=0&size=20\"\n    }\n  },\n\
                     \  \"data\" : {\n    \"content\" : [ {\n      \"id\" : 1,\n  \
@@ -991,8 +991,8 @@ paths:
               examples:
                 auth-admin-sms-send:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:50.41626951\",\n    \"request\" : {\n \
-                    \     \"path\" : \"/api/v1/auth/admin/sms/send\",\n      \"method\"\
+                    \ : \"2026-04-06T14:00:04.965871319\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/admin/sms/send\",\n      \"method\"\
                     \ : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"id\" : 2,\n \
                     \   \"to\" : \"01011112222\",\n    \"from\" : \"029302266\",\n\
                     \    \"text\" : \"관리자 공지 테스트\",\n    \"ok\" : true,\n    \"provider\"\
@@ -1045,7 +1045,7 @@ paths:
               examples:
                 auth-admin-sms-stats:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:50.483984562\",\n    \"request\" : {\n\
+                    \ : \"2026-04-06T14:00:05.022478036\",\n    \"request\" : {\n\
                     \      \"path\" : \"/api/v1/auth/admin/sms/stats\",\n      \"\
                     method\" : \"GET\"\n    }\n  },\n  \"data\" : {\n    \"total\"\
                     \ : 100,\n    \"ok\" : 95,\n    \"fail\" : 5,\n    \"rate\" :\
@@ -1104,7 +1104,7 @@ paths:
               examples:
                 auth-admin-blocked-users:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:50.969725782\",\n    \"request\" : {\n\
+                    \ : \"2026-04-06T14:00:05.468048563\",\n    \"request\" : {\n\
                     \      \"path\" : \"/api/v1/auth/admin/users/blocked\",\n    \
                     \  \"method\" : \"GET\",\n      \"query\" : \"page=0&size=20\"\
                     \n    }\n  },\n  \"data\" : {\n    \"content\" : [ {\n      \"\
@@ -1177,7 +1177,7 @@ paths:
               examples:
                 auth-admin-deleted-users:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:50.894769593\",\n    \"request\" : {\n\
+                    \ : \"2026-04-06T14:00:05.390429957\",\n    \"request\" : {\n\
                     \      \"path\" : \"/api/v1/auth/admin/users/deleted\",\n    \
                     \  \"method\" : \"GET\",\n      \"query\" : \"page=0&size=20\"\
                     \n    }\n  },\n  \"data\" : {\n    \"content\" : [ {\n      \"\
@@ -1242,12 +1242,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-admin-users-userId-tokens-revoke1698032162'
+                $ref: '#/components/schemas/api-v1-auth-admin-users-userId1698032162'
               examples:
                 auth-admin-user-detail:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:51.09245657\",\n    \"request\" : {\n \
-                    \     \"path\" : \"/api/v1/auth/admin/users/1\",\n      \"method\"\
+                    \ : \"2026-04-06T14:00:05.598282661\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/admin/users/1\",\n      \"method\"\
                     \ : \"GET\"\n    }\n  },\n  \"data\" : {\n    \"userId\" : 1,\n\
                     \    \"email\" : \"user@example.com\",\n    \"emailVerified\"\
                     \ : true,\n    \"phoneNumber\" : \"+82 10-1234-5678\",\n    \"\
@@ -1326,11 +1326,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-admin-users-userId-tokens-revoke1698032162'
+                $ref: '#/components/schemas/api-v1-auth-admin-users-userId1698032162'
               examples:
                 auth-admin-user-update:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:50.856889293\",\n    \"request\" : {\n\
+                    \ : \"2026-04-06T14:00:05.351794124\",\n    \"request\" : {\n\
                     \      \"path\" : \"/api/v1/auth/admin/users/1\",\n      \"method\"\
                     \ : \"PATCH\"\n    }\n  },\n  \"data\" : {\n    \"userId\" : 1,\n\
                     \    \"email\" : \"user@example.com\",\n    \"emailVerified\"\
@@ -1378,7 +1378,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/api-v1-auth-phone-login1536767407'
+              $ref: '#/components/schemas/api-v1-auth-local-signup-phone1536767407'
             examples:
               auth-local-login-phone:
                 value: "{\n  \"phoneNumber\" : \"+821012345678\",\n  \"phoneVerificationToken\"\
@@ -1389,11 +1389,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-phone-login-1150988368'
+                $ref: '#/components/schemas/api-v1-auth-id-login-1150988368'
               examples:
                 auth-local-login-phone:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:51.704639697\",\n    \"request\" : {\n\
+                    \ : \"2026-04-06T14:00:06.122965545\",\n    \"request\" : {\n\
                     \      \"path\" : \"/api/v1/auth/local/login/phone\",\n      \"\
                     method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"accessToken\"\
                     \ : \"access-token\",\n    \"accessExpiresInSec\" : 3600,\n  \
@@ -1436,8 +1436,8 @@ paths:
               examples:
                 auth-local-phone-verification-confirm:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:52.0053811\",\n    \"request\" : {\n  \
-                    \    \"path\" : \"/api/v1/auth/local/phone-verifications/confirm\"\
+                    \ : \"2026-04-06T14:00:06.389356209\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/local/phone-verifications/confirm\"\
                     ,\n      \"method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n\
                     \    \"phoneVerificationToken\" : \"verified-phone-token\",\n\
                     \    \"expiresInSec\" : 600\n  }\n}"
@@ -1476,7 +1476,7 @@ paths:
               examples:
                 auth-local-phone-verification-request:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:51.959482695\",\n    \"request\" : {\n\
+                    \ : \"2026-04-06T14:00:06.347545129\",\n    \"request\" : {\n\
                     \      \"path\" : \"/api/v1/auth/local/phone-verifications/request\"\
                     ,\n      \"method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n\
                     \    \"verificationId\" : \"verification-id-001\",\n    \"expiresInSec\"\
@@ -1496,7 +1496,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/api-v1-auth-phone-login1536767407'
+              $ref: '#/components/schemas/api-v1-auth-local-signup-phone1536767407'
             examples:
               auth-local-signup-phone:
                 value: "{\n  \"phoneNumber\" : \"+82 10-1234-5678\",\n  \"phoneVerificationToken\"\
@@ -1534,7 +1534,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/api-v1-auth-local-token-refresh1056639717'
+              $ref: '#/components/schemas/api-v1-services-serviceCode-auth-local-token-refresh1056639717'
             examples:
               auth-local-refresh:
                 value: "{\n  \"refreshToken\" : \"refresh-token\"\n}"
@@ -1544,11 +1544,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-phone-login-1150988368'
+                $ref: '#/components/schemas/api-v1-auth-id-login-1150988368'
               examples:
                 auth-local-refresh:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:51.792193967\",\n    \"request\" : {\n\
+                    \ : \"2026-04-06T14:00:06.204352896\",\n    \"request\" : {\n\
                     \      \"path\" : \"/api/v1/auth/local/token/refresh\",\n    \
                     \  \"method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"\
                     accessToken\" : \"access-token\",\n    \"accessExpiresInSec\"\
@@ -1598,11 +1598,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-services-serviceCode-auth-oauth2-provider-authorize-url1616597692'
+                $ref: '#/components/schemas/api-v1-auth-oauth2-provider-authorize-url1616597692'
               examples:
                 auth-oauth2-authorize-url:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:52.019767026\",\n    \"request\" : {\n\
+                    \ : \"2026-04-06T14:00:06.402895942\",\n    \"request\" : {\n\
                     \      \"path\" : \"/api/v1/auth/oauth2/kakao/authorize-url\"\
                     ,\n      \"method\" : \"GET\",\n      \"query\" : \"returnUrl=/app/callback\"\
                     \n    }\n  },\n  \"data\" : \"/oauth2/authorization/kakao\"\n}"
@@ -1707,7 +1707,7 @@ paths:
               examples:
                 auth-admin-user-block:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:51.036185151\",\n    \"request\" : {\n\
+                    \ : \"2026-04-06T14:00:05.544276979\",\n    \"request\" : {\n\
                     \      \"path\" : \"/api/v1/auth/admin/users/1/block\",\n    \
                     \  \"method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"\
                     userId\" : 1,\n    \"userStatus\" : \"BLOCKED\",\n    \"blocked\"\
@@ -1768,9 +1768,9 @@ paths:
               examples:
                 auth-admin-user-delete:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:50.79142065\",\n    \"request\" : {\n \
-                    \     \"path\" : \"/api/v1/auth/admin/users/1/delete\",\n    \
-                    \  \"method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"\
+                    \ : \"2026-04-06T14:00:05.293376882\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/admin/users/1/delete\",\n   \
+                    \   \"method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"\
                     userId\" : 2,\n    \"userStatus\" : \"SOFT_DELETED\",\n    \"\
                     blocked\" : false,\n    \"blockedReason\" : null,\n    \"blockedAt\"\
                     \ : null,\n    \"blockedByAdminId\" : null,\n    \"unblockedAt\"\
@@ -1836,7 +1836,7 @@ paths:
               examples:
                 auth-admin-user-status-audits:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:51.114572803\",\n    \"request\" : {\n\
+                    \ : \"2026-04-06T14:00:05.619283055\",\n    \"request\" : {\n\
                     \      \"path\" : \"/api/v1/auth/admin/users/1/status-audits\"\
                     ,\n      \"method\" : \"GET\",\n      \"query\" : \"page=0&size=20\"\
                     \n    }\n  },\n  \"data\" : {\n    \"content\" : [ {\n      \"\
@@ -1897,7 +1897,7 @@ paths:
               examples:
                 auth-admin-user-unblock:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:50.948829898\",\n    \"request\" : {\n\
+                    \ : \"2026-04-06T14:00:05.447031961\",\n    \"request\" : {\n\
                     \      \"path\" : \"/api/v1/auth/admin/users/1/unblock\",\n  \
                     \    \"method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"\
                     userId\" : 1,\n    \"userStatus\" : \"ACTIVE\",\n    \"blocked\"\
@@ -2134,11 +2134,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-admin-users-userId-tokens-revoke1698032162'
+                $ref: '#/components/schemas/api-v1-auth-admin-users-userId1698032162'
               examples:
                 auth-admin-user-password-reset:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:50.732674775\",\n    \"request\" : {\n\
+                    \ : \"2026-04-06T14:00:05.241826093\",\n    \"request\" : {\n\
                     \      \"path\" : \"/api/v1/auth/admin/users/1/password/reset\"\
                     ,\n      \"method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n\
                     \    \"userId\" : 1,\n    \"email\" : \"user@example.com\",\n\
@@ -2200,11 +2200,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-admin-users-userId-tokens-revoke1698032162'
+                $ref: '#/components/schemas/api-v1-auth-admin-users-userId1698032162'
               examples:
                 auth-admin-user-tokens-revoke:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:50.920897046\",\n    \"request\" : {\n\
+                    \ : \"2026-04-06T14:00:05.417717997\",\n    \"request\" : {\n\
                     \      \"path\" : \"/api/v1/auth/admin/users/1/tokens/revoke\"\
                     ,\n      \"method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n\
                     \    \"userId\" : 1,\n    \"email\" : \"user@example.com\",\n\
@@ -2307,7 +2307,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/api-v1-auth-local-token-refresh1056639717'
+              $ref: '#/components/schemas/api-v1-services-serviceCode-auth-local-token-refresh1056639717'
             examples:
               auth-service-local-refresh:
                 value: "{\n  \"refreshToken\" : \"refresh-token\"\n}"
@@ -2379,7 +2379,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-services-serviceCode-auth-oauth2-provider-authorize-url1616597692'
+                $ref: '#/components/schemas/api-v1-auth-oauth2-provider-authorize-url1616597692'
               examples:
                 auth-service-oauth2-authorize-url:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
@@ -2410,7 +2410,7 @@ paths:
               examples:
                 health:
                   value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
-                    \ : \"2026-04-06T10:27:51.665486697\",\n    \"request\" : {\n\
+                    \ : \"2026-04-06T14:00:06.089734567\",\n    \"request\" : {\n\
                     \      \"path\" : \"/health\",\n      \"method\" : \"GET\"\n \
                     \   }\n  },\n  \"data\" : {\n    \"status\" : \"UP\",\n    \"\
                     application\" : \"core-api\",\n    \"uptimeSec\" : 10,\n    \"\
@@ -3145,7 +3145,7 @@ components:
           type: object
           description: 오류 정보 (에러 응답에서만 포함)
           nullable: true
-    api-v1-auth-phone-login-1150988368:
+    api-v1-auth-id-login-1150988368:
       required:
       - data
       - result
@@ -3219,7 +3219,7 @@ components:
           type: object
           description: 오류 정보 (에러 응답에서만 포함)
           nullable: true
-    api-v1-auth-admin-users-userId-tokens-revoke1698032162:
+    api-v1-auth-admin-users-userId1698032162:
       required:
       - data
       - meta
@@ -3666,7 +3666,7 @@ components:
           type: object
           description: 오류 정보 (에러 응답에서만 포함)
           nullable: true
-    api-v1-auth-local-token-refresh1056639717:
+    api-v1-services-serviceCode-auth-local-token-refresh1056639717:
       required:
       - refreshToken
       type: object
@@ -3674,7 +3674,7 @@ components:
         refreshToken:
           type: string
           description: 리프레시 토큰
-    api-v1-auth-email-login-788118888:
+    api-v1-auth-local-login-788118888:
       required:
       - email
       - password
@@ -4184,7 +4184,7 @@ components:
         email:
           type: string
           description: 이메일
-    api-v1-services-serviceCode-auth-oauth2-provider-authorize-url1616597692:
+    api-v1-auth-oauth2-provider-authorize-url1616597692:
       required:
       - data
       - result
@@ -4549,7 +4549,7 @@ components:
           type: object
           description: 에러 정보
           nullable: true
-    api-v1-auth-phone-login1536767407:
+    api-v1-auth-local-signup-phone1536767407:
       required:
       - phoneNumber
       - phoneVerificationToken
@@ -4691,7 +4691,7 @@ components:
         newPassword:
           type: string
           description: 새 비밀번호
-    api-v1-auth-local-logout-2020253012:
+    api-v1-auth-local-withdraw-2020253012:
       required:
       - data
       - result
@@ -4837,7 +4837,7 @@ components:
           type: object
           description: 오류 정보 (에러 응답에서만 포함)
           nullable: true
-    api-v1-auth-email-login1560895474:
+    api-v1-auth-local-login1560895474:
       required:
       - data
       - meta
