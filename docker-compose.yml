@@ -152,11 +152,45 @@ services:
     networks:
       - backend
 
+  frontend:
+    image: ${FRONTEND_IMAGE}
+    pull_policy: always
+    restart: unless-stopped
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    tmpfs:
+      - /tmp
+      - /var/cache/nginx
+      - /var/run
+    expose:
+      - "80"
+    depends_on:
+      - app
+    networks:
+      - backend
+
   nginx:
     image: nginx:1.27-alpine
     restart: unless-stopped
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    tmpfs:
+      - /tmp
+      - /var/cache/nginx
+      - /var/run
     depends_on:
       - app
+      - frontend
     ports:
       - "80:80"
       - "443:443"

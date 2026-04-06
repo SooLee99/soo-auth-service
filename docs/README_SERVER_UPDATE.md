@@ -19,10 +19,10 @@
 ```bash
 ssh deploy@<SERVER>
 cd /opt/soo-auth-service
-docker compose pull app
-docker compose up -d --no-build app
-docker compose ps
-docker compose logs -f --tail=100 app
+sudo docker compose pull app
+sudo docker compose up -d --no-build app
+sudo docker compose ps
+sudo docker compose logs -f --tail=100 app
 ```
 
 - `pull app`: `latest` 이미지를 새로 받습니다.
@@ -32,8 +32,8 @@ docker compose logs -f --tail=100 app
 
 ```bash
 cd /opt/soo-auth-service
-docker compose pull
-docker compose up -d --remove-orphans --no-build
+sudo docker compose pull
+sudo docker compose up -d --remove-orphans --no-build
 ```
 
 ---
@@ -47,9 +47,9 @@ docker compose up -d --remove-orphans --no-build
 set -e
 
 cd /opt/soo-auth-service
-docker compose pull
-docker compose up -d --remove-orphans --no-build
-docker image prune -f
+sudo docker compose pull
+sudo docker compose up -d --remove-orphans --no-build
+sudo docker image prune -f
 ```
 
 실행:
@@ -121,9 +121,9 @@ jobs:
 
 ```bash
 cd /opt/soo-auth-service
-docker compose ps
-docker compose logs -f --tail=200 app
-docker compose logs -f --tail=200 nginx
+sudo docker compose ps
+sudo docker compose logs -f --tail=200 app
+sudo docker compose logs -f --tail=200 nginx
 ```
 
 - `app`가 `Up` 상태인지 확인
@@ -143,6 +143,6 @@ docker compose logs -f --tail=200 nginx
 
 ```bash
 cd /opt/soo-auth-service
-docker compose pull app
-docker compose up -d --no-build app
+sudo docker compose pull app
+sudo docker compose up -d --no-build app
 ```
