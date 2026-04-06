@@ -3,11 +3,9 @@ package io.soo.springboot.core.domain
 import io.mockk.mockk
 import io.mockk.verify
 import io.soo.springboot.core.domain.local.LocalAccountService
-import io.soo.springboot.core.domain.local.phone.PhoneVerificationService
-import io.soo.springboot.core.domain.local.phone.login.PhoneLoginResolver
-import io.soo.springboot.core.domain.local.policy.UserUniquenessPolicy
-import io.soo.springboot.core.domain.local.support.PhoneAccountFactory
-import io.soo.springboot.core.domain.local.support.PhoneNumberNormalizer
+import io.soo.springboot.core.domain.local.UserUniquenessPolicy
+import io.soo.springboot.core.domain.phone.verification.PhoneNumberNormalizer
+import io.soo.springboot.core.domain.phone.verification.PhoneVerificationService
 import io.soo.springboot.core.domain.token.TokenRevocationService
 import io.soo.springboot.core.domain.user.UserLifecycleService
 import io.soo.springboot.storage.db.core.LocalCredentialRepository
@@ -23,8 +21,6 @@ class LocalAccountServiceSoftDeleteTest {
     private val phoneVerificationService = mockk<PhoneVerificationService>(relaxed = true)
     private val userUniquenessPolicy = mockk<UserUniquenessPolicy>(relaxed = true)
     private val phoneNumberNormalizer = PhoneNumberNormalizer()
-    private val phoneAccountFactory = mockk<PhoneAccountFactory>(relaxed = true)
-    private val phoneLoginResolver = mockk<PhoneLoginResolver>(relaxed = true)
     private val userLifecycleService = mockk<UserLifecycleService>(relaxed = true)
 
     private val service = LocalAccountService(
@@ -35,8 +31,6 @@ class LocalAccountServiceSoftDeleteTest {
         phoneVerificationService = phoneVerificationService,
         userUniquenessPolicy = userUniquenessPolicy,
         phoneNumberNormalizer = phoneNumberNormalizer,
-        phoneAccountFactory = phoneAccountFactory,
-        phoneLoginResolver = phoneLoginResolver,
         userLifecycleService = userLifecycleService,
     )
 

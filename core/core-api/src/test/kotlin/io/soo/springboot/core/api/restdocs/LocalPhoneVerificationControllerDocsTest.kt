@@ -5,9 +5,9 @@ import io.mockk.mockk
 import io.soo.springboot.core.api.controller.v1.LocalPhoneVerificationController
 import io.soo.springboot.core.api.controller.v1.request.PhoneVerificationConfirmRequest
 import io.soo.springboot.core.api.controller.v1.request.PhoneVerificationIssueRequest
-import io.soo.springboot.core.domain.local.phone.PhoneVerificationConfirmResult
-import io.soo.springboot.core.domain.local.phone.PhoneVerificationIssueResult
-import io.soo.springboot.core.domain.local.phone.PhoneVerificationService
+import io.soo.springboot.core.domain.phone.verification.PhoneVerificationConfirmResult
+import io.soo.springboot.core.domain.phone.verification.PhoneVerificationIssueResult
+import io.soo.springboot.core.domain.phone.verification.PhoneVerificationService
 import io.soo.springboot.test.api.RestDocsTest
 import io.soo.springboot.test.api.RestDocsUtils
 import io.soo.springboot.test.api.mockMvcDocument
@@ -30,7 +30,7 @@ class LocalPhoneVerificationControllerDocsTest : RestDocsTest() {
 
     @Test
     fun requestVerification() {
-        every { phoneVerificationService.issue(any()) } returns PhoneVerificationIssueResult(
+        every { phoneVerificationService.createVerification(any()) } returns PhoneVerificationIssueResult(
             verificationId = "verification-id-001",
             expiresInSec = 180,
         )
@@ -64,7 +64,7 @@ class LocalPhoneVerificationControllerDocsTest : RestDocsTest() {
 
     @Test
     fun confirmVerification() {
-        every { phoneVerificationService.confirm(any(), any(), any()) } returns PhoneVerificationConfirmResult(
+        every { phoneVerificationService.confirmVerification(any(), any(), any()) } returns PhoneVerificationConfirmResult(
             proofToken = "verified-phone-token",
             expiresInSec = 600,
         )

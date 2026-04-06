@@ -7,8 +7,9 @@ import io.soo.springboot.core.api.controller.v1.request.PhoneSignUpRequest
 import io.soo.springboot.core.api.controller.v1.request.WithdrawRequest
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
 import io.soo.springboot.core.domain.local.LocalAccountService
-import io.soo.springboot.core.domain.local.login.LocalPhoneLoginCommand
-import io.soo.springboot.core.domain.local.login.LocalPhoneLoginService
+import io.soo.springboot.core.domain.phone.account.LocalPhoneAccountService
+import io.soo.springboot.core.domain.phone.login.LocalPhoneLoginCommand
+import io.soo.springboot.core.domain.phone.login.LocalPhoneLoginService
 import io.soo.springboot.core.domain.local.LocalSignUpCommand
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.support.error.CoreException
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1/auth/local")
 class LocalAccountController(
     private val localAccountService: LocalAccountService,
+    private val localPhoneAccountService: LocalPhoneAccountService,
     private val localPhoneLoginService: LocalPhoneLoginService,
     private val authTokenManager: AuthTokenManager,
 ) {
@@ -50,7 +52,7 @@ class LocalAccountController(
 
     @PostMapping("/signup/phone")
     fun signUpWithPhone(@RequestBody @Valid request: PhoneSignUpRequest) {
-        localAccountService.signUpWithPhone(
+        localPhoneAccountService.signUpWithPhone(
             phoneNumber = request.phoneNumber,
             phoneVerificationToken = request.phoneVerificationToken,
         )

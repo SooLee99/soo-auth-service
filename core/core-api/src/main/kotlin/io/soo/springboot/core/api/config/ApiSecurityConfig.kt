@@ -37,6 +37,13 @@ class ApiSecurityConfig(
             // ✅ local auth API
             "/api/v1/auth/login",
             "/api/v1/auth/signup",
+            "/api/v1/auth/email/login",
+            "/api/v1/auth/email/signup",
+            "/api/v1/auth/phone/signup",
+            "/api/v1/auth/phone/login",
+            "/api/v1/auth/id/signup",
+            "/api/v1/auth/id/login",
+            "/api/v1/auth/token/refresh",
             "/api/v1/auth/local/login",
             "/api/v1/auth/local/signup",
             "/api/v1/auth/local/signup/phone",

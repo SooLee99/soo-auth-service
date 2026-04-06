@@ -2,7 +2,7 @@ package io.soo.springboot.core.api.controller.v1
 
 import io.soo.springboot.core.api.controller.v1.request.PhoneVerificationConfirmRequest
 import io.soo.springboot.core.api.controller.v1.request.PhoneVerificationIssueRequest
-import io.soo.springboot.core.domain.local.phone.PhoneVerificationService
+import io.soo.springboot.core.domain.phone.verification.PhoneVerificationService
 import io.soo.springboot.core.support.response.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
@@ -22,7 +22,7 @@ class LocalPhoneVerificationController(
         @RequestBody @Valid request: PhoneVerificationIssueRequest,
         req: HttpServletRequest,
     ): ApiResponse<Any?> {
-        val issued = phoneVerificationService.issue(request.phoneNumber)
+        val issued = phoneVerificationService.createVerification(request.phoneNumber)
         return ApiResponse.success(
             req = req,
             data = mapOf(
@@ -37,7 +37,7 @@ class LocalPhoneVerificationController(
         @RequestBody @Valid request: PhoneVerificationConfirmRequest,
         req: HttpServletRequest,
     ): ApiResponse<Any?> {
-        val confirmed = phoneVerificationService.confirm(
+        val confirmed = phoneVerificationService.confirmVerification(
             phoneNumber = request.phoneNumber,
             verificationId = request.verificationId,
             code = request.code,

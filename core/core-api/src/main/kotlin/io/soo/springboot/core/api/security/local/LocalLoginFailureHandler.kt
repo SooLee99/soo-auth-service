@@ -4,8 +4,8 @@ import io.soo.springboot.core.api.security.response.SecurityErrorResponseWriter
 import io.soo.springboot.core.support.error.AccountStatusDeniedException
 import io.soo.springboot.core.enums.LoginType
 import io.soo.springboot.core.enums.LoginDenyReason
-import io.soo.springboot.core.domain.local.LocalLoginPolicy
-import io.soo.springboot.core.domain.LoginHistoryService
+import io.soo.springboot.core.domain.login.LocalLoginAttemptPolicy
+import io.soo.springboot.core.domain.login.LoginHistoryService
 import io.soo.springboot.storage.db.core.UserRepository
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -17,7 +17,7 @@ import java.time.LocalDateTime
 @Component
 class LocalLoginFailureHandler(
     private val writer: SecurityErrorResponseWriter,
-    private val localLoginPolicyService: LocalLoginPolicy,
+    private val localLoginPolicyService: LocalLoginAttemptPolicy,
     private val loginHistoryService: LoginHistoryService,
     private val userRepository: UserRepository,
     private val failurePolicies: List<LocalLoginFailurePolicy>,
@@ -42,7 +42,7 @@ class LocalLoginFailureHandler(
         val result = if (isStatusDenied) {
             null
         } else {
-            localLoginPolicyService.failByEmail(
+            localLoginPolicyService.recordFailureByEmail(
                 normalizedEmail = normalizedEmail,
                 now = LocalDateTime.now(),
             )
@@ -52,9 +52,9 @@ class LocalLoginFailureHandler(
         val user = userRepository.findByEmailIncludingDeleted(normalizedEmail)
         if (user != null) {
             val failureReason = when (result) {
-                LocalLoginPolicy.FailResult.LOCKED -> "LOGIN_ATTEMPTS_EXCEEDED"
-                LocalLoginPolicy.FailResult.BAD_CREDENTIALS -> "BAD_CREDENTIALS"
-                LocalLoginPolicy.FailResult.NOT_FOUND -> "ACCOUNT_NOT_FOUND"
+                LocalLoginAttemptPolicy.FailResult.LOCKED -> "LOGIN_ATTEMPTS_EXCEEDED"
+                LocalLoginAttemptPolicy.FailResult.BAD_CREDENTIALS -> "BAD_CREDENTIALS"
+                LocalLoginAttemptPolicy.FailResult.NOT_FOUND -> "ACCOUNT_NOT_FOUND"
                 null -> when (statusDenied?.reason) {
                     LoginDenyReason.SOFT_DELETED -> "ACCOUNT_SOFT_DELETED"
                     LoginDenyReason.BLOCKED -> "ACCOUNT_BLOCKED"

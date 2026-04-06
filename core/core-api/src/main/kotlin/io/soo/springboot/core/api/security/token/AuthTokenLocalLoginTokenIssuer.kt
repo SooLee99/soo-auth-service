@@ -1,8 +1,8 @@
 package io.soo.springboot.core.api.security.token
 
 import io.soo.springboot.core.api.security.userdetails.UserPrincipal
-import io.soo.springboot.core.domain.local.login.LocalIssuedTokens
-import io.soo.springboot.core.domain.local.login.LocalLoginTokenIssuer
+import io.soo.springboot.core.domain.phone.login.LocalIssuedTokens
+import io.soo.springboot.core.domain.phone.login.LocalLoginTokenIssuer
 import io.soo.springboot.storage.db.core.User
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.stereotype.Component

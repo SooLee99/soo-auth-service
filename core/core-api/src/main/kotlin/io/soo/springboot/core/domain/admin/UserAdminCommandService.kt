@@ -1,6 +1,6 @@
 package io.soo.springboot.core.domain.admin
 
-import io.soo.springboot.core.domain.local.policy.UserUniquenessPolicy
+import io.soo.springboot.core.domain.local.UserUniquenessPolicy
 import io.soo.springboot.core.domain.token.TokenRevocationService
 import io.soo.springboot.core.domain.user.UserLifecycleService
 import io.soo.springboot.core.enums.UserStatus

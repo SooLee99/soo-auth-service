@@ -13,11 +13,14 @@ interface UserRepository {
     fun findByIdIncludingDeleted(id: Long): User?
     fun findByEmail(email: String): User?
     fun findByEmailIncludingDeleted(email: String): User?
+    fun findByLoginId(loginId: String): User?
+    fun findByLoginIdIncludingDeleted(loginId: String): User?
     fun findByPhoneNumber(phoneNumber: String): User?
     fun findByPhoneNumberIncludingDeleted(phoneNumber: String): User?
     fun findByOAuth(provider: AuthProvider, providerId: String): User?
     fun findByOAuthIncludingDeleted(provider: AuthProvider, providerId: String): User?
     fun existsByEmail(email: String): Boolean
+    fun existsByLoginId(loginId: String): Boolean
     fun existsByPhoneNumber(phoneNumber: String): Boolean
     fun searchUsers(
         keyword: String?,

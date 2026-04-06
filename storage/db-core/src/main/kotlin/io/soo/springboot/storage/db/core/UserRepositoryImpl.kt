@@ -41,6 +41,14 @@ class UserRepositoryImpl(
         return jpaRepository.findByEmail(email)?.toModel()
     }
 
+    override fun findByLoginId(loginId: String): User? {
+        return jpaRepository.findByLoginIdAndUserStatusNot(loginId, UserStatus.SOFT_DELETED)?.toModel()
+    }
+
+    override fun findByLoginIdIncludingDeleted(loginId: String): User? {
+        return jpaRepository.findByLoginId(loginId)?.toModel()
+    }
+
     override fun findByPhoneNumber(phoneNumber: String): User? {
         return jpaRepository.findByPhoneNumberAndUserStatusNot(phoneNumber, UserStatus.SOFT_DELETED)?.toModel()
     }
@@ -65,6 +73,10 @@ class UserRepositoryImpl(
 
     override fun existsByEmail(email: String): Boolean {
         return jpaRepository.existsByEmailAndUserStatusNot(email, UserStatus.SOFT_DELETED)
+    }
+
+    override fun existsByLoginId(loginId: String): Boolean {
+        return jpaRepository.existsByLoginIdAndUserStatusNot(loginId, UserStatus.SOFT_DELETED)
     }
 
     override fun existsByPhoneNumber(phoneNumber: String): Boolean {
@@ -117,6 +129,7 @@ class UserRepositoryImpl(
     private fun User.toEntity(): UserEntity {
         return UserEntity(
             email = email,
+            loginId = loginId,
             emailVerified = emailVerified,
             phoneNumber = phoneNumber,
             phoneVerified = phoneVerified,
@@ -150,6 +163,7 @@ class UserRepositoryImpl(
         return User(
             id = id,
             email = email ?: "",
+            loginId = loginId,
             emailVerified = emailVerified,
             phoneNumber = phoneNumber,
             phoneVerified = phoneVerified,

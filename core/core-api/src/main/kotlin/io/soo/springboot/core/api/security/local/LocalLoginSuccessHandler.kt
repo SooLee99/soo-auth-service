@@ -6,7 +6,7 @@ import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.LoginType
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.api.security.userdetails.UserPrincipal
-import io.soo.springboot.core.domain.LoginHistoryService
+import io.soo.springboot.core.domain.login.LoginHistoryService
 import io.soo.springboot.core.support.response.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse

@@ -1,6 +1,6 @@
 package io.soo.springboot.core.api.controller.v1.response
 
-import io.soo.springboot.storage.db.core.SmsLog
+import io.soo.springboot.storage.db.core.sms.SmsLog
 import java.time.LocalDateTime
 
 data class AdminSmsSendResponse(

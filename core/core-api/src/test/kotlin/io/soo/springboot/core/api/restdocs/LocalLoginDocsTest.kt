@@ -13,7 +13,7 @@ import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.api.security.token.IssuedTokens
 import io.soo.springboot.core.api.security.userdetails.UserPrincipal
 import io.soo.springboot.core.domain.health.HealthSnapshotService
-import io.soo.springboot.core.domain.LoginHistoryService
+import io.soo.springboot.core.domain.login.LoginHistoryService
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.test.api.RestDocsTest
 import io.soo.springboot.test.api.RestDocsUtils
@@ -79,7 +79,7 @@ class LocalLoginDocsTest : RestDocsTest() {
 
         val loginFilter = LocalJsonLoginFilter(objectMapper).apply {
             setAuthenticationManager(authenticationManager)
-            setFilterProcessesUrl("/api/v1/auth/local/login")
+            setFilterProcessesUrl("/api/v1/auth/email/login")
             setAuthenticationSuccessHandler(successHandler)
         }
 
@@ -116,12 +116,12 @@ class LocalLoginDocsTest : RestDocsTest() {
             .header("X-Device-Id", "device-001")
             .body(request)
             .`when`()
-            .post("/api/v1/auth/local/login")
+            .post("/api/v1/auth/email/login")
             .then()
             .statusCode(200)
             .apply(
                 mockMvcDocument(
-                    "auth-local-login",
+                    "auth-email-login",
                     RestDocsUtils.requestPreprocessor(),
                     RestDocsUtils.responsePreprocessor(),
                     requestHeaders(

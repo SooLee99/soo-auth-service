@@ -18,6 +18,7 @@ import java.time.Instant
     ],
     indexes = [
         Index(name = "ix_user_email", columnList = "email"),
+        Index(name = "ix_user_login_id", columnList = "loginId"),
         Index(name = "ix_user_oauth", columnList = "authProvider, oauthProviderUserId"),
     ]
 )
@@ -25,6 +26,9 @@ class UserEntity(
 
     @Column(nullable = false)
     var email: String? = null,
+
+    @Column(length = 50)
+    var loginId: String? = null,
 
     @Column(nullable = false)
     var emailVerified: Boolean = false,

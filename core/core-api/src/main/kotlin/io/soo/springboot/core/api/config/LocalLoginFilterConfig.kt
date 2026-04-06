@@ -20,7 +20,7 @@ class LocalLoginFilterConfig(
     fun localJsonLoginFilter(authenticationManager: AuthenticationManager): LocalJsonLoginFilter {
         return LocalJsonLoginFilter(objectMapper).apply {
             setAuthenticationManager(authenticationManager)
-            setFilterProcessesUrl("/api/v1/auth/local/login")
+            setFilterProcessesUrl("/api/v1/auth/email/login")
             setAuthenticationSuccessHandler(localLoginSuccessHandler)
             setAuthenticationFailureHandler(localLoginFailureHandler)
         }

@@ -53,16 +53,14 @@ data class SignUpRequest(
     @field:NotNull(message = "성별은 필수입니다.")
     val gender: Gender,
 
-    @field:NotBlank(message = "휴대폰 번호는 필수입니다.")
     @field:Size(max = 20, message = "휴대폰 번호가 너무 깁니다.")
     @field:Pattern(
         regexp = """^\+?\d[\d\s-]{7,18}\d$""",
         message = "휴대폰 번호 형식이 올바르지 않습니다."
     )
-    val phoneNumber: String,
+    val phoneNumber: String? = null,
 
-    @field:NotBlank(message = "휴대폰 인증 토큰은 필수입니다.")
-    val phoneVerificationToken: String,
+    val phoneVerificationToken: String? = null,
 
     @field:Pattern(
         regexp = """^[a-zA-Z]{2,3}(-[a-zA-Z]{4})?(-[a-zA-Z]{2}|\d{3})?$""",
@@ -110,6 +108,43 @@ data class PhoneLoginRequest(
 
     @field:NotBlank(message = "휴대폰 인증 토큰은 필수입니다.")
     val phoneVerificationToken: String,
+)
+
+data class IdSignUpRequest(
+    @field:NotBlank(message = "아이디는 필수입니다.")
+    @field:Size(min = 4, max = 30, message = "아이디는 4자 이상 30자 이하로 입력해 주세요.")
+    @field:Pattern(
+        regexp = """^[a-zA-Z0-9._-]+$""",
+        message = "아이디에는 영문/숫자/점(.)/밑줄(_)/하이픈(-)만 사용할 수 있습니다.",
+    )
+    val loginId: String,
+
+    @field:NotBlank(message = "비밀번호는 필수입니다.")
+    @field:Size(min = 6, max = 72, message = "비밀번호는 6자 이상 72자 이하로 입력해 주세요.")
+    @field:Pattern(
+        regexp = """^(?=.{6,72}$)(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).*$""",
+        message = "비밀번호는 영문, 숫자, 특수문자 중 3종류 이상을 포함해야 합니다.",
+    )
+    val password: String,
+
+    @field:NotBlank(message = "휴대폰 번호는 필수입니다.")
+    @field:Size(max = 20, message = "휴대폰 번호가 너무 깁니다.")
+    @field:Pattern(
+        regexp = """^\+?\d[\d\s-]{7,18}\d$""",
+        message = "휴대폰 번호 형식이 올바르지 않습니다."
+    )
+    val phoneNumber: String,
+
+    @field:NotBlank(message = "휴대폰 인증 토큰은 필수입니다.")
+    val phoneVerificationToken: String,
+)
+
+data class IdLoginRequest(
+    @field:NotBlank(message = "아이디는 필수입니다.")
+    val loginId: String,
+
+    @field:NotBlank(message = "비밀번호는 필수입니다.")
+    val password: String,
 )
 
 data class PhoneVerificationIssueRequest(

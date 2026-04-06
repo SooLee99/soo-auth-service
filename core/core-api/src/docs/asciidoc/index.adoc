@@ -25,7 +25,11 @@ Auth-Service API 문서입니다.
 [cols="1,3"]
 |===
 |목적 |권장 API
-|회원가입 |`POST /api/v1/services/{serviceCode}/auth/local/signup`
+|이메일 회원가입 |`POST /api/v1/services/{serviceCode}/auth/local/signup`
+|아이디 회원가입 |`POST /api/v1/auth/id/signup`
+|전화번호 회원가입 |`POST /api/v1/auth/phone/signup`
+|아이디 로그인 |`POST /api/v1/auth/id/login`
+|전화번호 로그인 |`POST /api/v1/auth/phone/login`
 |토큰 갱신 |`POST /api/v1/services/{serviceCode}/auth/local/token/refresh`
 |로그아웃 |`POST /api/v1/services/{serviceCode}/auth/local/logout`
 |탈퇴 |`POST /api/v1/services/{serviceCode}/auth/local/withdraw`
@@ -51,8 +55,7 @@ Content-Type: application/json
   "password": "P@ssw0rd!",
   "name": "홍길동",
   "nickname": "gildong",
-  "gender": "MALE",
-  "phoneNumber": "+82 10-1234-5678"
+  "gender": "MALE"
 }
 ----
 
@@ -66,6 +69,117 @@ X-Device-Id: web-chrome-001
   "refreshToken": "..."
 }
 ----
+
+== Auth API (Current)
+
+신규 인증 API는 아래 3개 로그인 수단을 제공합니다.
+
+- 이메일 로그인: `POST /api/v1/auth/email/login`
+- 아이디 로그인: `POST /api/v1/auth/id/login`
+- 휴대폰 로그인: `POST /api/v1/auth/phone/login`
+
+회원가입 정책:
+
+- 이메일 회원가입(`POST /api/v1/auth/email/signup`): 휴대폰 인증 없이 가입 가능
+- 아이디 회원가입(`POST /api/v1/auth/id/signup`): 휴대폰 인증 필수
+- 휴대폰 회원가입(`POST /api/v1/auth/phone/signup`): 휴대폰 인증 필수
+
+토큰:
+
+- 토큰 갱신: `POST /api/v1/auth/token/refresh`
+
+참고:
+
+- 기존 `/api/v1/auth/local/*` 경로는 하위 호환 목적으로 유지됩니다.
+- 상세 처리 흐름은 프로젝트 루트의 `README_AUTH_API.md`를 참고하세요.
+
+=== 이메일 회원가입
+==== Curl Request
+include::{snippets}/auth-email-signup/curl-request.adoc[]
+==== Request Fields
+include::{snippets}/auth-email-signup/request-fields.adoc[]
+==== Http Response
+include::{snippets}/auth-email-signup/http-response.adoc[]
+
+'''
+
+=== 이메일 로그인
+* `X-Device-Id`는 선택 헤더입니다.
+==== Curl Request
+include::{snippets}/auth-email-login/curl-request.adoc[]
+==== Request Headers
+include::{snippets}/auth-email-login/request-headers.adoc[]
+==== Request Fields
+include::{snippets}/auth-email-login/request-fields.adoc[]
+==== Http Response
+include::{snippets}/auth-email-login/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-email-login/response-fields.adoc[]
+
+'''
+
+=== 아이디 회원가입
+==== Curl Request
+include::{snippets}/auth-id-signup/curl-request.adoc[]
+==== Request Fields
+include::{snippets}/auth-id-signup/request-fields.adoc[]
+==== Http Response
+include::{snippets}/auth-id-signup/http-response.adoc[]
+
+'''
+
+=== 아이디 로그인
+* `X-Device-Id`는 필수 헤더입니다.
+==== Curl Request
+include::{snippets}/auth-id-login/curl-request.adoc[]
+==== Request Headers
+include::{snippets}/auth-id-login/request-headers.adoc[]
+==== Request Fields
+include::{snippets}/auth-id-login/request-fields.adoc[]
+==== Http Response
+include::{snippets}/auth-id-login/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-id-login/response-fields.adoc[]
+
+'''
+
+=== 휴대폰 회원가입
+==== Curl Request
+include::{snippets}/auth-phone-signup/curl-request.adoc[]
+==== Request Fields
+include::{snippets}/auth-phone-signup/request-fields.adoc[]
+==== Http Response
+include::{snippets}/auth-phone-signup/http-response.adoc[]
+
+'''
+
+=== 휴대폰 로그인
+* `X-Device-Id`는 필수 헤더입니다.
+==== Curl Request
+include::{snippets}/auth-phone-login/curl-request.adoc[]
+==== Request Headers
+include::{snippets}/auth-phone-login/request-headers.adoc[]
+==== Request Fields
+include::{snippets}/auth-phone-login/request-fields.adoc[]
+==== Http Response
+include::{snippets}/auth-phone-login/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-phone-login/response-fields.adoc[]
+
+'''
+
+=== 토큰 갱신
+* `X-Device-Id`는 필수 헤더입니다.
+==== Curl Request
+include::{snippets}/auth-token-refresh/curl-request.adoc[]
+==== Request Headers
+include::{snippets}/auth-token-refresh/request-headers.adoc[]
+==== Request Fields
+include::{snippets}/auth-token-refresh/request-fields.adoc[]
+==== Http Response
+include::{snippets}/auth-token-refresh/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-token-refresh/response-fields.adoc[]
 
 
 == Health
@@ -146,15 +260,15 @@ include::{snippets}/auth-local-phone-verification-confirm/response-fields.adoc[]
 === 로그인
 * `X-Device-Id`는 선택 헤더입니다. 전달하면 refresh/로그아웃 정책에 활용됩니다.
 ==== Curl Request
-include::{snippets}/auth-local-login/curl-request.adoc[]
+include::{snippets}/auth-email-login/curl-request.adoc[]
 ==== Request Headers
-include::{snippets}/auth-local-login/request-headers.adoc[]
+include::{snippets}/auth-email-login/request-headers.adoc[]
 ==== Request Fields
-include::{snippets}/auth-local-login/request-fields.adoc[]
+include::{snippets}/auth-email-login/request-fields.adoc[]
 ==== Http Response
-include::{snippets}/auth-local-login/http-response.adoc[]
+include::{snippets}/auth-email-login/http-response.adoc[]
 ==== Response Fields
-include::{snippets}/auth-local-login/response-fields.adoc[]
+include::{snippets}/auth-email-login/response-fields.adoc[]
 
 '''
 

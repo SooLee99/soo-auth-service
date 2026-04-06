@@ -12,8 +12,9 @@ import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.api.security.token.IssuedTokens
 import io.soo.springboot.core.domain.local.LocalAccountService
-import io.soo.springboot.core.domain.local.login.LocalIssuedTokens
-import io.soo.springboot.core.domain.local.login.LocalPhoneLoginService
+import io.soo.springboot.core.domain.phone.account.LocalPhoneAccountService
+import io.soo.springboot.core.domain.phone.login.LocalIssuedTokens
+import io.soo.springboot.core.domain.phone.login.LocalPhoneLoginService
 import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.test.api.RestDocsTest
 import io.soo.springboot.test.api.RestDocsUtils
@@ -35,13 +36,14 @@ import java.time.Instant
 class LocalAccountServiceControllerDocsTest : RestDocsTest() {
 
     private val localAccountService = mockk<LocalAccountService>(relaxed = true)
+    private val localPhoneAccountService = mockk<LocalPhoneAccountService>(relaxed = true)
     private val localPhoneLoginService = mockk<LocalPhoneLoginService>()
     private val authTokenManager = mockk<AuthTokenManager>()
     private lateinit var controller: LocalAccountController
 
     @BeforeEach
     fun init() {
-        controller = LocalAccountController(localAccountService, localPhoneLoginService, authTokenManager)
+        controller = LocalAccountController(localAccountService, localPhoneAccountService, localPhoneLoginService, authTokenManager)
         mockMvc = mockController(controller)
     }
 

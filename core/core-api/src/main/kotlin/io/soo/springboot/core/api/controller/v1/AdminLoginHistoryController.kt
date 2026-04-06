@@ -1,9 +1,9 @@
 package io.soo.springboot.core.api.controller.v1
 
 import io.soo.springboot.core.api.security.auth.UserIdResolver
-import io.soo.springboot.core.domain.LoginHistoryService
+import io.soo.springboot.core.domain.login.LoginHistoryService
 import io.soo.springboot.core.support.response.ApiResponse
-import io.soo.springboot.storage.db.core.LoginHistory
+import io.soo.springboot.storage.db.core.login.LoginHistory
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest

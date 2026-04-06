@@ -13,7 +13,7 @@ import io.soo.springboot.core.api.security.auth.UserIdResolver
 import io.soo.springboot.core.domain.admin.AdminUserCommandUseCase
 import io.soo.springboot.core.domain.admin.AdminUserQueryUseCase
 import io.soo.springboot.core.domain.admin.UserBlockService
-import io.soo.springboot.core.domain.LoginHistoryService
+import io.soo.springboot.core.domain.login.LoginHistoryService
 import io.soo.springboot.core.enums.AdminUserActionType
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.Gender
@@ -21,7 +21,7 @@ import io.soo.springboot.core.enums.LoginStatus
 import io.soo.springboot.core.enums.LoginType
 import io.soo.springboot.core.enums.Role
 import io.soo.springboot.core.enums.UserStatus
-import io.soo.springboot.storage.db.core.LoginHistory
+import io.soo.springboot.storage.db.core.login.LoginHistory
 import io.soo.springboot.storage.db.core.User
 import io.soo.springboot.storage.db.core.UserStatusAuditLog
 import io.soo.springboot.test.api.RestDocsTest

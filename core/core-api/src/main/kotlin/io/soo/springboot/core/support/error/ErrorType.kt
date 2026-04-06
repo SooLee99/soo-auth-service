@@ -62,6 +62,7 @@ enum class ErrorType(
     // 409
     CONFLICT(HttpStatus.CONFLICT, ErrorCode.E409, "요청이 현재 상태와 충돌합니다.", LogLevel.WARN),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, ErrorCode.E409, "이미 존재하는 이메일입니다.", LogLevel.WARN),
+    DUPLICATE_LOGIN_ID(HttpStatus.CONFLICT, ErrorCode.E409, "이미 존재하는 아이디입니다.", LogLevel.WARN),
     DUPLICATE_PHONE_NUMBER(HttpStatus.CONFLICT, ErrorCode.E409, "이미 존재하는 전화번호입니다.", LogLevel.WARN),
 
     // 413

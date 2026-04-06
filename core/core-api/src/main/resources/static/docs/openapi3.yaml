@@ -64,30 +64,28 @@ paths:
                 $ref: '#/components/schemas/api-v1-auth-admin-health553791584'
               examples:
                 auth-admin-health:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:07:11.0232039\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/health\"\
-                    ,\r\n      \"method\" : \"GET\"\r\n    }\r\n  },\r\n  \"data\"\
-                    \ : {\r\n    \"status\" : \"UP\",\r\n    \"application\" : \"\
-                    core-api\",\r\n    \"profiles\" : [ \"dev\" ],\r\n    \"uptimeSec\"\
-                    \ : 10,\r\n    \"components\" : {\r\n      \"database\" : {\r\n\
-                    \        \"status\" : \"UP\",\r\n        \"latencyMs\" : 2\r\n\
-                    \      },\r\n      \"redis\" : {\r\n        \"status\" : \"UP\"\
-                    ,\r\n        \"latencyMs\" : 1\r\n      }\r\n    },\r\n    \"\
-                    system\" : {\r\n      \"jvm\" : {\r\n        \"heapUsedBytes\"\
-                    \ : 1000,\r\n        \"heapMaxBytes\" : 10000,\r\n        \"processors\"\
-                    \ : 4\r\n      },\r\n      \"disk\" : {\r\n        \"totalBytes\"\
-                    \ : 100000,\r\n        \"usableBytes\" : 90000\r\n      }\r\n\
-                    \    },\r\n    \"links\" : {\r\n      \"docs\" : {\r\n       \
-                    \ \"swagger\" : \"https://api.example.com/docs/swagger/index.html\"\
-                    ,\r\n        \"docs\" : \"https://api.example.com/docs/index.html\"\
-                    \r\n      },\r\n      \"monitoring\" : {\r\n        \"grafana\"\
-                    \ : \"https://api.example.com:3000\",\r\n        \"prometheus\"\
-                    \ : \"https://api.example.com/actuator/prometheus\",\r\n     \
-                    \   \"loki\" : \"https://api.example.com:3100\"\r\n      },\r\n\
-                    \      \"logs\" : {\r\n        \"lokiQuery\" : \"https://api.example.com:3100/loki/api/v1/query_range\"\
-                    ,\r\n        \"grafanaExplore\" : \"https://api.example.com:3000/explore\"\
-                    \r\n      }\r\n    }\r\n  }\r\n}"
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:51.680751332\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/admin/health\",\n      \"method\"\
+                    \ : \"GET\"\n    }\n  },\n  \"data\" : {\n    \"status\" : \"\
+                    UP\",\n    \"application\" : \"core-api\",\n    \"profiles\" :\
+                    \ [ \"dev\" ],\n    \"uptimeSec\" : 10,\n    \"components\" :\
+                    \ {\n      \"database\" : {\n        \"status\" : \"UP\",\n  \
+                    \      \"latencyMs\" : 2\n      },\n      \"redis\" : {\n    \
+                    \    \"status\" : \"UP\",\n        \"latencyMs\" : 1\n      }\n\
+                    \    },\n    \"system\" : {\n      \"jvm\" : {\n        \"heapUsedBytes\"\
+                    \ : 1000,\n        \"heapMaxBytes\" : 10000,\n        \"processors\"\
+                    \ : 4\n      },\n      \"disk\" : {\n        \"totalBytes\" :\
+                    \ 100000,\n        \"usableBytes\" : 90000\n      }\n    },\n\
+                    \    \"links\" : {\n      \"docs\" : {\n        \"swagger\" :\
+                    \ \"https://api.example.com/docs/swagger/index.html\",\n     \
+                    \   \"docs\" : \"https://api.example.com/docs/index.html\"\n \
+                    \     },\n      \"monitoring\" : {\n        \"grafana\" : \"https://api.example.com:3000\"\
+                    ,\n        \"prometheus\" : \"https://api.example.com/actuator/prometheus\"\
+                    ,\n        \"loki\" : \"https://api.example.com:3100\"\n     \
+                    \ },\n      \"logs\" : {\n        \"lokiQuery\" : \"https://api.example.com:3100/loki/api/v1/query_range\"\
+                    ,\n        \"grafanaExplore\" : \"https://api.example.com:3000/explore\"\
+                    \n      }\n    }\n  }\n}"
   /api/v1/auth/admin/login-history:
     get:
       tags:
@@ -163,28 +161,146 @@ paths:
                 $ref: '#/components/schemas/api-v1-auth-admin-login-history-262485762'
               examples:
                 auth-admin-login-history:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:07:09.5966928\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/login-history\"\
-                    ,\r\n      \"method\" : \"GET\",\r\n      \"query\" : \"page=0&size=20\"\
-                    \r\n    }\r\n  },\r\n  \"data\" : {\r\n    \"content\" : [ {\r\
-                    \n      \"id\" : 1,\r\n      \"userId\" : 1,\r\n      \"userEmail\"\
-                    \ : \"user@example.com\",\r\n      \"loginType\" : \"LOCAL\",\r\
-                    \n      \"status\" : \"SUCCESS\",\r\n      \"ipAddress\" : \"\
-                    127.0.0.1\",\r\n      \"userAgent\" : \"Mozilla/5.0\",\r\n   \
-                    \   \"deviceId\" : \"device-001\",\r\n      \"failureReason\"\
-                    \ : null,\r\n      \"createdAt\" : \"2025-01-01T12:00:00\"\r\n\
-                    \    } ],\r\n    \"pageable\" : {\r\n      \"pageNumber\" : 0,\r\
-                    \n      \"pageSize\" : 20,\r\n      \"sort\" : {\r\n        \"\
-                    empty\" : true,\r\n        \"unsorted\" : true,\r\n        \"\
-                    sorted\" : false\r\n      },\r\n      \"offset\" : 0,\r\n    \
-                    \  \"paged\" : true,\r\n      \"unpaged\" : false\r\n    },\r\n\
-                    \    \"totalElements\" : 1,\r\n    \"last\" : true,\r\n    \"\
-                    totalPages\" : 1,\r\n    \"size\" : 20,\r\n    \"number\" : 0,\r\
-                    \n    \"sort\" : {\r\n      \"empty\" : true,\r\n      \"unsorted\"\
-                    \ : true,\r\n      \"sorted\" : false\r\n    },\r\n    \"numberOfElements\"\
-                    \ : 1,\r\n    \"first\" : true,\r\n    \"empty\" : false\r\n \
-                    \ }\r\n}"
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:51.065282843\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/admin/login-history\",\n    \
+                    \  \"method\" : \"GET\",\n      \"query\" : \"page=0&size=20\"\
+                    \n    }\n  },\n  \"data\" : {\n    \"content\" : [ {\n      \"\
+                    id\" : 1,\n      \"userId\" : 1,\n      \"userEmail\" : \"user@example.com\"\
+                    ,\n      \"loginType\" : \"LOCAL\",\n      \"status\" : \"SUCCESS\"\
+                    ,\n      \"ipAddress\" : \"127.0.0.1\",\n      \"userAgent\" :\
+                    \ \"Mozilla/5.0\",\n      \"deviceId\" : \"device-001\",\n   \
+                    \   \"failureReason\" : null,\n      \"createdAt\" : \"2025-01-01T12:00:00\"\
+                    \n    } ],\n    \"pageable\" : {\n      \"pageNumber\" : 0,\n\
+                    \      \"pageSize\" : 20,\n      \"sort\" : {\n        \"empty\"\
+                    \ : true,\n        \"sorted\" : false,\n        \"unsorted\" :\
+                    \ true\n      },\n      \"offset\" : 0,\n      \"paged\" : true,\n\
+                    \      \"unpaged\" : false\n    },\n    \"totalElements\" : 1,\n\
+                    \    \"totalPages\" : 1,\n    \"last\" : true,\n    \"size\" :\
+                    \ 20,\n    \"number\" : 0,\n    \"sort\" : {\n      \"empty\"\
+                    \ : true,\n      \"sorted\" : false,\n      \"unsorted\" : true\n\
+                    \    },\n    \"first\" : true,\n    \"numberOfElements\" : 1,\n\
+                    \    \"empty\" : false\n  }\n}"
+  /api/v1/auth/admin/services:
+    get:
+      tags:
+      - Admin
+      summary: 관리자 서비스 목록 조회
+      description: "등록된 서비스 목록을 페이징 조회합니다.\n\n### 인증\n- `Authorization: Bearer {accessToken}`\
+        \ 필요\n- 권한: `ROLE_ADMIN` 필요\n\n### 헤더\n- `Authorization`: Bearer 관리자 액세스 토\
+        큰\n\n### Query 파라미터\n- `page`: 페이지 번호 (0부터 시작)\n- `size`: 페이지 크기\n\n### 응답\
+        \ 바디 필드\n- `result`: 요청 처리 결과 (SUCCESS/ERROR)\n- `meta.timestamp`: 응답 생성 시\
+        각 (서버 로컬 시간)\n- `meta.requestId`: 요청 추적 ID (있을 때만 반환)\n- `meta.durationMs`:\
+        \ 처리 시간(ms)\n- `meta.request.path`: 요청 경로\n- `meta.request.method`: HTTP 메\
+        서드\n- `meta.request.query`: 쿼리 문자열 (없으면 null)\n- `meta.paging`: 페이징 메타 정보\
+        \ (있을 때만 반환)\n- `meta.locale`: 응답 로케일 (있을 때만 반환)\n- `error`: 오류 정보 (에러 응답에\
+        서만 포함)\n- `data`: 서비스 목록 페이지\n- `data.content`: 서비스 목록\n- `data.content[].serviceId`:\
+        \ 서비스 ID\n- `data.content[].serviceCode`: 서비스 코드\n- `data.content[].serviceName`:\
+        \ 서비스 이름\n- `data.content[].serviceStatus`: 서비스 상태(ACTIVE/INACTIVE)\n- `data.totalElements`:\
+        \ 전체 건수\n- `data.totalPages`: 전체 페이지 수\n- `data.size`: 페이지 크기\n- `data.number`:\
+        \ 현재 페이지 번호\n- `data.numberOfElements`: 현재 페이지 요소 수\n- `data.first`: 첫 페이지\
+        \ 여부\n- `data.last`: 마지막 페이지 여부\n- `data.empty`: 비어있는 페이지 여부\n- `data.pageable`:\
+        \ null\n- `data.sort`: null\n\n### 공통 에러\n- **401** 인증 실패/만료/위조\n- **403**\
+        \ 권한 없음(권한 필요한 API)\n- **400** validation 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시\
+        는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-admin-service-list
+      parameters:
+      - name: page
+        in: query
+        description: 페이지 번호 (0부터 시작)
+        required: false
+        schema:
+          type: string
+      - name: size
+        in: query
+        description: 페이지 크기
+        required: false
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer 관리자 액세스 토큰
+        required: true
+        schema:
+          type: string
+        example: Bearer token
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-admin-services-2117864034'
+              examples:
+                auth-admin-service-list:
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-03-20T21:07:34.16742564\",\n    \"request\" : {\n \
+                    \     \"path\" : \"/api/v1/auth/admin/services\",\n      \"method\"\
+                    \ : \"GET\",\n      \"query\" : \"page=0&size=20\"\n    }\n  },\n\
+                    \  \"data\" : {\n    \"content\" : [ {\n      \"serviceId\" :\
+                    \ 10,\n      \"serviceCode\" : \"SHOP\",\n      \"serviceName\"\
+                    \ : \"Shopping Service\",\n      \"serviceStatus\" : \"ACTIVE\"\
+                    \n    } ],\n    \"pageable\" : {\n      \"pageNumber\" : 0,\n\
+                    \      \"pageSize\" : 20,\n      \"sort\" : {\n        \"empty\"\
+                    \ : true,\n        \"sorted\" : false,\n        \"unsorted\" :\
+                    \ true\n      },\n      \"offset\" : 0,\n      \"paged\" : true,\n\
+                    \      \"unpaged\" : false\n    },\n    \"totalElements\" : 1,\n\
+                    \    \"totalPages\" : 1,\n    \"last\" : true,\n    \"size\" :\
+                    \ 20,\n    \"number\" : 0,\n    \"sort\" : {\n      \"empty\"\
+                    \ : true,\n      \"sorted\" : false,\n      \"unsorted\" : true\n\
+                    \    },\n    \"numberOfElements\" : 1,\n    \"first\" : true,\n\
+                    \    \"empty\" : false\n  }\n}"
+    post:
+      tags:
+      - Admin
+      summary: 관리자 서비스 등록
+      description: "새 서비스 코드를 등록합니다.\n\n### 인증\n- `Authorization: Bearer {accessToken}`\
+        \ 필요\n- 권한: `ROLE_ADMIN` 필요\n\n### 헤더\n- `Authorization`: Bearer 관리자 액세스 토\
+        큰\n\n### 요청 바디 필드\n- `serviceCode`: 서비스 코드\n- `serviceName`: 서비스 이름\n\n###\
+        \ 응답 바디 필드\n- `result`: 요청 처리 결과 (SUCCESS/ERROR)\n- `meta.timestamp`: 응답 생\
+        성 시각 (서버 로컬 시간)\n- `meta.requestId`: 요청 추적 ID (있을 때만 반환)\n- `meta.durationMs`:\
+        \ 처리 시간(ms)\n- `meta.request.path`: 요청 경로\n- `meta.request.method`: HTTP 메\
+        서드\n- `meta.request.query`: 쿼리 문자열 (없으면 null)\n- `meta.paging`: 페이징 메타 정보\
+        \ (있을 때만 반환)\n- `meta.locale`: 응답 로케일 (있을 때만 반환)\n- `error`: 오류 정보 (에러 응답에\
+        서만 포함)\n- `data`: 서비스 정보\n- `data.serviceId`: 서비스 ID\n- `data.serviceCode`:\
+        \ 서비스 코드\n- `data.serviceName`: 서비스 이름\n- `data.serviceStatus`: 서비스 상태(ACTIVE/INACTIVE)\n\
+        \n### 공통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400**\
+        \ validation 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션\
+        에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-admin-service-register
+      parameters:
+      - name: Authorization
+        in: header
+        description: Bearer 관리자 액세스 토큰
+        required: true
+        schema:
+          type: string
+        example: Bearer token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-admin-services-932807326'
+            examples:
+              auth-admin-service-register:
+                value: "{\n  \"serviceCode\" : \"SHOP\",\n  \"serviceName\" : \"Shopping\
+                  \ Service\"\n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-admin-services1455034867'
+              examples:
+                auth-admin-service-register:
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-03-20T21:07:34.247214788\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/admin/services\",\n      \"method\"\
+                    \ : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"serviceId\" :\
+                    \ 10,\n    \"serviceCode\" : \"SHOP\",\n    \"serviceName\" :\
+                    \ \"Shopping Service\",\n    \"serviceStatus\" : \"ACTIVE\"\n\
+                    \  }\n}"
   /api/v1/auth/admin/users:
     get:
       tags:
@@ -263,36 +379,188 @@ paths:
                 $ref: '#/components/schemas/api-v1-auth-admin-users-1322716065'
               examples:
                 auth-admin-users-list:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:07:07.638639\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/users\"\
-                    ,\r\n      \"method\" : \"GET\",\r\n      \"query\" : \"page=0&size=20&keyword=user&userStatus=ACTIVE&role=USER&authProvider=LOCAL\"\
-                    \r\n    }\r\n  },\r\n  \"data\" : {\r\n    \"content\" : [ {\r\
-                    \n      \"userId\" : 1,\r\n      \"email\" : \"user@example.com\"\
-                    ,\r\n      \"name\" : \"홍길동\",\r\n      \"nickname\" : \"gildong\"\
-                    ,\r\n      \"role\" : \"USER\",\r\n      \"authProvider\" : \"\
-                    LOCAL\",\r\n      \"userStatus\" : \"ACTIVE\",\r\n      \"blocked\"\
-                    \ : false,\r\n      \"deletedAt\" : null\r\n    } ],\r\n    \"\
-                    pageable\" : {\r\n      \"pageNumber\" : 0,\r\n      \"pageSize\"\
-                    \ : 20,\r\n      \"sort\" : {\r\n        \"empty\" : true,\r\n\
-                    \        \"unsorted\" : true,\r\n        \"sorted\" : false\r\n\
-                    \      },\r\n      \"offset\" : 0,\r\n      \"paged\" : true,\r\
-                    \n      \"unpaged\" : false\r\n    },\r\n    \"totalElements\"\
-                    \ : 1,\r\n    \"last\" : true,\r\n    \"totalPages\" : 1,\r\n\
-                    \    \"size\" : 20,\r\n    \"number\" : 0,\r\n    \"sort\" : {\r\
-                    \n      \"empty\" : true,\r\n      \"unsorted\" : true,\r\n  \
-                    \    \"sorted\" : false\r\n    },\r\n    \"numberOfElements\"\
-                    \ : 1,\r\n    \"first\" : true,\r\n    \"empty\" : false\r\n \
-                    \ }\r\n}"
-  /api/v1/auth/local/login:
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:50.99890261\",\n    \"request\" : {\n \
+                    \     \"path\" : \"/api/v1/auth/admin/users\",\n      \"method\"\
+                    \ : \"GET\",\n      \"query\" : \"page=0&size=20&keyword=user&userStatus=ACTIVE&role=USER&authProvider=LOCAL\"\
+                    \n    }\n  },\n  \"data\" : {\n    \"content\" : [ {\n      \"\
+                    userId\" : 1,\n      \"email\" : \"user@example.com\",\n     \
+                    \ \"name\" : \"홍길동\",\n      \"nickname\" : \"gildong\",\n   \
+                    \   \"role\" : \"USER\",\n      \"authProvider\" : \"LOCAL\",\n\
+                    \      \"userStatus\" : \"ACTIVE\",\n      \"blocked\" : false,\n\
+                    \      \"deletedAt\" : null\n    } ],\n    \"pageable\" : {\n\
+                    \      \"pageNumber\" : 0,\n      \"pageSize\" : 20,\n      \"\
+                    sort\" : {\n        \"empty\" : true,\n        \"sorted\" : false,\n\
+                    \        \"unsorted\" : true\n      },\n      \"offset\" : 0,\n\
+                    \      \"paged\" : true,\n      \"unpaged\" : false\n    },\n\
+                    \    \"totalElements\" : 1,\n    \"totalPages\" : 1,\n    \"last\"\
+                    \ : true,\n    \"size\" : 20,\n    \"number\" : 0,\n    \"sort\"\
+                    \ : {\n      \"empty\" : true,\n      \"sorted\" : false,\n  \
+                    \    \"unsorted\" : true\n    },\n    \"first\" : true,\n    \"\
+                    numberOfElements\" : 1,\n    \"empty\" : false\n  }\n}"
+  /api/v1/auth/email/login:
     post:
       tags:
-      - Local Auth
-      summary: 로컬 로그인
+      - Auth
+      summary: 이메일 로그인
       description: "이메일/비밀번호로 로그인하고 액세스/리프레시 토큰을 발급합니다.\n\n### 인증\n- 인증 불필요\n\n###\
         \ 헤더\n- `X-Device-Id`: 디바이스 식별자 (선택)\n\n### 요청 바디 필드\n- `email`: 이메일\n- `password`:\
         \ 비밀번호\n\n### 응답 바디 필드\n- `result`: 결과\n- `meta`: 메타 정보\n- `meta.timestamp`:\
         \ 응답 생성 시각\n- `meta.request`: 요청 정보\n- `meta.request.path`: 요청 경로\n- `meta.request.method`:\
+        \ HTTP 메서드\n- `meta.request.query`: 쿼리 스트링(있으면 문자열, 없으면 null)\n- `data`: 토\
+        큰 정보\n- `data.accessToken`: 액세스 토큰\n- `data.accessExpiresInSec`: 액세스 토큰 만료\
+        (초)\n- `data.refreshToken`: 리프레시 토큰\n- `data.refreshExpiresInSec`: 리프레시 토큰\
+        \ 만료(초)\n\n### 공통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n\
+        - **400** validation 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples**\
+        \ 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-email-login
+      parameters:
+      - name: X-Device-Id
+        in: header
+        description: 디바이스 식별자 (선택)
+        required: false
+        schema:
+          type: string
+        example: device-001
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-email-login-788118888'
+            examples:
+              auth-email-login:
+                value: "{\n  \"email\" : \"user@example.com\",\n  \"password\" : \"\
+                  P@ssw0rd!\"\n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-email-login1560895474'
+              examples:
+                auth-email-login:
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:51.877166644\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/email/login\",\n      \"method\"\
+                    \ : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"accessToken\"\
+                    \ : \"access-token\",\n    \"accessExpiresInSec\" : 3600,\n  \
+                    \  \"refreshToken\" : \"refresh-token\",\n    \"refreshExpiresInSec\"\
+                    \ : 1209600\n  }\n}"
+  /api/v1/auth/email/signup:
+    post:
+      tags:
+      - Auth
+      summary: 이메일 회원가입
+      description: "이메일/비밀번호 기반 로컬 계정을 생성합니다. 휴대폰 인증은 선택입니다.\n\n### 인증\n- 인증 불필요\n\
+        \n### 요청 바디 필드\n- `email`: 이메일\n- `password`: 비밀번호\n- `name`: 이름\n- `nickname`:\
+        \ 닉네임\n- `gender`: 성별 (MALE/FEMALE/UNKNOWN)\n- `phoneNumber`: 휴대폰 번호 (선택)\n\
+        - `phoneVerificationToken`: 휴대폰 인증 완료 토큰 (선택)\n- `locale`: 로케일\n- `profileImageUrl`:\
+        \ 프로필 이미지 URL\n- `thumbnailImageUrl`: 썸네일 이미지 URL\n- `birthyear`: 출생연도 (yyyy)\n\
+        - `birthday`: 생일 (MM-DD)\n\n### 공통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한\
+        \ 없음(권한 필요한 API)\n- **400** validation 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger\
+        \ UI의 **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-email-signup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-email-signup-989332341'
+            examples:
+              auth-email-signup:
+                value: "{\n  \"email\" : \"user@example.com\",\n  \"password\" : \"\
+                  P@ssw0rd!\",\n  \"name\" : \"홍길동\",\n  \"nickname\" : \"gildong\"\
+                  ,\n  \"gender\" : \"MALE\",\n  \"phoneNumber\" : null,\n  \"phoneVerificationToken\"\
+                  \ : null,\n  \"locale\" : \"ko-KR\",\n  \"profileImageUrl\" : \"\
+                  http://dev.soo.io/profile.png\",\n  \"thumbnailImageUrl\" : \"http://dev.soo.io/thumbnail.png\"\
+                  ,\n  \"birthyear\" : \"1990\",\n  \"birthday\" : \"01-31\"\n}"
+      responses:
+        "200":
+          description: "200"
+  /api/v1/auth/id/login:
+    post:
+      tags:
+      - Auth
+      summary: 아이디 로그인
+      description: "아이디/비밀번호로 로그인하고 액세스/리프레시 토큰을 발급합니다.\n\n### 인증\n- 인증 불필요\n\n###\
+        \ 헤더\n- `X-Device-Id`: 디바이스 식별자\n\n### 요청 바디 필드\n- `loginId`: 로그인 아이디\n- `password`:\
+        \ 비밀번호\n\n### 응답 바디 필드\n- `result`: 요청 처리 결과 (SUCCESS/ERROR)\n- `meta.timestamp`:\
+        \ 응답 생성 시각 (서버 로컬 시간)\n- `meta.requestId`: 요청 추적 ID (있을 때만 반환)\n- `meta.durationMs`:\
+        \ 처리 시간(ms)\n- `meta.request.path`: 요청 경로\n- `meta.request.method`: HTTP 메\
+        서드\n- `meta.request.query`: 쿼리 문자열 (없으면 null)\n- `meta.paging`: 페이징 메타 정보\
+        \ (있을 때만 반환)\n- `meta.locale`: 응답 로케일 (있을 때만 반환)\n- `error`: 오류 정보 (에러 응답에\
+        서만 포함)\n- `data`: 토큰 정보\n- `data.accessToken`: 액세스 토큰\n- `data.accessExpiresInSec`:\
+        \ 액세스 토큰 만료(초)\n- `data.refreshToken`: 리프레시 토큰\n- `data.refreshExpiresInSec`:\
+        \ 리프레시 토큰 만료(초)\n\n### 공통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요\
+        한 API)\n- **400** validation 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의\
+        \ **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-id-login
+      parameters:
+      - name: X-Device-Id
+        in: header
+        description: 디바이스 식별자
+        required: true
+        schema:
+          type: string
+        example: device-001
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-id-login-1427235532'
+            examples:
+              auth-id-login:
+                value: "{\n  \"loginId\" : \"test-user\",\n  \"password\" : \"P@ssw0rd!\"\
+                  \n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-phone-login-1150988368'
+              examples:
+                auth-id-login:
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:51.476006794\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/id/login\",\n      \"method\"\
+                    \ : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"accessToken\"\
+                    \ : \"access-token\",\n    \"accessExpiresInSec\" : 3600,\n  \
+                    \  \"refreshToken\" : \"refresh-token\",\n    \"refreshExpiresInSec\"\
+                    \ : 1209600\n  }\n}"
+  /api/v1/auth/id/signup:
+    post:
+      tags:
+      - Auth
+      summary: 아이디 회원가입
+      description: "아이디/비밀번호 계정을 생성합니다. 휴대폰 인증이 필수입니다.\n\n### 인증\n- 인증 불필요\n\n###\
+        \ 요청 바디 필드\n- `loginId`: 로그인 아이디\n- `password`: 비밀번호\n- `phoneNumber`: 휴대폰\
+        \ 번호\n- `phoneVerificationToken`: 휴대폰 인증 완료 토큰\n\n### 공통 에러\n- **401** 인증\
+        \ 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400** validation 실패(필드 형식/필수\
+        \ 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-id-signup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-id-signup936474755'
+            examples:
+              auth-id-signup:
+                value: "{\n  \"loginId\" : \"test-user\",\n  \"password\" : \"P@ssw0rd!\"\
+                  ,\n  \"phoneNumber\" : \"+82 10-1234-5678\",\n  \"phoneVerificationToken\"\
+                  \ : \"verified-phone-token\"\n}"
+      responses:
+        "200":
+          description: "200"
+  /api/v1/auth/local/login:
+    post:
+      tags:
+      - Auth
+      summary: 로컬 로그인
+      description: "이메일/비밀번호로 로그인하고 토큰을 발급합니다.\n\n### 인증\n- 인증 불필요\n\n### 헤더\n- `X-Device-Id`:\
+        \ 디바이스 식별자 (선택)\n\n### 요청 바디 필드\n- `email`: 이메일\n- `password`: 비밀번호\n\n###\
+        \ 응답 바디 필드\n- `result`: 결과\n- `meta`: 메타 정보\n- `meta.timestamp`: 응답 생성 시각\n\
+        - `meta.request`: 요청 정보\n- `meta.request.path`: 요청 경로\n- `meta.request.method`:\
         \ HTTP 메서드\n- `meta.request.query`: 쿼리 스트링(있으면 문자열, 없으면 null)\n- `data`: 토\
         큰 정보\n- `data.accessToken`: 액세스 토큰\n- `data.accessExpiresInSec`: 액세스 토큰 만료\
         (초)\n- `data.refreshToken`: 리프레시 토큰\n- `data.refreshExpiresInSec`: 리프레시 토큰\
@@ -312,27 +580,27 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/api-v1-auth-local-login-788118888'
+              $ref: '#/components/schemas/api-v1-auth-email-login-788118888'
             examples:
               auth-local-login:
-                value: "{\r\n  \"email\" : \"user@example.com\",\r\n  \"password\"\
-                  \ : \"P@ssw0rd!\"\r\n}"
+                value: "{\n  \"email\" : \"user@example.com\",\n  \"password\" : \"\
+                  P@ssw0rd!\"\n}"
       responses:
         "200":
           description: "200"
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-local-login1560895474'
+                $ref: '#/components/schemas/api-v1-auth-email-login1560895474'
               examples:
                 auth-local-login:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:07:12.1984232\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/api/v1/auth/local/login\"\
-                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
-                    \ : {\r\n    \"accessToken\" : \"access-token\",\r\n    \"accessExpiresInSec\"\
-                    \ : 3600,\r\n    \"refreshToken\" : \"refresh-token\",\r\n   \
-                    \ \"refreshExpiresInSec\" : 1209600\r\n  }\r\n}"
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-03-20T21:07:34.675305286\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/local/login\",\n      \"method\"\
+                    \ : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"accessToken\"\
+                    \ : \"access-token\",\n    \"accessExpiresInSec\" : 3600,\n  \
+                    \  \"refreshToken\" : \"refresh-token\",\n    \"refreshExpiresInSec\"\
+                    \ : 1209600\n  }\n}"
   /api/v1/auth/local/logout:
     post:
       tags:
@@ -369,11 +637,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/api-v1-auth-local-logout1868317452'
+              $ref: '#/components/schemas/api-v1-services-serviceCode-auth-local-logout1868317452'
             examples:
               auth-local-logout:
-                value: "{\r\n  \"refreshToken\" : \"refresh-token\",\r\n  \"logoutAll\"\
-                  \ : false\r\n}"
+                value: "{\n  \"refreshToken\" : \"refresh-token\",\n  \"logoutAll\"\
+                  \ : false\n}"
       responses:
         "200":
           description: "200"
@@ -383,11 +651,11 @@ paths:
                 $ref: '#/components/schemas/api-v1-auth-local-logout-2020253012'
               examples:
                 auth-local-logout:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:07:11.613157\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/api/v1/auth/local/logout\"\
-                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
-                    \ : {\r\n    \"result\" : \"OK\"\r\n  }\r\n}"
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:51.725674715\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/local/logout\",\n      \"method\"\
+                    \ : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"result\" : \"\
+                    OK\"\n  }\n}"
   /api/v1/auth/local/signup:
     post:
       tags:
@@ -409,14 +677,13 @@ paths:
               $ref: '#/components/schemas/api-v1-auth-local-signup-108875888'
             examples:
               auth-local-signup:
-                value: "{\r\n  \"email\" : \"user@example.com\",\r\n  \"password\"\
-                  \ : \"P@ssw0rd!\",\r\n  \"name\" : \"홍길동\",\r\n  \"nickname\" :\
-                  \ \"gildong\",\r\n  \"gender\" : \"MALE\",\r\n  \"phoneNumber\"\
-                  \ : \"+82 10-1234-5678\",\r\n  \"phoneVerificationToken\" : \"verified-phone-token\"\
-                  ,\r\n  \"locale\" : \"ko-KR\",\r\n  \"profileImageUrl\" : \"http://dev.soo.io/profile.png\"\
-                  ,\r\n  \"thumbnailImageUrl\" : \"http://dev.soo.io/thumbnail.png\"\
-                  ,\r\n  \"birthyear\" : \"1990\",\r\n  \"birthday\" : \"01-31\"\r\
-                  \n}"
+                value: "{\n  \"email\" : \"user@example.com\",\n  \"password\" : \"\
+                  P@ssw0rd!\",\n  \"name\" : \"홍길동\",\n  \"nickname\" : \"gildong\"\
+                  ,\n  \"gender\" : \"MALE\",\n  \"phoneNumber\" : \"+82 10-1234-5678\"\
+                  ,\n  \"phoneVerificationToken\" : \"verified-phone-token\",\n  \"\
+                  locale\" : \"ko-KR\",\n  \"profileImageUrl\" : \"http://dev.soo.io/profile.png\"\
+                  ,\n  \"thumbnailImageUrl\" : \"http://dev.soo.io/thumbnail.png\"\
+                  ,\n  \"birthyear\" : \"1990\",\n  \"birthday\" : \"01-31\"\n}"
       responses:
         "200":
           description: "200"
@@ -449,10 +716,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/api-v1-auth-local-withdraw-1115063761'
+              $ref: '#/components/schemas/api-v1-services-serviceCode-auth-local-withdraw-1115063761'
             examples:
               auth-local-withdraw:
-                value: "{\r\n  \"reason\" : \"privacy\"\r\n}"
+                value: "{\n  \"reason\" : \"privacy\"\n}"
       responses:
         "200":
           description: "200"
@@ -462,11 +729,136 @@ paths:
                 $ref: '#/components/schemas/api-v1-auth-local-logout-2020253012'
               examples:
                 auth-local-withdraw:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:07:11.7446725\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/api/v1/auth/local/withdraw\"\
-                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
-                    \ : {\r\n    \"result\" : \"OK\"\r\n  }\r\n}"
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:51.75535614\",\n    \"request\" : {\n \
+                    \     \"path\" : \"/api/v1/auth/local/withdraw\",\n      \"method\"\
+                    \ : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"result\" : \"\
+                    OK\"\n  }\n}"
+  /api/v1/auth/phone/login:
+    post:
+      tags:
+      - Auth
+      summary: 휴대폰 로그인
+      description: "휴대폰 인증 토큰으로 로그인하고 액세스/리프레시 토큰을 발급합니다.\n\n### 인증\n- 인증 불필요\n\n\
+        ### 헤더\n- `X-Device-Id`: 디바이스 식별자\n\n### 요청 바디 필드\n- `phoneNumber`: 휴대폰 번호\
+        \n- `phoneVerificationToken`: 휴대폰 인증 완료 토큰\n\n### 응답 바디 필드\n- `result`: 요청\
+        \ 처리 결과 (SUCCESS/ERROR)\n- `meta.timestamp`: 응답 생성 시각 (서버 로컬 시간)\n- `meta.requestId`:\
+        \ 요청 추적 ID (있을 때만 반환)\n- `meta.durationMs`: 처리 시간(ms)\n- `meta.request.path`:\
+        \ 요청 경로\n- `meta.request.method`: HTTP 메서드\n- `meta.request.query`: 쿼리 문자열\
+        \ (없으면 null)\n- `meta.paging`: 페이징 메타 정보 (있을 때만 반환)\n- `meta.locale`: 응답 로\
+        케일 (있을 때만 반환)\n- `error`: 오류 정보 (에러 응답에서만 포함)\n- `data`: 토큰 정보\n- `data.accessToken`:\
+        \ 액세스 토큰\n- `data.accessExpiresInSec`: 액세스 토큰 만료(초)\n- `data.refreshToken`:\
+        \ 리프레시 토큰\n- `data.refreshExpiresInSec`: 리프레시 토큰 만료(초)\n\n### 공통 에러\n- **401**\
+        \ 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400** validation 실패(필드 형식\
+        /필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다\
+        ."
+      operationId: auth-phone-login
+      parameters:
+      - name: X-Device-Id
+        in: header
+        description: 디바이스 식별자
+        required: true
+        schema:
+          type: string
+        example: device-001
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-phone-login1536767407'
+            examples:
+              auth-phone-login:
+                value: "{\n  \"phoneNumber\" : \"+821012345678\",\n  \"phoneVerificationToken\"\
+                  \ : \"verified-phone-token\"\n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-phone-login-1150988368'
+              examples:
+                auth-phone-login:
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:51.351754666\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/phone/login\",\n      \"method\"\
+                    \ : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"accessToken\"\
+                    \ : \"access-token\",\n    \"accessExpiresInSec\" : 3600,\n  \
+                    \  \"refreshToken\" : \"refresh-token\",\n    \"refreshExpiresInSec\"\
+                    \ : 1209600\n  }\n}"
+  /api/v1/auth/phone/signup:
+    post:
+      tags:
+      - Auth
+      summary: 휴대폰 회원가입
+      description: "휴대폰 인증 토큰으로 계정을 생성합니다.\n\n### 인증\n- 인증 불필요\n\n### 요청 바디 필드\n-\
+        \ `phoneNumber`: 휴대폰 번호\n- `phoneVerificationToken`: 휴대폰 인증 완료 토큰\n\n### 공\
+        통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400** validation\
+        \ 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과\
+        로 자동 포함됩니다."
+      operationId: auth-phone-signup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-phone-login1536767407'
+            examples:
+              auth-phone-signup:
+                value: "{\n  \"phoneNumber\" : \"+82 10-1234-5678\",\n  \"phoneVerificationToken\"\
+                  \ : \"verified-phone-token\"\n}"
+      responses:
+        "200":
+          description: "200"
+  /api/v1/auth/token/refresh:
+    post:
+      tags:
+      - Auth
+      summary: 토큰 재발급
+      description: "리프레시 토큰으로 새 액세스/리프레시 토큰을 발급합니다.\n\n### 인증\n- 인증 불필요(리프레시 토큰 필요\
+        )\n\n### 헤더\n- `X-Device-Id`: 디바이스 식별자\n\n### 요청 바디 필드\n- `refreshToken`:\
+        \ 리프레시 토큰\n\n### 응답 바디 필드\n- `result`: 요청 처리 결과 (SUCCESS/ERROR)\n- `meta.timestamp`:\
+        \ 응답 생성 시각 (서버 로컬 시간)\n- `meta.requestId`: 요청 추적 ID (있을 때만 반환)\n- `meta.durationMs`:\
+        \ 처리 시간(ms)\n- `meta.request.path`: 요청 경로\n- `meta.request.method`: HTTP 메\
+        서드\n- `meta.request.query`: 쿼리 문자열 (없으면 null)\n- `meta.paging`: 페이징 메타 정보\
+        \ (있을 때만 반환)\n- `meta.locale`: 응답 로케일 (있을 때만 반환)\n- `error`: 오류 정보 (에러 응답에\
+        서만 포함)\n- `data`: 토큰 정보\n- `data.accessToken`: 액세스 토큰\n- `data.accessExpiresInSec`:\
+        \ 액세스 토큰 만료(초)\n- `data.refreshToken`: 리프레시 토큰\n- `data.refreshExpiresInSec`:\
+        \ 리프레시 토큰 만료(초)\n\n### 공통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요\
+        한 API)\n- **400** validation 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의\
+        \ **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-token-refresh
+      parameters:
+      - name: X-Device-Id
+        in: header
+        description: 디바이스 식별자
+        required: true
+        schema:
+          type: string
+        example: device-001
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-local-token-refresh1056639717'
+            examples:
+              auth-token-refresh:
+                value: "{\n  \"refreshToken\" : \"refresh-token\"\n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-phone-login-1150988368'
+              examples:
+                auth-token-refresh:
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:51.448222228\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/token/refresh\",\n      \"method\"\
+                    \ : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"accessToken\"\
+                    \ : \"access-token\",\n    \"accessExpiresInSec\" : 3600,\n  \
+                    \  \"refreshToken\" : \"refresh-token\",\n    \"refreshExpiresInSec\"\
+                    \ : 1209600\n  }\n}"
   /api/v1/auth/admin/sms/logs:
     get:
       tags:
@@ -534,27 +926,25 @@ paths:
                 $ref: '#/components/schemas/api-v1-auth-admin-sms-logs1758979252'
               examples:
                 auth-admin-sms-logs:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:06:57.345344\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/sms/logs\"\
-                    ,\r\n      \"method\" : \"GET\",\r\n      \"query\" : \"page=0&size=20\"\
-                    \r\n    }\r\n  },\r\n  \"data\" : {\r\n    \"content\" : [ {\r\
-                    \n      \"id\" : 1,\r\n      \"to\" : \"01012345678\",\r\n   \
-                    \   \"from\" : \"029302266\",\r\n      \"text\" : \"[soo-auth]\
-                    \ 인증번호 [123456] (유효 3분)\",\r\n      \"ok\" : true,\r\n      \"\
-                    provider\" : \"SOLAPI\",\r\n      \"code\" : null,\r\n      \"\
-                    msg\" : null,\r\n      \"at\" : \"2026-03-28T12:00:00\"\r\n  \
-                    \  } ],\r\n    \"pageable\" : {\r\n      \"pageNumber\" : 0,\r\
-                    \n      \"pageSize\" : 20,\r\n      \"sort\" : {\r\n        \"\
-                    empty\" : true,\r\n        \"unsorted\" : true,\r\n        \"\
-                    sorted\" : false\r\n      },\r\n      \"offset\" : 0,\r\n    \
-                    \  \"paged\" : true,\r\n      \"unpaged\" : false\r\n    },\r\n\
-                    \    \"totalElements\" : 1,\r\n    \"last\" : true,\r\n    \"\
-                    totalPages\" : 1,\r\n    \"size\" : 20,\r\n    \"number\" : 0,\r\
-                    \n    \"sort\" : {\r\n      \"empty\" : true,\r\n      \"unsorted\"\
-                    \ : true,\r\n      \"sorted\" : false\r\n    },\r\n    \"numberOfElements\"\
-                    \ : 1,\r\n    \"first\" : true,\r\n    \"empty\" : false\r\n \
-                    \ }\r\n}"
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:49.566815875\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/admin/sms/logs\",\n      \"method\"\
+                    \ : \"GET\",\n      \"query\" : \"page=0&size=20\"\n    }\n  },\n\
+                    \  \"data\" : {\n    \"content\" : [ {\n      \"id\" : 1,\n  \
+                    \    \"to\" : \"01012345678\",\n      \"from\" : \"029302266\"\
+                    ,\n      \"text\" : \"[soo-auth] 인증번호 [123456] (유효 3분)\",\n  \
+                    \    \"ok\" : true,\n      \"provider\" : \"SOLAPI\",\n      \"\
+                    code\" : null,\n      \"msg\" : null,\n      \"at\" : \"2026-03-28T12:00:00\"\
+                    \n    } ],\n    \"pageable\" : {\n      \"pageNumber\" : 0,\n\
+                    \      \"pageSize\" : 20,\n      \"sort\" : {\n        \"empty\"\
+                    \ : true,\n        \"sorted\" : false,\n        \"unsorted\" :\
+                    \ true\n      },\n      \"offset\" : 0,\n      \"paged\" : true,\n\
+                    \      \"unpaged\" : false\n    },\n    \"totalElements\" : 1,\n\
+                    \    \"totalPages\" : 1,\n    \"last\" : true,\n    \"size\" :\
+                    \ 20,\n    \"number\" : 0,\n    \"sort\" : {\n      \"empty\"\
+                    \ : true,\n      \"sorted\" : false,\n      \"unsorted\" : true\n\
+                    \    },\n    \"first\" : true,\n    \"numberOfElements\" : 1,\n\
+                    \    \"empty\" : false\n  }\n}"
   /api/v1/auth/admin/sms/send:
     post:
       tags:
@@ -589,8 +979,8 @@ paths:
               $ref: '#/components/schemas/api-v1-auth-admin-sms-send-1110343501'
             examples:
               auth-admin-sms-send:
-                value: "{\r\n  \"to\" : \"01011112222\",\r\n  \"text\" : \"관리자 공지\
-                  \ 테스트\"\r\n}"
+                value: "{\n  \"to\" : \"01011112222\",\n  \"text\" : \"관리자 공지 테스트\"\
+                  \n}"
       responses:
         "200":
           description: "200"
@@ -600,14 +990,13 @@ paths:
                 $ref: '#/components/schemas/api-v1-auth-admin-sms-send1615980123'
               examples:
                 auth-admin-sms-send:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:07:02.2068769\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/sms/send\"\
-                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
-                    \ : {\r\n    \"id\" : 2,\r\n    \"to\" : \"01011112222\",\r\n\
-                    \    \"from\" : \"029302266\",\r\n    \"text\" : \"관리자 공지 테스트\"\
-                    ,\r\n    \"ok\" : true,\r\n    \"provider\" : \"SOLAPI\",\r\n\
-                    \    \"at\" : \"2026-03-28T13:00:00\"\r\n  }\r\n}"
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:50.41626951\",\n    \"request\" : {\n \
+                    \     \"path\" : \"/api/v1/auth/admin/sms/send\",\n      \"method\"\
+                    \ : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"id\" : 2,\n \
+                    \   \"to\" : \"01011112222\",\n    \"from\" : \"029302266\",\n\
+                    \    \"text\" : \"관리자 공지 테스트\",\n    \"ok\" : true,\n    \"provider\"\
+                    \ : \"SOLAPI\",\n    \"at\" : \"2026-03-28T13:00:00\"\n  }\n}"
   /api/v1/auth/admin/sms/stats:
     get:
       tags:
@@ -655,12 +1044,12 @@ paths:
                 $ref: '#/components/schemas/api-v1-auth-admin-sms-stats1143583724'
               examples:
                 auth-admin-sms-stats:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:07:03.0156705\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/sms/stats\"\
-                    ,\r\n      \"method\" : \"GET\"\r\n    }\r\n  },\r\n  \"data\"\
-                    \ : {\r\n    \"total\" : 100,\r\n    \"ok\" : 95,\r\n    \"fail\"\
-                    \ : 5,\r\n    \"rate\" : 95.0\r\n  }\r\n}"
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:50.483984562\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/admin/sms/stats\",\n      \"\
+                    method\" : \"GET\"\n    }\n  },\n  \"data\" : {\n    \"total\"\
+                    \ : 100,\n    \"ok\" : 95,\n    \"fail\" : 5,\n    \"rate\" :\
+                    \ 95.0\n  }\n}"
   /api/v1/auth/admin/users/blocked:
     get:
       tags:
@@ -711,31 +1100,29 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-admin-users-blocked-322523064'
+                $ref: '#/components/schemas/api-v1-auth-admin-users-deleted-322523064'
               examples:
                 auth-admin-blocked-users:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:07:06.2000938\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/users/blocked\"\
-                    ,\r\n      \"method\" : \"GET\",\r\n      \"query\" : \"page=0&size=20\"\
-                    \r\n    }\r\n  },\r\n  \"data\" : {\r\n    \"content\" : [ {\r\
-                    \n      \"userId\" : 1,\r\n      \"userStatus\" : \"BLOCKED\"\
-                    ,\r\n      \"blocked\" : true,\r\n      \"blockedReason\" : \"\
-                    abuse\",\r\n      \"blockedAt\" : \"2026-03-16T10:00:00Z\",\r\n\
-                    \      \"blockedByAdminId\" : 100,\r\n      \"unblockedAt\" :\
-                    \ null,\r\n      \"unblockedByAdminId\" : null,\r\n      \"deletedAt\"\
-                    \ : null,\r\n      \"deletionReason\" : null,\r\n      \"retentionUntil\"\
-                    \ : null\r\n    } ],\r\n    \"pageable\" : {\r\n      \"pageNumber\"\
-                    \ : 0,\r\n      \"pageSize\" : 20,\r\n      \"sort\" : {\r\n \
-                    \       \"empty\" : true,\r\n        \"unsorted\" : true,\r\n\
-                    \        \"sorted\" : false\r\n      },\r\n      \"offset\" :\
-                    \ 0,\r\n      \"paged\" : true,\r\n      \"unpaged\" : false\r\
-                    \n    },\r\n    \"totalElements\" : 1,\r\n    \"last\" : true,\r\
-                    \n    \"totalPages\" : 1,\r\n    \"size\" : 20,\r\n    \"number\"\
-                    \ : 0,\r\n    \"sort\" : {\r\n      \"empty\" : true,\r\n    \
-                    \  \"unsorted\" : true,\r\n      \"sorted\" : false\r\n    },\r\
-                    \n    \"numberOfElements\" : 1,\r\n    \"first\" : true,\r\n \
-                    \   \"empty\" : false\r\n  }\r\n}"
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:50.969725782\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/admin/users/blocked\",\n    \
+                    \  \"method\" : \"GET\",\n      \"query\" : \"page=0&size=20\"\
+                    \n    }\n  },\n  \"data\" : {\n    \"content\" : [ {\n      \"\
+                    userId\" : 1,\n      \"userStatus\" : \"BLOCKED\",\n      \"blocked\"\
+                    \ : true,\n      \"blockedReason\" : \"abuse\",\n      \"blockedAt\"\
+                    \ : \"2026-03-16T10:00:00Z\",\n      \"blockedByAdminId\" : 100,\n\
+                    \      \"unblockedAt\" : null,\n      \"unblockedByAdminId\" :\
+                    \ null,\n      \"deletedAt\" : null,\n      \"deletionReason\"\
+                    \ : null,\n      \"retentionUntil\" : null\n    } ],\n    \"pageable\"\
+                    \ : {\n      \"pageNumber\" : 0,\n      \"pageSize\" : 20,\n \
+                    \     \"sort\" : {\n        \"empty\" : true,\n        \"sorted\"\
+                    \ : false,\n        \"unsorted\" : true\n      },\n      \"offset\"\
+                    \ : 0,\n      \"paged\" : true,\n      \"unpaged\" : false\n \
+                    \   },\n    \"totalElements\" : 1,\n    \"totalPages\" : 1,\n\
+                    \    \"last\" : true,\n    \"size\" : 20,\n    \"number\" : 0,\n\
+                    \    \"sort\" : {\n      \"empty\" : true,\n      \"sorted\" :\
+                    \ false,\n      \"unsorted\" : true\n    },\n    \"first\" : true,\n\
+                    \    \"numberOfElements\" : 1,\n    \"empty\" : false\n  }\n}"
   /api/v1/auth/admin/users/deleted:
     get:
       tags:
@@ -786,31 +1173,30 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-admin-users-blocked-322523064'
+                $ref: '#/components/schemas/api-v1-auth-admin-users-deleted-322523064'
               examples:
                 auth-admin-deleted-users:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:07:05.4278283\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/users/deleted\"\
-                    ,\r\n      \"method\" : \"GET\",\r\n      \"query\" : \"page=0&size=20\"\
-                    \r\n    }\r\n  },\r\n  \"data\" : {\r\n    \"content\" : [ {\r\
-                    \n      \"userId\" : 2,\r\n      \"userStatus\" : \"SOFT_DELETED\"\
-                    ,\r\n      \"blocked\" : false,\r\n      \"blockedReason\" : null,\r\
-                    \n      \"blockedAt\" : null,\r\n      \"blockedByAdminId\" :\
-                    \ null,\r\n      \"unblockedAt\" : null,\r\n      \"unblockedByAdminId\"\
-                    \ : null,\r\n      \"deletedAt\" : \"2026-03-16T11:00:00Z\",\r\
-                    \n      \"deletionReason\" : \"privacy\",\r\n      \"retentionUntil\"\
-                    \ : \"2031-03-16T11:00:00Z\"\r\n    } ],\r\n    \"pageable\" :\
-                    \ {\r\n      \"pageNumber\" : 0,\r\n      \"pageSize\" : 20,\r\
-                    \n      \"sort\" : {\r\n        \"empty\" : true,\r\n        \"\
-                    unsorted\" : true,\r\n        \"sorted\" : false\r\n      },\r\
-                    \n      \"offset\" : 0,\r\n      \"paged\" : true,\r\n      \"\
-                    unpaged\" : false\r\n    },\r\n    \"totalElements\" : 1,\r\n\
-                    \    \"last\" : true,\r\n    \"totalPages\" : 1,\r\n    \"size\"\
-                    \ : 20,\r\n    \"number\" : 0,\r\n    \"sort\" : {\r\n      \"\
-                    empty\" : true,\r\n      \"unsorted\" : true,\r\n      \"sorted\"\
-                    \ : false\r\n    },\r\n    \"numberOfElements\" : 1,\r\n    \"\
-                    first\" : true,\r\n    \"empty\" : false\r\n  }\r\n}"
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:50.894769593\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/admin/users/deleted\",\n    \
+                    \  \"method\" : \"GET\",\n      \"query\" : \"page=0&size=20\"\
+                    \n    }\n  },\n  \"data\" : {\n    \"content\" : [ {\n      \"\
+                    userId\" : 2,\n      \"userStatus\" : \"SOFT_DELETED\",\n    \
+                    \  \"blocked\" : false,\n      \"blockedReason\" : null,\n   \
+                    \   \"blockedAt\" : null,\n      \"blockedByAdminId\" : null,\n\
+                    \      \"unblockedAt\" : null,\n      \"unblockedByAdminId\" :\
+                    \ null,\n      \"deletedAt\" : \"2026-03-16T11:00:00Z\",\n   \
+                    \   \"deletionReason\" : \"privacy\",\n      \"retentionUntil\"\
+                    \ : \"2031-03-16T11:00:00Z\"\n    } ],\n    \"pageable\" : {\n\
+                    \      \"pageNumber\" : 0,\n      \"pageSize\" : 20,\n      \"\
+                    sort\" : {\n        \"empty\" : true,\n        \"sorted\" : false,\n\
+                    \        \"unsorted\" : true\n      },\n      \"offset\" : 0,\n\
+                    \      \"paged\" : true,\n      \"unpaged\" : false\n    },\n\
+                    \    \"totalElements\" : 1,\n    \"totalPages\" : 1,\n    \"last\"\
+                    \ : true,\n    \"size\" : 20,\n    \"number\" : 0,\n    \"sort\"\
+                    \ : {\n      \"empty\" : true,\n      \"sorted\" : false,\n  \
+                    \    \"unsorted\" : true\n    },\n    \"first\" : true,\n    \"\
+                    numberOfElements\" : 1,\n    \"empty\" : false\n  }\n}"
   /api/v1/auth/admin/users/{userId}:
     get:
       tags:
@@ -856,28 +1242,27 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-admin-users-userId-password-reset1698032162'
+                $ref: '#/components/schemas/api-v1-auth-admin-users-userId-tokens-revoke1698032162'
               examples:
                 auth-admin-user-detail:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:07:09.8347068\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/users/1\"\
-                    ,\r\n      \"method\" : \"GET\"\r\n    }\r\n  },\r\n  \"data\"\
-                    \ : {\r\n    \"userId\" : 1,\r\n    \"email\" : \"user@example.com\"\
-                    ,\r\n    \"emailVerified\" : true,\r\n    \"phoneNumber\" : \"\
-                    +82 10-1234-5678\",\r\n    \"phoneVerified\" : true,\r\n    \"\
-                    name\" : \"홍길동\",\r\n    \"nickname\" : \"gildong\",\r\n    \"\
-                    gender\" : \"MALE\",\r\n    \"locale\" : \"ko-KR\",\r\n    \"\
-                    birthyear\" : \"1990\",\r\n    \"birthday\" : \"01-31\",\r\n \
-                    \   \"profileImageUrl\" : \"https://cdn.example.com/profile.png\"\
-                    ,\r\n    \"thumbnailImageUrl\" : \"https://cdn.example.com/thumb.png\"\
-                    ,\r\n    \"authProvider\" : \"LOCAL\",\r\n    \"oauthProviderUserId\"\
-                    \ : null,\r\n    \"role\" : \"USER\",\r\n    \"userStatus\" :\
-                    \ \"ACTIVE\",\r\n    \"blocked\" : false,\r\n    \"blockedReason\"\
-                    \ : null,\r\n    \"blockedAt\" : null,\r\n    \"blockedByAdminId\"\
-                    \ : null,\r\n    \"unblockedAt\" : null,\r\n    \"unblockedByAdminId\"\
-                    \ : null,\r\n    \"deletedAt\" : null,\r\n    \"deletionReason\"\
-                    \ : null,\r\n    \"retentionUntil\" : null\r\n  }\r\n}"
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:51.09245657\",\n    \"request\" : {\n \
+                    \     \"path\" : \"/api/v1/auth/admin/users/1\",\n      \"method\"\
+                    \ : \"GET\"\n    }\n  },\n  \"data\" : {\n    \"userId\" : 1,\n\
+                    \    \"email\" : \"user@example.com\",\n    \"emailVerified\"\
+                    \ : true,\n    \"phoneNumber\" : \"+82 10-1234-5678\",\n    \"\
+                    phoneVerified\" : true,\n    \"name\" : \"홍길동\",\n    \"nickname\"\
+                    \ : \"gildong\",\n    \"gender\" : \"MALE\",\n    \"locale\" :\
+                    \ \"ko-KR\",\n    \"birthyear\" : \"1990\",\n    \"birthday\"\
+                    \ : \"01-31\",\n    \"profileImageUrl\" : \"https://cdn.example.com/profile.png\"\
+                    ,\n    \"thumbnailImageUrl\" : \"https://cdn.example.com/thumb.png\"\
+                    ,\n    \"authProvider\" : \"LOCAL\",\n    \"oauthProviderUserId\"\
+                    \ : null,\n    \"role\" : \"USER\",\n    \"userStatus\" : \"ACTIVE\"\
+                    ,\n    \"blocked\" : false,\n    \"blockedReason\" : null,\n \
+                    \   \"blockedAt\" : null,\n    \"blockedByAdminId\" : null,\n\
+                    \    \"unblockedAt\" : null,\n    \"unblockedByAdminId\" : null,\n\
+                    \    \"deletedAt\" : null,\n    \"deletionReason\" : null,\n \
+                    \   \"retentionUntil\" : null\n  }\n}"
     patch:
       tags:
       - Admin Users
@@ -928,42 +1313,40 @@ paths:
               $ref: '#/components/schemas/api-v1-auth-admin-users-userId327764809'
             examples:
               auth-admin-user-update:
-                value: "{\r\n  \"email\" : null,\r\n  \"phoneNumber\" : null,\r\n\
-                  \  \"name\" : null,\r\n  \"nickname\" : \"updated-nickname\",\r\n\
-                  \  \"gender\" : null,\r\n  \"locale\" : null,\r\n  \"birthyear\"\
-                  \ : null,\r\n  \"birthday\" : null,\r\n  \"profileImageUrl\" : null,\r\
-                  \n  \"thumbnailImageUrl\" : null,\r\n  \"role\" : \"ADMIN\",\r\n\
-                  \  \"userStatus\" : null,\r\n  \"blocked\" : false,\r\n  \"blockedReason\"\
-                  \ : null,\r\n  \"emailVerified\" : null,\r\n  \"phoneVerified\"\
-                  \ : null\r\n}"
+                value: "{\n  \"email\" : null,\n  \"phoneNumber\" : null,\n  \"name\"\
+                  \ : null,\n  \"nickname\" : \"updated-nickname\",\n  \"gender\"\
+                  \ : null,\n  \"locale\" : null,\n  \"birthyear\" : null,\n  \"birthday\"\
+                  \ : null,\n  \"profileImageUrl\" : null,\n  \"thumbnailImageUrl\"\
+                  \ : null,\n  \"role\" : \"ADMIN\",\n  \"userStatus\" : null,\n \
+                  \ \"blocked\" : false,\n  \"blockedReason\" : null,\n  \"emailVerified\"\
+                  \ : null,\n  \"phoneVerified\" : null\n}"
       responses:
         "200":
           description: "200"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-admin-users-userId-password-reset1698032162'
+                $ref: '#/components/schemas/api-v1-auth-admin-users-userId-tokens-revoke1698032162'
               examples:
                 auth-admin-user-update:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:07:05.1761939\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/users/1\"\
-                    ,\r\n      \"method\" : \"PATCH\"\r\n    }\r\n  },\r\n  \"data\"\
-                    \ : {\r\n    \"userId\" : 1,\r\n    \"email\" : \"user@example.com\"\
-                    ,\r\n    \"emailVerified\" : true,\r\n    \"phoneNumber\" : \"\
-                    +82 10-1234-5678\",\r\n    \"phoneVerified\" : true,\r\n    \"\
-                    name\" : \"홍길동\",\r\n    \"nickname\" : \"updated-nickname\",\r\
-                    \n    \"gender\" : \"MALE\",\r\n    \"locale\" : \"ko-KR\",\r\n\
-                    \    \"birthyear\" : \"1990\",\r\n    \"birthday\" : \"01-31\"\
-                    ,\r\n    \"profileImageUrl\" : \"https://cdn.example.com/profile.png\"\
-                    ,\r\n    \"thumbnailImageUrl\" : \"https://cdn.example.com/thumb.png\"\
-                    ,\r\n    \"authProvider\" : \"LOCAL\",\r\n    \"oauthProviderUserId\"\
-                    \ : null,\r\n    \"role\" : \"ADMIN\",\r\n    \"userStatus\" :\
-                    \ \"ACTIVE\",\r\n    \"blocked\" : false,\r\n    \"blockedReason\"\
-                    \ : null,\r\n    \"blockedAt\" : null,\r\n    \"blockedByAdminId\"\
-                    \ : null,\r\n    \"unblockedAt\" : null,\r\n    \"unblockedByAdminId\"\
-                    \ : null,\r\n    \"deletedAt\" : null,\r\n    \"deletionReason\"\
-                    \ : null,\r\n    \"retentionUntil\" : null\r\n  }\r\n}"
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:50.856889293\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/admin/users/1\",\n      \"method\"\
+                    \ : \"PATCH\"\n    }\n  },\n  \"data\" : {\n    \"userId\" : 1,\n\
+                    \    \"email\" : \"user@example.com\",\n    \"emailVerified\"\
+                    \ : true,\n    \"phoneNumber\" : \"+82 10-1234-5678\",\n    \"\
+                    phoneVerified\" : true,\n    \"name\" : \"홍길동\",\n    \"nickname\"\
+                    \ : \"updated-nickname\",\n    \"gender\" : \"MALE\",\n    \"\
+                    locale\" : \"ko-KR\",\n    \"birthyear\" : \"1990\",\n    \"birthday\"\
+                    \ : \"01-31\",\n    \"profileImageUrl\" : \"https://cdn.example.com/profile.png\"\
+                    ,\n    \"thumbnailImageUrl\" : \"https://cdn.example.com/thumb.png\"\
+                    ,\n    \"authProvider\" : \"LOCAL\",\n    \"oauthProviderUserId\"\
+                    \ : null,\n    \"role\" : \"ADMIN\",\n    \"userStatus\" : \"\
+                    ACTIVE\",\n    \"blocked\" : false,\n    \"blockedReason\" : null,\n\
+                    \    \"blockedAt\" : null,\n    \"blockedByAdminId\" : null,\n\
+                    \    \"unblockedAt\" : null,\n    \"unblockedByAdminId\" : null,\n\
+                    \    \"deletedAt\" : null,\n    \"deletionReason\" : null,\n \
+                    \   \"retentionUntil\" : null\n  }\n}"
   /api/v1/auth/local/login/phone:
     post:
       tags:
@@ -995,27 +1378,27 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/api-v1-auth-local-signup-phone1536767407'
+              $ref: '#/components/schemas/api-v1-auth-phone-login1536767407'
             examples:
               auth-local-login-phone:
-                value: "{\r\n  \"phoneNumber\" : \"+821012345678\",\r\n  \"phoneVerificationToken\"\
-                  \ : \"verified-phone-token\"\r\n}"
+                value: "{\n  \"phoneNumber\" : \"+821012345678\",\n  \"phoneVerificationToken\"\
+                  \ : \"verified-phone-token\"\n}"
       responses:
         "200":
           description: "200"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-local-token-refresh-1150988368'
+                $ref: '#/components/schemas/api-v1-auth-phone-login-1150988368'
               examples:
                 auth-local-login-phone:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:07:11.5186937\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/api/v1/auth/local/login/phone\"\
-                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
-                    \ : {\r\n    \"accessToken\" : \"access-token\",\r\n    \"accessExpiresInSec\"\
-                    \ : 3600,\r\n    \"refreshToken\" : \"refresh-token\",\r\n   \
-                    \ \"refreshExpiresInSec\" : 1209600\r\n  }\r\n}"
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:51.704639697\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/local/login/phone\",\n      \"\
+                    method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"accessToken\"\
+                    \ : \"access-token\",\n    \"accessExpiresInSec\" : 3600,\n  \
+                    \  \"refreshToken\" : \"refresh-token\",\n    \"refreshExpiresInSec\"\
+                    \ : 1209600\n  }\n}"
   /api/v1/auth/local/phone-verifications/confirm:
     post:
       tags:
@@ -1041,8 +1424,8 @@ paths:
               $ref: '#/components/schemas/api-v1-auth-local-phone-verifications-confirm168401481'
             examples:
               auth-local-phone-verification-confirm:
-                value: "{\r\n  \"phoneNumber\" : \"+82 10-1234-5678\",\r\n  \"verificationId\"\
-                  \ : \"verification-id-001\",\r\n  \"code\" : \"123456\"\r\n}"
+                value: "{\n  \"phoneNumber\" : \"+82 10-1234-5678\",\n  \"verificationId\"\
+                  \ : \"verification-id-001\",\n  \"code\" : \"123456\"\n}"
       responses:
         "200":
           description: "200"
@@ -1052,12 +1435,12 @@ paths:
                 $ref: '#/components/schemas/api-v1-auth-local-phone-verifications-confirm445202834'
               examples:
                 auth-local-phone-verification-confirm:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:07:12.5325753\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/api/v1/auth/local/phone-verifications/confirm\"\
-                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
-                    \ : {\r\n    \"phoneVerificationToken\" : \"verified-phone-token\"\
-                    ,\r\n    \"expiresInSec\" : 600\r\n  }\r\n}"
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:52.0053811\",\n    \"request\" : {\n  \
+                    \    \"path\" : \"/api/v1/auth/local/phone-verifications/confirm\"\
+                    ,\n      \"method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n\
+                    \    \"phoneVerificationToken\" : \"verified-phone-token\",\n\
+                    \    \"expiresInSec\" : 600\n  }\n}"
   /api/v1/auth/local/phone-verifications/request:
     post:
       tags:
@@ -1082,7 +1465,7 @@ paths:
               $ref: '#/components/schemas/api-v1-auth-local-phone-verifications-request-394943525'
             examples:
               auth-local-phone-verification-request:
-                value: "{\r\n  \"phoneNumber\" : \"+82 10-1234-5678\"\r\n}"
+                value: "{\n  \"phoneNumber\" : \"+82 10-1234-5678\"\n}"
       responses:
         "200":
           description: "200"
@@ -1092,12 +1475,12 @@ paths:
                 $ref: '#/components/schemas/api-v1-auth-local-phone-verifications-request271430078'
               examples:
                 auth-local-phone-verification-request:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:07:12.412732\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/api/v1/auth/local/phone-verifications/request\"\
-                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
-                    \ : {\r\n    \"verificationId\" : \"verification-id-001\",\r\n\
-                    \    \"expiresInSec\" : 180\r\n  }\r\n}"
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:51.959482695\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/local/phone-verifications/request\"\
+                    ,\n      \"method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n\
+                    \    \"verificationId\" : \"verification-id-001\",\n    \"expiresInSec\"\
+                    \ : 180\n  }\n}"
   /api/v1/auth/local/signup/phone:
     post:
       tags:
@@ -1113,11 +1496,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/api-v1-auth-local-signup-phone1536767407'
+              $ref: '#/components/schemas/api-v1-auth-phone-login1536767407'
             examples:
               auth-local-signup-phone:
-                value: "{\r\n  \"phoneNumber\" : \"+82 10-1234-5678\",\r\n  \"phoneVerificationToken\"\
-                  \ : \"verified-phone-token\"\r\n}"
+                value: "{\n  \"phoneNumber\" : \"+82 10-1234-5678\",\n  \"phoneVerificationToken\"\
+                  \ : \"verified-phone-token\"\n}"
       responses:
         "200":
           description: "200"
@@ -1154,23 +1537,23 @@ paths:
               $ref: '#/components/schemas/api-v1-auth-local-token-refresh1056639717'
             examples:
               auth-local-refresh:
-                value: "{\r\n  \"refreshToken\" : \"refresh-token\"\r\n}"
+                value: "{\n  \"refreshToken\" : \"refresh-token\"\n}"
       responses:
         "200":
           description: "200"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-local-token-refresh-1150988368'
+                $ref: '#/components/schemas/api-v1-auth-phone-login-1150988368'
               examples:
                 auth-local-refresh:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:07:11.9497515\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/api/v1/auth/local/token/refresh\"\
-                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
-                    \ : {\r\n    \"accessToken\" : \"access-token\",\r\n    \"accessExpiresInSec\"\
-                    \ : 3600,\r\n    \"refreshToken\" : \"refresh-token\",\r\n   \
-                    \ \"refreshExpiresInSec\" : 1209600\r\n  }\r\n}"
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:51.792193967\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/local/token/refresh\",\n    \
+                    \  \"method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"\
+                    accessToken\" : \"access-token\",\n    \"accessExpiresInSec\"\
+                    \ : 3600,\n    \"refreshToken\" : \"refresh-token\",\n    \"refreshExpiresInSec\"\
+                    \ : 1209600\n  }\n}"
   /api/v1/auth/oauth2/{provider}/authorize-url:
     get:
       tags:
@@ -1215,15 +1598,63 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-oauth2-provider-authorize-url1616597692'
+                $ref: '#/components/schemas/api-v1-services-serviceCode-auth-oauth2-provider-authorize-url1616597692'
               examples:
                 auth-oauth2-authorize-url:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:07:12.5950525\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/api/v1/auth/oauth2/kakao/authorize-url\"\
-                    ,\r\n      \"method\" : \"GET\",\r\n      \"query\" : \"returnUrl=/app/callback\"\
-                    \r\n    }\r\n  },\r\n  \"data\" : \"/oauth2/authorization/kakao\"\
-                    \r\n}"
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:52.019767026\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/oauth2/kakao/authorize-url\"\
+                    ,\n      \"method\" : \"GET\",\n      \"query\" : \"returnUrl=/app/callback\"\
+                    \n    }\n  },\n  \"data\" : \"/oauth2/authorization/kakao\"\n}"
+  /api/v1/auth/admin/services/{serviceCode}/deactivate:
+    post:
+      tags:
+      - Admin
+      summary: 관리자 서비스 비활성화
+      description: "서비스를 물리 삭제하지 않고 INACTIVE 상태로 전환합니다.\n\n### 인증\n- `Authorization:\
+        \ Bearer {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요\n\n### 헤더\n- `Authorization`:\
+        \ Bearer 관리자 액세스 토큰\n\n### Path 파라미터\n- `serviceCode`: 비활성화 대상 서비스 코드\n\n\
+        ### 응답 바디 필드\n- `result`: 요청 처리 결과 (SUCCESS/ERROR)\n- `meta.timestamp`: 응답\
+        \ 생성 시각 (서버 로컬 시간)\n- `meta.requestId`: 요청 추적 ID (있을 때만 반환)\n- `meta.durationMs`:\
+        \ 처리 시간(ms)\n- `meta.request.path`: 요청 경로\n- `meta.request.method`: HTTP 메\
+        서드\n- `meta.request.query`: 쿼리 문자열 (없으면 null)\n- `meta.paging`: 페이징 메타 정보\
+        \ (있을 때만 반환)\n- `meta.locale`: 응답 로케일 (있을 때만 반환)\n- `error`: 오류 정보 (에러 응답에\
+        서만 포함)\n- `data`: 서비스 정보\n- `data.serviceId`: 서비스 ID\n- `data.serviceCode`:\
+        \ 서비스 코드\n- `data.serviceName`: 서비스 이름\n- `data.serviceStatus`: 서비스 상태(ACTIVE/INACTIVE)\n\
+        \n### 공통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400**\
+        \ validation 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션\
+        에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-admin-service-deactivate
+      parameters:
+      - name: serviceCode
+        in: path
+        description: 비활성화 대상 서비스 코드
+        required: true
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer 관리자 액세스 토큰
+        required: true
+        schema:
+          type: string
+        example: Bearer token
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-auth-admin-services1455034867'
+              examples:
+                auth-admin-service-deactivate:
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-03-20T21:07:34.214808719\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/admin/services/SHOP/deactivate\"\
+                    ,\n      \"method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n\
+                    \    \"serviceId\" : 10,\n    \"serviceCode\" : \"SHOP\",\n  \
+                    \  \"serviceName\" : \"Shopping Service\",\n    \"serviceStatus\"\
+                    \ : \"INACTIVE\"\n  }\n}"
   /api/v1/auth/admin/users/{userId}/block:
     post:
       tags:
@@ -1265,26 +1696,26 @@ paths:
               $ref: '#/components/schemas/api-v1-auth-admin-users-userId-block1800099987'
             examples:
               auth-admin-user-block:
-                value: "{\r\n  \"reason\" : \"abuse\"\r\n}"
+                value: "{\n  \"reason\" : \"abuse\"\n}"
       responses:
         "200":
           description: "200"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-admin-users-userId-block-1556520031'
+                $ref: '#/components/schemas/api-v1-auth-admin-users-userId-unblock-1556520031'
               examples:
                 auth-admin-user-block:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:07:08.6160831\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/users/1/block\"\
-                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
-                    \ : {\r\n    \"userId\" : 1,\r\n    \"userStatus\" : \"BLOCKED\"\
-                    ,\r\n    \"blocked\" : true,\r\n    \"blockedReason\" : \"abuse\"\
-                    ,\r\n    \"blockedAt\" : \"2026-03-16T10:00:00Z\",\r\n    \"blockedByAdminId\"\
-                    \ : 100,\r\n    \"unblockedAt\" : null,\r\n    \"unblockedByAdminId\"\
-                    \ : null,\r\n    \"deletedAt\" : null,\r\n    \"deletionReason\"\
-                    \ : null,\r\n    \"retentionUntil\" : null\r\n  }\r\n}"
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:51.036185151\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/admin/users/1/block\",\n    \
+                    \  \"method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"\
+                    userId\" : 1,\n    \"userStatus\" : \"BLOCKED\",\n    \"blocked\"\
+                    \ : true,\n    \"blockedReason\" : \"abuse\",\n    \"blockedAt\"\
+                    \ : \"2026-03-16T10:00:00Z\",\n    \"blockedByAdminId\" : 100,\n\
+                    \    \"unblockedAt\" : null,\n    \"unblockedByAdminId\" : null,\n\
+                    \    \"deletedAt\" : null,\n    \"deletionReason\" : null,\n \
+                    \   \"retentionUntil\" : null\n  }\n}"
   /api/v1/auth/admin/users/{userId}/delete:
     post:
       tags:
@@ -1326,27 +1757,26 @@ paths:
               $ref: '#/components/schemas/api-v1-auth-admin-users-userId-delete-795616532'
             examples:
               auth-admin-user-delete:
-                value: "{\r\n  \"reason\" : \"admin-delete\"\r\n}"
+                value: "{\n  \"reason\" : \"admin-delete\"\n}"
       responses:
         "200":
           description: "200"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-admin-users-userId-block-1556520031'
+                $ref: '#/components/schemas/api-v1-auth-admin-users-userId-unblock-1556520031'
               examples:
                 auth-admin-user-delete:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:07:04.8185345\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/users/1/delete\"\
-                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
-                    \ : {\r\n    \"userId\" : 2,\r\n    \"userStatus\" : \"SOFT_DELETED\"\
-                    ,\r\n    \"blocked\" : false,\r\n    \"blockedReason\" : null,\r\
-                    \n    \"blockedAt\" : null,\r\n    \"blockedByAdminId\" : null,\r\
-                    \n    \"unblockedAt\" : null,\r\n    \"unblockedByAdminId\" :\
-                    \ null,\r\n    \"deletedAt\" : \"2026-03-16T11:00:00Z\",\r\n \
-                    \   \"deletionReason\" : \"privacy\",\r\n    \"retentionUntil\"\
-                    \ : \"2031-03-16T11:00:00Z\"\r\n  }\r\n}"
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:50.79142065\",\n    \"request\" : {\n \
+                    \     \"path\" : \"/api/v1/auth/admin/users/1/delete\",\n    \
+                    \  \"method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"\
+                    userId\" : 2,\n    \"userStatus\" : \"SOFT_DELETED\",\n    \"\
+                    blocked\" : false,\n    \"blockedReason\" : null,\n    \"blockedAt\"\
+                    \ : null,\n    \"blockedByAdminId\" : null,\n    \"unblockedAt\"\
+                    \ : null,\n    \"unblockedByAdminId\" : null,\n    \"deletedAt\"\
+                    \ : \"2026-03-16T11:00:00Z\",\n    \"deletionReason\" : \"privacy\"\
+                    ,\n    \"retentionUntil\" : \"2031-03-16T11:00:00Z\"\n  }\n}"
   /api/v1/auth/admin/users/{userId}/status-audits:
     get:
       tags:
@@ -1405,25 +1835,24 @@ paths:
                 $ref: '#/components/schemas/api-v1-auth-admin-users-userId-status-audits-1202361055'
               examples:
                 auth-admin-user-status-audits:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:07:10.0146682\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/users/1/status-audits\"\
-                    ,\r\n      \"method\" : \"GET\",\r\n      \"query\" : \"page=0&size=20\"\
-                    \r\n    }\r\n  },\r\n  \"data\" : {\r\n    \"content\" : [ {\r\
-                    \n      \"id\" : 1,\r\n      \"targetUserId\" : 1,\r\n      \"\
-                    actorUserId\" : 100,\r\n      \"actionType\" : \"BLOCK\",\r\n\
-                    \      \"reason\" : \"abuse\",\r\n      \"actionAt\" : \"2026-03-16T10:00:00Z\"\
-                    \r\n    } ],\r\n    \"pageable\" : {\r\n      \"pageNumber\" :\
-                    \ 0,\r\n      \"pageSize\" : 20,\r\n      \"sort\" : {\r\n   \
-                    \     \"empty\" : true,\r\n        \"unsorted\" : true,\r\n  \
-                    \      \"sorted\" : false\r\n      },\r\n      \"offset\" : 0,\r\
-                    \n      \"paged\" : true,\r\n      \"unpaged\" : false\r\n   \
-                    \ },\r\n    \"totalElements\" : 1,\r\n    \"last\" : true,\r\n\
-                    \    \"totalPages\" : 1,\r\n    \"size\" : 20,\r\n    \"number\"\
-                    \ : 0,\r\n    \"sort\" : {\r\n      \"empty\" : true,\r\n    \
-                    \  \"unsorted\" : true,\r\n      \"sorted\" : false\r\n    },\r\
-                    \n    \"numberOfElements\" : 1,\r\n    \"first\" : true,\r\n \
-                    \   \"empty\" : false\r\n  }\r\n}"
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:51.114572803\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/admin/users/1/status-audits\"\
+                    ,\n      \"method\" : \"GET\",\n      \"query\" : \"page=0&size=20\"\
+                    \n    }\n  },\n  \"data\" : {\n    \"content\" : [ {\n      \"\
+                    id\" : 1,\n      \"targetUserId\" : 1,\n      \"actorUserId\"\
+                    \ : 100,\n      \"actionType\" : \"BLOCK\",\n      \"reason\"\
+                    \ : \"abuse\",\n      \"actionAt\" : \"2026-03-16T10:00:00Z\"\n\
+                    \    } ],\n    \"pageable\" : {\n      \"pageNumber\" : 0,\n \
+                    \     \"pageSize\" : 20,\n      \"sort\" : {\n        \"empty\"\
+                    \ : true,\n        \"sorted\" : false,\n        \"unsorted\" :\
+                    \ true\n      },\n      \"offset\" : 0,\n      \"paged\" : true,\n\
+                    \      \"unpaged\" : false\n    },\n    \"totalElements\" : 1,\n\
+                    \    \"totalPages\" : 1,\n    \"last\" : true,\n    \"size\" :\
+                    \ 20,\n    \"number\" : 0,\n    \"sort\" : {\n      \"empty\"\
+                    \ : true,\n      \"sorted\" : false,\n      \"unsorted\" : true\n\
+                    \    },\n    \"first\" : true,\n    \"numberOfElements\" : 1,\n\
+                    \    \"empty\" : false\n  }\n}"
   /api/v1/auth/admin/users/{userId}/unblock:
     post:
       tags:
@@ -1464,20 +1893,194 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-admin-users-userId-block-1556520031'
+                $ref: '#/components/schemas/api-v1-auth-admin-users-userId-unblock-1556520031'
               examples:
                 auth-admin-user-unblock:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:07:05.8865506\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/users/1/unblock\"\
-                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
-                    \ : {\r\n    \"userId\" : 1,\r\n    \"userStatus\" : \"ACTIVE\"\
-                    ,\r\n    \"blocked\" : false,\r\n    \"blockedReason\" : \"abuse\"\
-                    ,\r\n    \"blockedAt\" : \"2026-03-16T10:00:00Z\",\r\n    \"blockedByAdminId\"\
-                    \ : 100,\r\n    \"unblockedAt\" : \"2026-03-16T12:00:00Z\",\r\n\
-                    \    \"unblockedByAdminId\" : 100,\r\n    \"deletedAt\" : null,\r\
-                    \n    \"deletionReason\" : null,\r\n    \"retentionUntil\" : null\r\
-                    \n  }\r\n}"
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:50.948829898\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/admin/users/1/unblock\",\n  \
+                    \    \"method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n    \"\
+                    userId\" : 1,\n    \"userStatus\" : \"ACTIVE\",\n    \"blocked\"\
+                    \ : false,\n    \"blockedReason\" : \"abuse\",\n    \"blockedAt\"\
+                    \ : \"2026-03-16T10:00:00Z\",\n    \"blockedByAdminId\" : 100,\n\
+                    \    \"unblockedAt\" : \"2026-03-16T12:00:00Z\",\n    \"unblockedByAdminId\"\
+                    \ : 100,\n    \"deletedAt\" : null,\n    \"deletionReason\" :\
+                    \ null,\n    \"retentionUntil\" : null\n  }\n}"
+  /api/v1/services/{serviceCode}/auth/local/logout:
+    post:
+      tags:
+      - Auth
+      summary: 서비스별 로그아웃
+      description: "serviceCode 기준 경로에서 로그아웃을 수행합니다(단건/전체 옵션).\n\n### 인증\n- `Authorization:\
+        \ Bearer {accessToken}` 필요\n- `serviceCode` 유효성/활성 상태 검증\n\n### 헤더\n- `Authorization`:\
+        \ Bearer 액세스 토큰\n- `X-Device-Id`: 디바이스 식별자\n\n### Path 파라미터\n- `serviceCode`:\
+        \ 서비스 코드 (예: SHOP, CRM, DEFAULT)\n\n### 요청 바디 필드\n- `refreshToken`: 리프레시 토\
+        큰 (단건 로그아웃)\n- `logoutAll`: 전체 로그아웃 여부\n\n### 응답 바디 필드\n- `result`: 요청 처리\
+        \ 결과 (SUCCESS/ERROR)\n- `meta.timestamp`: 응답 생성 시각 (서버 로컬 시간)\n- `meta.requestId`:\
+        \ 요청 추적 ID (있을 때만 반환)\n- `meta.durationMs`: 처리 시간(ms)\n- `meta.request.path`:\
+        \ 요청 경로\n- `meta.request.method`: HTTP 메서드\n- `meta.request.query`: 쿼리 문자열\
+        \ (없으면 null)\n- `meta.paging`: 페이징 메타 정보 (있을 때만 반환)\n- `meta.locale`: 응답 로\
+        케일 (있을 때만 반환)\n- `error`: 오류 정보 (에러 응답에서만 포함)\n- `data`: 로그아웃 결과\n- `data.result`:\
+        \ 처리 결과(OK)\n- `data.serviceCode`: 적용 서비스 코드\n\n### 공통 에러\n- **401** 인증 실패\
+        /만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400** validation 실패(필드 형식/필수 누락)\n\
+        \n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-service-local-logout
+      parameters:
+      - name: serviceCode
+        in: path
+        description: "서비스 코드 (예: SHOP, CRM, DEFAULT)"
+        required: true
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer 액세스 토큰
+        required: true
+        schema:
+          type: string
+        example: Bearer token
+      - name: X-Device-Id
+        in: header
+        description: 디바이스 식별자
+        required: true
+        schema:
+          type: string
+        example: device-001
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-services-serviceCode-auth-local-logout1868317452'
+            examples:
+              auth-service-local-logout:
+                value: "{\n  \"refreshToken\" : \"refresh-token\",\n  \"logoutAll\"\
+                  \ : false\n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-services-serviceCode-auth-local-logout-879006433'
+              examples:
+                auth-service-local-logout:
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-03-20T21:07:34.748601321\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/services/SHOP/auth/local/logout\"\
+                    ,\n      \"method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n\
+                    \    \"result\" : \"OK\",\n    \"serviceCode\" : \"SHOP\"\n  }\n\
+                    }"
+  /api/v1/services/{serviceCode}/auth/local/signup:
+    post:
+      tags:
+      - Auth
+      summary: 서비스별 로컬 회원가입
+      description: "serviceCode 기준으로 로컬 계정을 생성합니다.\n\n### 인증\n- 인증 불필요\n- `serviceCode`\
+        \ 유효성/활성 상태 검증\n\n### Path 파라미터\n- `serviceCode`: 서비스 코드 (예: SHOP, CRM, DEFAULT)\n\
+        \n### 요청 바디 필드\n- `email`: 이메일\n- `password`: 비밀번호\n- `name`: 이름\n- `nickname`:\
+        \ 닉네임\n- `gender`: 성별 (MALE/FEMALE)\n- `phoneNumber`: 휴대폰 번호\n- `locale`:\
+        \ 로케일 (기본값: ko-KR)\n- `profileImageUrl`: 프로필 이미지 URL\n- `thumbnailImageUrl`:\
+        \ 썸네일 이미지 URL\n- `birthyear`: 출생연도 (yyyy)\n- `birthday`: 생일 (MM-DD)\n\n###\
+        \ 응답 바디 필드\n- `result`: 요청 처리 결과 (SUCCESS/ERROR)\n- `meta.timestamp`: 응답 생\
+        성 시각 (서버 로컬 시간)\n- `meta.requestId`: 요청 추적 ID (있을 때만 반환)\n- `meta.durationMs`:\
+        \ 처리 시간(ms)\n- `meta.request.path`: 요청 경로\n- `meta.request.method`: HTTP 메\
+        서드\n- `meta.request.query`: 쿼리 문자열 (없으면 null)\n- `meta.paging`: 페이징 메타 정보\
+        \ (있을 때만 반환)\n- `meta.locale`: 응답 로케일 (있을 때만 반환)\n- `error`: 오류 정보 (에러 응답에\
+        서만 포함)\n- `data`: 회원가입 결과\n- `data.result`: 처리 결과(OK)\n- `data.serviceCode`:\
+        \ 적용 서비스 코드\n\n### 공통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n\
+        - **400** validation 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples**\
+        \ 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-service-local-signup
+      parameters:
+      - name: serviceCode
+        in: path
+        description: "서비스 코드 (예: SHOP, CRM, DEFAULT)"
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-services-serviceCode-auth-local-signup-255962728'
+            examples:
+              auth-service-local-signup:
+                value: "{\n  \"email\" : \"user@example.com\",\n  \"password\" : \"\
+                  P@ssw0rd!\",\n  \"name\" : \"홍길동\",\n  \"nickname\" : \"gildong\"\
+                  ,\n  \"gender\" : \"MALE\",\n  \"phoneNumber\" : \"+82 10-1234-5678\"\
+                  ,\n  \"locale\" : \"ko-KR\",\n  \"profileImageUrl\" : \"http://dev.soo.io/profile.png\"\
+                  ,\n  \"thumbnailImageUrl\" : \"http://dev.soo.io/thumbnail.png\"\
+                  ,\n  \"birthyear\" : \"1990\",\n  \"birthday\" : \"01-31\"\n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-services-serviceCode-auth-local-signup-107839563'
+              examples:
+                auth-service-local-signup:
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-03-20T21:07:34.786358892\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/services/SHOP/auth/local/signup\"\
+                    ,\n      \"method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n\
+                    \    \"result\" : \"OK\",\n    \"serviceCode\" : \"SHOP\"\n  }\n\
+                    }"
+  /api/v1/services/{serviceCode}/auth/local/withdraw:
+    post:
+      tags:
+      - Auth
+      summary: 서비스별 회원 탈퇴(소프트 삭제)
+      description: "serviceCode 기준 경로에서 회원 탈퇴(소프트 삭제)를 처리합니다.\n\n### 인증\n- `Authorization:\
+        \ Bearer {accessToken}` 필요\n- `serviceCode` 유효성/활성 상태 검증\n\n### 헤더\n- `Authorization`:\
+        \ Bearer 액세스 토큰\n\n### Path 파라미터\n- `serviceCode`: 서비스 코드 (예: SHOP, CRM, DEFAULT)\n\
+        \n### 요청 바디 필드\n- `reason`: 탈퇴 사유\n\n### 응답 바디 필드\n- `result`: 요청 처리 결과 (SUCCESS/ERROR)\n\
+        - `meta.timestamp`: 응답 생성 시각 (서버 로컬 시간)\n- `meta.requestId`: 요청 추적 ID (있을\
+        \ 때만 반환)\n- `meta.durationMs`: 처리 시간(ms)\n- `meta.request.path`: 요청 경로\n-\
+        \ `meta.request.method`: HTTP 메서드\n- `meta.request.query`: 쿼리 문자열 (없으면 null)\n\
+        - `meta.paging`: 페이징 메타 정보 (있을 때만 반환)\n- `meta.locale`: 응답 로케일 (있을 때만 반환)\n\
+        - `error`: 오류 정보 (에러 응답에서만 포함)\n- `data`: 탈퇴 처리 결과\n- `data.result`: 처리 결과\
+        (OK)\n- `data.serviceCode`: 적용 서비스 코드\n\n### 공통 에러\n- **401** 인증 실패/만료/위조\n\
+        - **403** 권한 없음(권한 필요한 API)\n- **400** validation 실패(필드 형식/필수 누락)\n\n> 실제\
+        \ 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-service-local-withdraw
+      parameters:
+      - name: serviceCode
+        in: path
+        description: "서비스 코드 (예: SHOP, CRM, DEFAULT)"
+        required: true
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: Bearer 액세스 토큰
+        required: true
+        schema:
+          type: string
+        example: Bearer token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-services-serviceCode-auth-local-withdraw-1115063761'
+            examples:
+              auth-service-local-withdraw:
+                value: "{\n  \"reason\" : \"privacy\"\n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-services-serviceCode-auth-local-withdraw1895331346'
+              examples:
+                auth-service-local-withdraw:
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-03-20T21:07:34.766701121\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/services/SHOP/auth/local/withdraw\"\
+                    ,\n      \"method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n\
+                    \    \"result\" : \"OK\",\n    \"serviceCode\" : \"SHOP\"\n  }\n\
+                    }"
   /api/v1/auth/admin/users/{userId}/password/reset:
     post:
       tags:
@@ -1524,35 +2127,34 @@ paths:
               $ref: '#/components/schemas/api-v1-auth-admin-users-userId-password-reset-1938778681'
             examples:
               auth-admin-user-password-reset:
-                value: "{\r\n  \"newPassword\" : \"NewP@ssword1!\"\r\n}"
+                value: "{\n  \"newPassword\" : \"NewP@ssword1!\"\n}"
       responses:
         "200":
           description: "200"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-admin-users-userId-password-reset1698032162'
+                $ref: '#/components/schemas/api-v1-auth-admin-users-userId-tokens-revoke1698032162'
               examples:
                 auth-admin-user-password-reset:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:07:04.288991\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/users/1/password/reset\"\
-                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
-                    \ : {\r\n    \"userId\" : 1,\r\n    \"email\" : \"user@example.com\"\
-                    ,\r\n    \"emailVerified\" : true,\r\n    \"phoneNumber\" : \"\
-                    +82 10-1234-5678\",\r\n    \"phoneVerified\" : true,\r\n    \"\
-                    name\" : \"홍길동\",\r\n    \"nickname\" : \"gildong\",\r\n    \"\
-                    gender\" : \"MALE\",\r\n    \"locale\" : \"ko-KR\",\r\n    \"\
-                    birthyear\" : \"1990\",\r\n    \"birthday\" : \"01-31\",\r\n \
-                    \   \"profileImageUrl\" : \"https://cdn.example.com/profile.png\"\
-                    ,\r\n    \"thumbnailImageUrl\" : \"https://cdn.example.com/thumb.png\"\
-                    ,\r\n    \"authProvider\" : \"LOCAL\",\r\n    \"oauthProviderUserId\"\
-                    \ : null,\r\n    \"role\" : \"USER\",\r\n    \"userStatus\" :\
-                    \ \"ACTIVE\",\r\n    \"blocked\" : false,\r\n    \"blockedReason\"\
-                    \ : null,\r\n    \"blockedAt\" : null,\r\n    \"blockedByAdminId\"\
-                    \ : null,\r\n    \"unblockedAt\" : null,\r\n    \"unblockedByAdminId\"\
-                    \ : null,\r\n    \"deletedAt\" : null,\r\n    \"deletionReason\"\
-                    \ : null,\r\n    \"retentionUntil\" : null\r\n  }\r\n}"
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:50.732674775\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/admin/users/1/password/reset\"\
+                    ,\n      \"method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n\
+                    \    \"userId\" : 1,\n    \"email\" : \"user@example.com\",\n\
+                    \    \"emailVerified\" : true,\n    \"phoneNumber\" : \"+82 10-1234-5678\"\
+                    ,\n    \"phoneVerified\" : true,\n    \"name\" : \"홍길동\",\n  \
+                    \  \"nickname\" : \"gildong\",\n    \"gender\" : \"MALE\",\n \
+                    \   \"locale\" : \"ko-KR\",\n    \"birthyear\" : \"1990\",\n \
+                    \   \"birthday\" : \"01-31\",\n    \"profileImageUrl\" : \"https://cdn.example.com/profile.png\"\
+                    ,\n    \"thumbnailImageUrl\" : \"https://cdn.example.com/thumb.png\"\
+                    ,\n    \"authProvider\" : \"LOCAL\",\n    \"oauthProviderUserId\"\
+                    \ : null,\n    \"role\" : \"USER\",\n    \"userStatus\" : \"ACTIVE\"\
+                    ,\n    \"blocked\" : false,\n    \"blockedReason\" : null,\n \
+                    \   \"blockedAt\" : null,\n    \"blockedByAdminId\" : null,\n\
+                    \    \"unblockedAt\" : null,\n    \"unblockedByAdminId\" : null,\n\
+                    \    \"deletedAt\" : null,\n    \"deletionReason\" : null,\n \
+                    \   \"retentionUntil\" : null\n  }\n}"
   /api/v1/auth/admin/users/{userId}/tokens/revoke:
     post:
       tags:
@@ -1598,28 +2200,193 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/api-v1-auth-admin-users-userId-password-reset1698032162'
+                $ref: '#/components/schemas/api-v1-auth-admin-users-userId-tokens-revoke1698032162'
               examples:
                 auth-admin-user-tokens-revoke:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:07:05.6402407\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/api/v1/auth/admin/users/1/tokens/revoke\"\
-                    ,\r\n      \"method\" : \"POST\"\r\n    }\r\n  },\r\n  \"data\"\
-                    \ : {\r\n    \"userId\" : 1,\r\n    \"email\" : \"user@example.com\"\
-                    ,\r\n    \"emailVerified\" : true,\r\n    \"phoneNumber\" : \"\
-                    +82 10-1234-5678\",\r\n    \"phoneVerified\" : true,\r\n    \"\
-                    name\" : \"홍길동\",\r\n    \"nickname\" : \"gildong\",\r\n    \"\
-                    gender\" : \"MALE\",\r\n    \"locale\" : \"ko-KR\",\r\n    \"\
-                    birthyear\" : \"1990\",\r\n    \"birthday\" : \"01-31\",\r\n \
-                    \   \"profileImageUrl\" : \"https://cdn.example.com/profile.png\"\
-                    ,\r\n    \"thumbnailImageUrl\" : \"https://cdn.example.com/thumb.png\"\
-                    ,\r\n    \"authProvider\" : \"LOCAL\",\r\n    \"oauthProviderUserId\"\
-                    \ : null,\r\n    \"role\" : \"USER\",\r\n    \"userStatus\" :\
-                    \ \"ACTIVE\",\r\n    \"blocked\" : false,\r\n    \"blockedReason\"\
-                    \ : null,\r\n    \"blockedAt\" : null,\r\n    \"blockedByAdminId\"\
-                    \ : null,\r\n    \"unblockedAt\" : null,\r\n    \"unblockedByAdminId\"\
-                    \ : null,\r\n    \"deletedAt\" : null,\r\n    \"deletionReason\"\
-                    \ : null,\r\n    \"retentionUntil\" : null\r\n  }\r\n}"
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:50.920897046\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/auth/admin/users/1/tokens/revoke\"\
+                    ,\n      \"method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n\
+                    \    \"userId\" : 1,\n    \"email\" : \"user@example.com\",\n\
+                    \    \"emailVerified\" : true,\n    \"phoneNumber\" : \"+82 10-1234-5678\"\
+                    ,\n    \"phoneVerified\" : true,\n    \"name\" : \"홍길동\",\n  \
+                    \  \"nickname\" : \"gildong\",\n    \"gender\" : \"MALE\",\n \
+                    \   \"locale\" : \"ko-KR\",\n    \"birthyear\" : \"1990\",\n \
+                    \   \"birthday\" : \"01-31\",\n    \"profileImageUrl\" : \"https://cdn.example.com/profile.png\"\
+                    ,\n    \"thumbnailImageUrl\" : \"https://cdn.example.com/thumb.png\"\
+                    ,\n    \"authProvider\" : \"LOCAL\",\n    \"oauthProviderUserId\"\
+                    \ : null,\n    \"role\" : \"USER\",\n    \"userStatus\" : \"ACTIVE\"\
+                    ,\n    \"blocked\" : false,\n    \"blockedReason\" : null,\n \
+                    \   \"blockedAt\" : null,\n    \"blockedByAdminId\" : null,\n\
+                    \    \"unblockedAt\" : null,\n    \"unblockedByAdminId\" : null,\n\
+                    \    \"deletedAt\" : null,\n    \"deletionReason\" : null,\n \
+                    \   \"retentionUntil\" : null\n  }\n}"
+  /api/v1/services/{serviceCode}/auth/local/signup/phone:
+    post:
+      tags:
+      - API
+      summary: auth-service-local-signup-phone
+      description: "auth-service-local-signup-phone\n\n### 인증\n- 인증 정책 확인 필요\n\n###\
+        \ Path 파라미터\n- `serviceCode`: 서비스 코드 (예: SHOP, CRM, DEFAULT)\n\n### 요청 바디\
+        \ 필드\n- `phoneNumber`: 휴대폰 번호\n\n### 응답 바디 필드\n- `result`: 요청 처리 결과 (SUCCESS/ERROR)\n\
+        - `meta.timestamp`: 응답 생성 시각 (서버 로컬 시간)\n- `meta.requestId`: 요청 추적 ID (있을\
+        \ 때만 반환)\n- `meta.durationMs`: 처리 시간(ms)\n- `meta.request.path`: 요청 경로\n-\
+        \ `meta.request.method`: HTTP 메서드\n- `meta.request.query`: 쿼리 문자열 (없으면 null)\n\
+        - `meta.paging`: 페이징 메타 정보 (있을 때만 반환)\n- `meta.locale`: 응답 로케일 (있을 때만 반환)\n\
+        - `error`: 오류 정보 (에러 응답에서만 포함)\n- `data`: 회원가입 결과\n- `data.result`: 처리 결과\
+        (OK)\n- `data.serviceCode`: 적용 서비스 코드\n\n### 공통 에러\n- **401** 인증 실패/만료/위조\n\
+        - **403** 권한 없음(권한 필요한 API)\n- **400** validation 실패(필드 형식/필수 누락)\n\n> 실제\
+        \ 요청/응답 예시는 Swagger UI의 **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-service-local-signup-phone
+      parameters:
+      - name: serviceCode
+        in: path
+        description: "서비스 코드 (예: SHOP, CRM, DEFAULT)"
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-services-serviceCode-auth-local-signup-phone-616279009'
+            examples:
+              auth-service-local-signup-phone:
+                value: "{\n  \"phoneNumber\" : \"+82 10-1234-5678\"\n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-services-serviceCode-auth-local-signup-107839563'
+              examples:
+                auth-service-local-signup-phone:
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-03-20T21:07:34.83722562\",\n    \"request\" : {\n \
+                    \     \"path\" : \"/api/v1/services/SHOP/auth/local/signup/phone\"\
+                    ,\n      \"method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n\
+                    \    \"result\" : \"OK\",\n    \"serviceCode\" : \"SHOP\"\n  }\n\
+                    }"
+  /api/v1/services/{serviceCode}/auth/local/token/refresh:
+    post:
+      tags:
+      - Auth
+      summary: 서비스별 토큰 재발급(Refresh)
+      description: "serviceCode 기준 경로에서 Refresh Token으로 Access Token을 재발급합니다.\n\n\
+        ### 인증\n- 인증 불필요(일반적으로 refreshToken 자체가 인증 수단)\n- `serviceCode` 유효성/활성 상태\
+        \ 검증\n\n### 헤더\n- `X-Device-Id`: 디바이스 식별자\n\n### Path 파라미터\n- `serviceCode`:\
+        \ 서비스 코드 (예: SHOP, CRM, DEFAULT)\n\n### 요청 바디 필드\n- `refreshToken`: 리프레시 토\
+        큰\n\n### 응답 바디 필드\n- `result`: 요청 처리 결과 (SUCCESS/ERROR)\n- `meta.timestamp`:\
+        \ 응답 생성 시각 (서버 로컬 시간)\n- `meta.requestId`: 요청 추적 ID (있을 때만 반환)\n- `meta.durationMs`:\
+        \ 처리 시간(ms)\n- `meta.request.path`: 요청 경로\n- `meta.request.method`: HTTP 메\
+        서드\n- `meta.request.query`: 쿼리 문자열 (없으면 null)\n- `meta.paging`: 페이징 메타 정보\
+        \ (있을 때만 반환)\n- `meta.locale`: 응답 로케일 (있을 때만 반환)\n- `error`: 오류 정보 (에러 응답에\
+        서만 포함)\n- `data`: 토큰 재발급 결과\n- `data.serviceCode`: 적용 서비스 코드\n- `data.tokens`:\
+        \ 재발급 토큰\n- `data.tokens.accessToken`: 액세스 토큰\n- `data.tokens.accessExpiresInSec`:\
+        \ 액세스 토큰 만료(초)\n- `data.tokens.refreshToken`: 리프레시 토큰\n- `data.tokens.refreshExpiresInSec`:\
+        \ 리프레시 토큰 만료(초)\n\n### 공통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요\
+        한 API)\n- **400** validation 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의\
+        \ **Examples** 섹션에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-service-local-refresh
+      parameters:
+      - name: serviceCode
+        in: path
+        description: "서비스 코드 (예: SHOP, CRM, DEFAULT)"
+        required: true
+        schema:
+          type: string
+      - name: X-Device-Id
+        in: header
+        description: 디바이스 식별자
+        required: true
+        schema:
+          type: string
+        example: device-001
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api-v1-auth-local-token-refresh1056639717'
+            examples:
+              auth-service-local-refresh:
+                value: "{\n  \"refreshToken\" : \"refresh-token\"\n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-services-serviceCode-auth-local-token-refresh416663598'
+              examples:
+                auth-service-local-refresh:
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-03-20T21:07:34.818539679\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/api/v1/services/SHOP/auth/local/token/refresh\"\
+                    ,\n      \"method\" : \"POST\"\n    }\n  },\n  \"data\" : {\n\
+                    \    \"serviceCode\" : \"SHOP\",\n    \"tokens\" : {\n      \"\
+                    accessToken\" : \"access-token\",\n      \"accessExpiresInSec\"\
+                    \ : 3600,\n      \"refreshToken\" : \"refresh-token\",\n     \
+                    \ \"refreshExpiresInSec\" : 1209600\n    }\n  }\n}"
+  /api/v1/services/{serviceCode}/auth/oauth2/{provider}/authorize-url:
+    get:
+      tags:
+      - OAuth2
+      summary: 서비스별 OAuth2 인가 URL 조회
+      description: "serviceCode 기준 OAuth2 인가 URL 경로를 반환합니다.\n\n### 인증\n- 인증 불필요\n\
+        - `serviceCode` 유효성/활성 상태 검증\n\n### 헤더\n- `X-Device-Id`: 디바이스 식별자 (선택)\n\n\
+        ### Path 파라미터\n- `serviceCode`: 서비스 코드 (예: SHOP, CRM, DEFAULT)\n- `provider`:\
+        \ OAuth2 공급자 (예: kakao, naver, google)\n\n### Query 파라미터\n- `returnUrl`: 로\
+        그인 완료 후 리다이렉트할 상대 경로\n\n### 응답 바디 필드\n- `result`: 요청 처리 결과 (SUCCESS/ERROR)\n\
+        - `meta.timestamp`: 응답 생성 시각 (서버 로컬 시간)\n- `meta.requestId`: 요청 추적 ID (있을\
+        \ 때만 반환)\n- `meta.durationMs`: 처리 시간(ms)\n- `meta.request.path`: 요청 경로\n-\
+        \ `meta.request.method`: HTTP 메서드\n- `meta.request.query`: 쿼리 문자열 (없으면 null)\n\
+        - `meta.paging`: 페이징 메타 정보 (있을 때만 반환)\n- `meta.locale`: 응답 로케일 (있을 때만 반환)\n\
+        - `error`: 오류 정보 (에러 응답에서만 포함)\n- `data`: OAuth2 인가 URL 경로 (예: /oauth2/authorization/{provider})\n\
+        \n### 공통 에러\n- **401** 인증 실패/만료/위조\n- **403** 권한 없음(권한 필요한 API)\n- **400**\
+        \ validation 실패(필드 형식/필수 누락)\n\n> 실제 요청/응답 예시는 Swagger UI의 **Examples** 섹션\
+        에 테스트 실행 결과로 자동 포함됩니다."
+      operationId: auth-service-oauth2-authorize-url
+      parameters:
+      - name: serviceCode
+        in: path
+        description: "서비스 코드 (예: SHOP, CRM, DEFAULT)"
+        required: true
+        schema:
+          type: string
+      - name: provider
+        in: path
+        description: "OAuth2 공급자 (예: kakao, naver, google)"
+        required: true
+        schema:
+          type: string
+      - name: returnUrl
+        in: query
+        description: 로그인 완료 후 리다이렉트할 상대 경로
+        required: false
+        schema:
+          type: string
+      - name: X-Device-Id
+        in: header
+        description: 디바이스 식별자 (선택)
+        required: false
+        schema:
+          type: string
+        example: device-001
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-v1-services-serviceCode-auth-oauth2-provider-authorize-url1616597692'
+              examples:
+                auth-service-oauth2-authorize-url:
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-03-20T21:07:34.85448798\",\n    \"request\" : {\n \
+                    \     \"path\" : \"/api/v1/services/SHOP/auth/oauth2/kakao/authorize-url\"\
+                    ,\n      \"method\" : \"GET\",\n      \"query\" : \"returnUrl=/app/callback\"\
+                    \n    }\n  },\n  \"data\" : \"/oauth2/authorization/kakao\"\n}"
   /health:
     get:
       tags:
@@ -1642,17 +2409,32 @@ paths:
                 $ref: '#/components/schemas/health-916046377'
               examples:
                 health:
-                  value: "{\r\n  \"result\" : \"SUCCESS\",\r\n  \"meta\" : {\r\n \
-                    \   \"timestamp\" : \"2026-03-29T16:07:10.9389448\",\r\n    \"\
-                    request\" : {\r\n      \"path\" : \"/health\",\r\n      \"method\"\
-                    \ : \"GET\"\r\n    }\r\n  },\r\n  \"data\" : {\r\n    \"status\"\
-                    \ : \"UP\",\r\n    \"application\" : \"core-api\",\r\n    \"uptimeSec\"\
-                    \ : 10,\r\n    \"links\" : {\r\n      \"docs\" : {\r\n       \
-                    \ \"swagger\" : \"https://api.example.com/docs/swagger/index.html\"\
-                    ,\r\n        \"docs\" : \"https://api.example.com/docs/index.html\"\
-                    \r\n      }\r\n    }\r\n  }\r\n}"
+                  value: "{\n  \"result\" : \"SUCCESS\",\n  \"meta\" : {\n    \"timestamp\"\
+                    \ : \"2026-04-06T10:27:51.665486697\",\n    \"request\" : {\n\
+                    \      \"path\" : \"/health\",\n      \"method\" : \"GET\"\n \
+                    \   }\n  },\n  \"data\" : {\n    \"status\" : \"UP\",\n    \"\
+                    application\" : \"core-api\",\n    \"uptimeSec\" : 10,\n    \"\
+                    links\" : {\n      \"docs\" : {\n        \"swagger\" : \"https://api.example.com/docs/swagger/index.html\"\
+                    ,\n        \"docs\" : \"https://api.example.com/docs/index.html\"\
+                    \n      }\n    }\n  }\n}"
 components:
   schemas:
+    api-v1-auth-local-phone-verifications-confirm168401481:
+      required:
+      - code
+      - phoneNumber
+      - verificationId
+      type: object
+      properties:
+        code:
+          type: string
+          description: 6자리 인증번호
+        phoneNumber:
+          type: string
+          description: 인증 확인할 휴대폰 번호
+        verificationId:
+          type: string
+          description: 인증 요청 식별자
     api-v1-auth-admin-users-userId327764809:
       type: object
       properties:
@@ -1720,22 +2502,84 @@ components:
           type: string
           description: 이메일
           nullable: true
-    api-v1-auth-local-phone-verifications-confirm168401481:
+    api-v1-services-serviceCode-auth-local-logout-879006433:
       required:
-      - code
-      - phoneNumber
-      - verificationId
+      - data
+      - result
       type: object
       properties:
-        code:
+        result:
           type: string
-          description: 6자리 인증번호
-        phoneNumber:
+          description: 요청 처리 결과 (SUCCESS/ERROR)
+        data:
+          required:
+          - result
+          - serviceCode
+          type: object
+          properties:
+            result:
+              type: string
+              description: 처리 결과(OK)
+            serviceCode:
+              type: string
+              description: 적용 서비스 코드
+          description: 로그아웃 결과
+        meta:
+          required:
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: string
+                  description: 쿼리 문자열 (없으면 null)
+                  nullable: true
+            requestId:
+              type: string
+              description: 요청 추적 ID (있을 때만 반환)
+              nullable: true
+            paging:
+              type: object
+              description: 페이징 메타 정보 (있을 때만 반환)
+              nullable: true
+            locale:
+              type: string
+              description: 응답 로케일 (있을 때만 반환)
+              nullable: true
+            durationMs:
+              type: number
+              description: 처리 시간(ms)
+              nullable: true
+            timestamp:
+              type: string
+              description: 응답 생성 시각 (서버 로컬 시간)
+        error:
+          type: object
+          description: 오류 정보 (에러 응답에서만 포함)
+          nullable: true
+    api-v1-auth-admin-services-932807326:
+      required:
+      - serviceCode
+      - serviceName
+      type: object
+      properties:
+        serviceCode:
           type: string
-          description: 인증 확인할 휴대폰 번호
-        verificationId:
+          description: 서비스 코드
+        serviceName:
           type: string
-          description: 인증 요청 식별자
+          description: 서비스 이름
     api-v1-auth-admin-sms-stats1143583724:
       required:
       - data
@@ -1766,6 +2610,80 @@ components:
               type: number
               description: 성공 수
           description: 문자 발송 통계
+        meta:
+          required:
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: string
+                  description: 쿼리 문자열 (없으면 null)
+                  nullable: true
+            requestId:
+              type: string
+              description: 요청 추적 ID (있을 때만 반환)
+              nullable: true
+            paging:
+              type: object
+              description: 페이징 메타 정보 (있을 때만 반환)
+              nullable: true
+            locale:
+              type: string
+              description: 응답 로케일 (있을 때만 반환)
+              nullable: true
+            durationMs:
+              type: number
+              description: 처리 시간(ms)
+              nullable: true
+            timestamp:
+              type: string
+              description: 응답 생성 시각 (서버 로컬 시간)
+        error:
+          type: object
+          description: 오류 정보 (에러 응답에서만 포함)
+          nullable: true
+    api-v1-auth-admin-services1455034867:
+      required:
+      - data
+      - result
+      type: object
+      properties:
+        result:
+          type: string
+          description: 요청 처리 결과 (SUCCESS/ERROR)
+        data:
+          required:
+          - serviceCode
+          - serviceId
+          - serviceName
+          - serviceStatus
+          type: object
+          properties:
+            serviceCode:
+              type: string
+              description: 서비스 코드
+            serviceStatus:
+              type: string
+              description: 서비스 상태(ACTIVE/INACTIVE)
+            serviceName:
+              type: string
+              description: 서비스 이름
+            serviceId:
+              type: number
+              description: 서비스 ID
+          description: 서비스 정보
         meta:
           required:
           - timestamp
@@ -1896,7 +2814,59 @@ components:
           type: object
           description: 오류 정보 (에러 응답에서만 포함)
           nullable: true
-    api-v1-auth-admin-users-blocked-322523064:
+    api-v1-auth-email-signup-989332341:
+      required:
+      - email
+      - gender
+      - password
+      type: object
+      properties:
+        birthday:
+          type: string
+          description: 생일 (MM-DD)
+          nullable: true
+        phoneVerificationToken:
+          type: string
+          description: 휴대폰 인증 완료 토큰 (선택)
+          nullable: true
+        thumbnailImageUrl:
+          type: string
+          description: 썸네일 이미지 URL
+          nullable: true
+        password:
+          type: string
+          description: 비밀번호
+        phoneNumber:
+          type: string
+          description: 휴대폰 번호 (선택)
+          nullable: true
+        birthyear:
+          type: string
+          description: 출생연도 (yyyy)
+          nullable: true
+        gender:
+          type: string
+          description: 성별 (MALE/FEMALE/UNKNOWN)
+        nickname:
+          type: string
+          description: 닉네임
+          nullable: true
+        name:
+          type: string
+          description: 이름
+          nullable: true
+        locale:
+          type: string
+          description: 로케일
+          nullable: true
+        profileImageUrl:
+          type: string
+          description: 프로필 이미지 URL
+          nullable: true
+        email:
+          type: string
+          description: 이메일
+    api-v1-auth-admin-users-deleted-322523064:
       required:
       - data
       - meta
@@ -2026,7 +2996,7 @@ components:
           type: object
           description: 에러 정보
           nullable: true
-    api-v1-auth-local-logout1868317452:
+    api-v1-services-serviceCode-auth-local-logout1868317452:
       type: object
       properties:
         logoutAll:
@@ -2037,6 +3007,26 @@ components:
           type: string
           description: 리프레시 토큰 (단건 로그아웃)
           nullable: true
+    api-v1-auth-id-signup936474755:
+      required:
+      - loginId
+      - password
+      - phoneNumber
+      - phoneVerificationToken
+      type: object
+      properties:
+        phoneVerificationToken:
+          type: string
+          description: 휴대폰 인증 완료 토큰
+        password:
+          type: string
+          description: 비밀번호
+        phoneNumber:
+          type: string
+          description: 휴대폰 번호
+        loginId:
+          type: string
+          description: 로그인 아이디
     api-v1-auth-local-signup-108875888:
       required:
       - email
@@ -2155,7 +3145,7 @@ components:
           type: object
           description: 오류 정보 (에러 응답에서만 포함)
           nullable: true
-    api-v1-auth-local-token-refresh-1150988368:
+    api-v1-auth-phone-login-1150988368:
       required:
       - data
       - result
@@ -2229,7 +3219,7 @@ components:
           type: object
           description: 오류 정보 (에러 응답에서만 포함)
           nullable: true
-    api-v1-auth-admin-users-userId-password-reset1698032162:
+    api-v1-auth-admin-users-userId-tokens-revoke1698032162:
       required:
       - data
       - meta
@@ -2379,14 +3369,7 @@ components:
           type: object
           description: 에러 정보
           nullable: true
-    api-v1-auth-admin-users-userId-block1800099987:
-      type: object
-      properties:
-        reason:
-          type: string
-          description: 차단 사유
-          nullable: true
-    api-v1-auth-admin-users-userId-block-1556520031:
+    api-v1-auth-admin-users-userId-unblock-1556520031:
       required:
       - data
       - meta
@@ -2476,6 +3459,25 @@ components:
           type: object
           description: 에러 정보
           nullable: true
+    api-v1-auth-admin-users-userId-block1800099987:
+      type: object
+      properties:
+        reason:
+          type: string
+          description: 차단 사유
+          nullable: true
+    api-v1-auth-id-login-1427235532:
+      required:
+      - loginId
+      - password
+      type: object
+      properties:
+        password:
+          type: string
+          description: 비밀번호
+        loginId:
+          type: string
+          description: 로그인 아이디
     api-v1-auth-local-phone-verifications-confirm445202834:
       required:
       - data
@@ -2542,7 +3544,137 @@ components:
           type: object
           description: 오류 정보 (에러 응답에서만 포함)
           nullable: true
-    api-v1-auth-local-login-788118888:
+    api-v1-services-serviceCode-auth-local-signup-phone-616279009:
+      required:
+      - phoneNumber
+      type: object
+      properties:
+        phoneNumber:
+          type: string
+          description: 휴대폰 번호
+    api-v1-auth-admin-services-2117864034:
+      required:
+      - data
+      - result
+      type: object
+      properties:
+        result:
+          type: string
+          description: 요청 처리 결과 (SUCCESS/ERROR)
+        data:
+          required:
+          - content
+          - empty
+          - first
+          - last
+          - number
+          - numberOfElements
+          - size
+          - totalElements
+          - totalPages
+          type: object
+          properties:
+            number:
+              type: number
+              description: 현재 페이지 번호
+            last:
+              type: boolean
+              description: 마지막 페이지 여부
+            numberOfElements:
+              type: number
+              description: 현재 페이지 요소 수
+            size:
+              type: number
+              description: 페이지 크기
+            totalPages:
+              type: number
+              description: 전체 페이지 수
+            first:
+              type: boolean
+              description: 첫 페이지 여부
+            content:
+              type: array
+              description: 서비스 목록
+              items:
+                required:
+                - serviceCode
+                - serviceId
+                - serviceName
+                - serviceStatus
+                type: object
+                properties:
+                  serviceCode:
+                    type: string
+                    description: 서비스 코드
+                  serviceStatus:
+                    type: string
+                    description: 서비스 상태(ACTIVE/INACTIVE)
+                  serviceName:
+                    type: string
+                    description: 서비스 이름
+                  serviceId:
+                    type: number
+                    description: 서비스 ID
+            empty:
+              type: boolean
+              description: 비어있는 페이지 여부
+            totalElements:
+              type: number
+              description: 전체 건수
+          description: 서비스 목록 페이지
+        meta:
+          required:
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: string
+                  description: 쿼리 문자열 (없으면 null)
+                  nullable: true
+            requestId:
+              type: string
+              description: 요청 추적 ID (있을 때만 반환)
+              nullable: true
+            paging:
+              type: object
+              description: 페이징 메타 정보 (있을 때만 반환)
+              nullable: true
+            locale:
+              type: string
+              description: 응답 로케일 (있을 때만 반환)
+              nullable: true
+            durationMs:
+              type: number
+              description: 처리 시간(ms)
+              nullable: true
+            timestamp:
+              type: string
+              description: 응답 생성 시각 (서버 로컬 시간)
+        error:
+          type: object
+          description: 오류 정보 (에러 응답에서만 포함)
+          nullable: true
+    api-v1-auth-local-token-refresh1056639717:
+      required:
+      - refreshToken
+      type: object
+      properties:
+        refreshToken:
+          type: string
+          description: 리프레시 토큰
+    api-v1-auth-email-login-788118888:
       required:
       - email
       - password
@@ -2554,14 +3686,6 @@ components:
         email:
           type: string
           description: 이메일
-    api-v1-auth-local-token-refresh1056639717:
-      required:
-      - refreshToken
-      type: object
-      properties:
-        refreshToken:
-          type: string
-          description: 리프레시 토큰
     api-v1-auth-admin-sms-send-1110343501:
       required:
       - text
@@ -3005,14 +4129,62 @@ components:
           type: object
           description: 에러 정보(실패 시에만 존재)
           nullable: true
-    api-v1-auth-local-withdraw-1115063761:
+    api-v1-services-serviceCode-auth-local-withdraw-1115063761:
       type: object
       properties:
         reason:
           type: string
           description: 탈퇴 사유
           nullable: true
-    api-v1-auth-oauth2-provider-authorize-url1616597692:
+    api-v1-services-serviceCode-auth-local-signup-255962728:
+      required:
+      - email
+      - gender
+      - password
+      - phoneNumber
+      type: object
+      properties:
+        birthday:
+          type: string
+          description: 생일 (MM-DD)
+          nullable: true
+        thumbnailImageUrl:
+          type: string
+          description: 썸네일 이미지 URL
+          nullable: true
+        password:
+          type: string
+          description: 비밀번호
+        phoneNumber:
+          type: string
+          description: 휴대폰 번호
+        birthyear:
+          type: string
+          description: 출생연도 (yyyy)
+          nullable: true
+        gender:
+          type: string
+          description: 성별 (MALE/FEMALE)
+        nickname:
+          type: string
+          description: 닉네임
+          nullable: true
+        name:
+          type: string
+          description: 이름
+          nullable: true
+        locale:
+          type: string
+          description: "로케일 (기본값: ko-KR)"
+          nullable: true
+        profileImageUrl:
+          type: string
+          description: 프로필 이미지 URL
+          nullable: true
+        email:
+          type: string
+          description: 이메일
+    api-v1-services-serviceCode-auth-oauth2-provider-authorize-url1616597692:
       required:
       - data
       - result
@@ -3024,6 +4196,138 @@ components:
         data:
           type: string
           description: "OAuth2 인가 URL 경로 (예: /oauth2/authorization/{provider})"
+        meta:
+          required:
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: string
+                  description: 쿼리 문자열 (없으면 null)
+                  nullable: true
+            requestId:
+              type: string
+              description: 요청 추적 ID (있을 때만 반환)
+              nullable: true
+            paging:
+              type: object
+              description: 페이징 메타 정보 (있을 때만 반환)
+              nullable: true
+            locale:
+              type: string
+              description: 응답 로케일 (있을 때만 반환)
+              nullable: true
+            durationMs:
+              type: number
+              description: 처리 시간(ms)
+              nullable: true
+            timestamp:
+              type: string
+              description: 응답 생성 시각 (서버 로컬 시간)
+        error:
+          type: object
+          description: 오류 정보 (에러 응답에서만 포함)
+          nullable: true
+    api-v1-services-serviceCode-auth-local-signup-107839563:
+      required:
+      - data
+      - result
+      type: object
+      properties:
+        result:
+          type: string
+          description: 요청 처리 결과 (SUCCESS/ERROR)
+        data:
+          required:
+          - result
+          - serviceCode
+          type: object
+          properties:
+            result:
+              type: string
+              description: 처리 결과(OK)
+            serviceCode:
+              type: string
+              description: 적용 서비스 코드
+          description: 회원가입 결과
+        meta:
+          required:
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: string
+                  description: 쿼리 문자열 (없으면 null)
+                  nullable: true
+            requestId:
+              type: string
+              description: 요청 추적 ID (있을 때만 반환)
+              nullable: true
+            paging:
+              type: object
+              description: 페이징 메타 정보 (있을 때만 반환)
+              nullable: true
+            locale:
+              type: string
+              description: 응답 로케일 (있을 때만 반환)
+              nullable: true
+            durationMs:
+              type: number
+              description: 처리 시간(ms)
+              nullable: true
+            timestamp:
+              type: string
+              description: 응답 생성 시각 (서버 로컬 시간)
+        error:
+          type: object
+          description: 오류 정보 (에러 응답에서만 포함)
+          nullable: true
+    api-v1-services-serviceCode-auth-local-withdraw1895331346:
+      required:
+      - data
+      - result
+      type: object
+      properties:
+        result:
+          type: string
+          description: 요청 처리 결과 (SUCCESS/ERROR)
+        data:
+          required:
+          - result
+          - serviceCode
+          type: object
+          properties:
+            result:
+              type: string
+              description: 처리 결과(OK)
+            serviceCode:
+              type: string
+              description: 적용 서비스 코드
+          description: 탈퇴 처리 결과
         meta:
           required:
           - timestamp
@@ -3245,7 +4549,7 @@ components:
           type: object
           description: 에러 정보
           nullable: true
-    api-v1-auth-local-signup-phone1536767407:
+    api-v1-auth-phone-login1536767407:
       required:
       - phoneNumber
       - phoneVerificationToken
@@ -3257,14 +4561,6 @@ components:
         phoneNumber:
           type: string
           description: 휴대폰 번호
-    api-v1-auth-admin-users-userId-password-reset-1938778681:
-      required:
-      - newPassword
-      type: object
-      properties:
-        newPassword:
-          type: string
-          description: 새 비밀번호
     api-v1-auth-admin-users-1322716065:
       required:
       - data
@@ -3387,6 +4683,14 @@ components:
           type: object
           description: 에러 정보
           nullable: true
+    api-v1-auth-admin-users-userId-password-reset-1938778681:
+      required:
+      - newPassword
+      type: object
+      properties:
+        newPassword:
+          type: string
+          description: 새 비밀번호
     api-v1-auth-local-logout-2020253012:
       required:
       - data
@@ -3449,7 +4753,91 @@ components:
           type: object
           description: 오류 정보 (에러 응답에서만 포함)
           nullable: true
-    api-v1-auth-local-login1560895474:
+    api-v1-services-serviceCode-auth-local-token-refresh416663598:
+      required:
+      - data
+      - result
+      type: object
+      properties:
+        result:
+          type: string
+          description: 요청 처리 결과 (SUCCESS/ERROR)
+        data:
+          required:
+          - serviceCode
+          - tokens
+          type: object
+          properties:
+            serviceCode:
+              type: string
+              description: 적용 서비스 코드
+            tokens:
+              required:
+              - accessExpiresInSec
+              - accessToken
+              - refreshExpiresInSec
+              - refreshToken
+              type: object
+              properties:
+                refreshExpiresInSec:
+                  type: number
+                  description: 리프레시 토큰 만료(초)
+                accessExpiresInSec:
+                  type: number
+                  description: 액세스 토큰 만료(초)
+                accessToken:
+                  type: string
+                  description: 액세스 토큰
+                refreshToken:
+                  type: string
+                  description: 리프레시 토큰
+              description: 재발급 토큰
+          description: 토큰 재발급 결과
+        meta:
+          required:
+          - timestamp
+          type: object
+          properties:
+            request:
+              required:
+              - method
+              - path
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: 요청 경로
+                method:
+                  type: string
+                  description: HTTP 메서드
+                query:
+                  type: string
+                  description: 쿼리 문자열 (없으면 null)
+                  nullable: true
+            requestId:
+              type: string
+              description: 요청 추적 ID (있을 때만 반환)
+              nullable: true
+            paging:
+              type: object
+              description: 페이징 메타 정보 (있을 때만 반환)
+              nullable: true
+            locale:
+              type: string
+              description: 응답 로케일 (있을 때만 반환)
+              nullable: true
+            durationMs:
+              type: number
+              description: 처리 시간(ms)
+              nullable: true
+            timestamp:
+              type: string
+              description: 응답 생성 시각 (서버 로컬 시간)
+        error:
+          type: object
+          description: 오류 정보 (에러 응답에서만 포함)
+          nullable: true
+    api-v1-auth-email-login1560895474:
       required:
       - data
       - meta

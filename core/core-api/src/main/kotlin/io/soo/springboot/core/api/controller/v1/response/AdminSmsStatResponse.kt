@@ -1,6 +1,6 @@
 package io.soo.springboot.core.api.controller.v1.response
 
-import io.soo.springboot.core.domain.SmsStat
+import io.soo.springboot.core.domain.sms.SmsStat
 
 data class AdminSmsStatResponse(
     val total: Long,

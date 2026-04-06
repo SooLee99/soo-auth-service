@@ -9,6 +9,7 @@ import java.time.Instant
 data class User(
     val id: Long = 0L,
     val email: String,
+    val loginId: String? = null,
     val emailVerified: Boolean = false,
     val phoneNumber: String?,
     val phoneNumberE164: String? = null,
@@ -42,6 +43,7 @@ data class User(
     companion object {
         fun createLocal(
             email: String,
+            loginId: String? = null,
             phoneNumber: String?,
             emailVerified: Boolean = false,
             phoneVerified: Boolean = false,
@@ -57,6 +59,7 @@ data class User(
         ): User {
             return User(
                 email = email,
+                loginId = loginId,
                 emailVerified = emailVerified,
                 phoneNumber = phoneNumber,
                 phoneVerified = phoneVerified,
@@ -152,6 +155,7 @@ data class User(
     ): User {
         return copy(
             email = anonymizedEmail,
+            loginId = null,
             emailVerified = false,
             phoneNumber = anonymizedPhone,
             phoneNumberE164 = null,
@@ -225,6 +229,7 @@ data class User(
 
         return copy(
             email = email?.trim()?.lowercase() ?: this.email,
+            loginId = this.loginId,
             emailVerified = emailVerified ?: this.emailVerified,
             phoneNumber = phoneNumber?.trim() ?: this.phoneNumber,
             phoneVerified = phoneVerified ?: this.phoneVerified,
@@ -267,6 +272,7 @@ data class User(
     ): User {
         return copy(
             email = email?.takeIf { it.isNotBlank() } ?: this.email,
+            loginId = this.loginId,
             emailVerified = emailVerified ?: this.emailVerified,
             name = name?.takeIf { it.isNotBlank() } ?: this.name,
             nickname = nickname?.takeIf { it.isNotBlank() } ?: this.nickname,

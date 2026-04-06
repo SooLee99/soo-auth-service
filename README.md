@@ -4,6 +4,7 @@
 
 ## 문서
 - 프론트엔드 개발 가이드: [docs/README_FRONTEND_API.md](docs/README_FRONTEND_API.md)
+- 인증 API 흐름/시퀀스 다이어그램: [docs/README_AUTH_API.md](docs/README_AUTH_API.md)
 - API 개발 규칙/레이어 가이드: [docs/README_API_RULES.md](docs/README_API_RULES.md)
 - 로컬 HTTP 테스트 가이드: [core/core-api/src/test/http/README.md](core/core-api/src/test/http/README.md)
 - 로깅/모니터링: [docs/README_LOG_MONITORING.md](docs/README_LOG_MONITORING.md)

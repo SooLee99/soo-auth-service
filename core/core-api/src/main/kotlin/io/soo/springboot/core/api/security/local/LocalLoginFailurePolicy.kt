@@ -2,7 +2,7 @@ package io.soo.springboot.core.api.security.local
 
 import io.soo.springboot.core.api.security.response.SecurityErrorFields
 import io.soo.springboot.core.support.error.AccountStatusDeniedException
-import io.soo.springboot.core.domain.local.LocalLoginPolicy
+import io.soo.springboot.core.domain.login.LocalLoginAttemptPolicy
 import io.soo.springboot.core.support.error.ErrorType
 import org.springframework.core.annotation.Order
 import org.springframework.security.authentication.BadCredentialsException
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 data class LocalLoginFailureContext(
     val payload: LocalJsonLoginFilter.AuthErrorPayload?,
     val exception: AuthenticationException,
-    val loginPolicyResult: LocalLoginPolicy.FailResult?,
+    val loginPolicyResult: LocalLoginAttemptPolicy.FailResult?,
     val isStatusDenied: Boolean,
 )
 
@@ -75,7 +75,7 @@ class StatusDeniedFailurePolicy : LocalLoginFailurePolicy {
 @Order(400)
 class LockedFailurePolicy : LocalLoginFailurePolicy {
     override fun match(context: LocalLoginFailureContext): Boolean =
-        context.loginPolicyResult == LocalLoginPolicy.FailResult.LOCKED
+        context.loginPolicyResult == LocalLoginAttemptPolicy.FailResult.LOCKED
 
     override fun decide(context: LocalLoginFailureContext): LocalLoginFailureDecision =
         LocalLoginFailureDecision(
@@ -92,8 +92,8 @@ class BadCredentialsFailurePolicy : LocalLoginFailurePolicy {
 
     override fun decide(context: LocalLoginFailureContext): LocalLoginFailureDecision {
         val type = when (context.loginPolicyResult) {
-            LocalLoginPolicy.FailResult.BAD_CREDENTIALS -> ErrorType.LOGIN_BAD_CREDENTIALS
-            LocalLoginPolicy.FailResult.NOT_FOUND -> ErrorType.LOGIN_ACCOUNT_NOT_FOUND
+            LocalLoginAttemptPolicy.FailResult.BAD_CREDENTIALS -> ErrorType.LOGIN_BAD_CREDENTIALS
+            LocalLoginAttemptPolicy.FailResult.NOT_FOUND -> ErrorType.LOGIN_ACCOUNT_NOT_FOUND
             else -> ErrorType.UNAUTHORIZED
         }
         return LocalLoginFailureDecision(type = type, fields = SecurityErrorFields.badCredentials())

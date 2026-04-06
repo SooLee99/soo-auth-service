@@ -106,6 +106,48 @@ private object ApiDocCatalog {
             description = "관리자 권한으로 DB/Redis/System/링크 상세 상태를 조회합니다.",
             authMarkdown = "- `Authorization: Bearer {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요",
         ),
+        "auth-email-login" to ApiMeta(
+            tag = "Auth",
+            summary = "이메일 로그인",
+            description = "이메일/비밀번호로 로그인하고 액세스/리프레시 토큰을 발급합니다.",
+            authMarkdown = "- 인증 불필요",
+        ),
+        "auth-email-signup" to ApiMeta(
+            tag = "Auth",
+            summary = "이메일 회원가입",
+            description = "이메일/비밀번호 기반 로컬 계정을 생성합니다. 휴대폰 인증은 선택입니다.",
+            authMarkdown = "- 인증 불필요",
+        ),
+        "auth-phone-signup" to ApiMeta(
+            tag = "Auth",
+            summary = "휴대폰 회원가입",
+            description = "휴대폰 인증 토큰으로 계정을 생성합니다.",
+            authMarkdown = "- 인증 불필요",
+        ),
+        "auth-phone-login" to ApiMeta(
+            tag = "Auth",
+            summary = "휴대폰 로그인",
+            description = "휴대폰 인증 토큰으로 로그인하고 액세스/리프레시 토큰을 발급합니다.",
+            authMarkdown = "- 인증 불필요",
+        ),
+        "auth-id-signup" to ApiMeta(
+            tag = "Auth",
+            summary = "아이디 회원가입",
+            description = "아이디/비밀번호 계정을 생성합니다. 휴대폰 인증이 필수입니다.",
+            authMarkdown = "- 인증 불필요",
+        ),
+        "auth-id-login" to ApiMeta(
+            tag = "Auth",
+            summary = "아이디 로그인",
+            description = "아이디/비밀번호로 로그인하고 액세스/리프레시 토큰을 발급합니다.",
+            authMarkdown = "- 인증 불필요",
+        ),
+        "auth-token-refresh" to ApiMeta(
+            tag = "Auth",
+            summary = "토큰 재발급",
+            description = "리프레시 토큰으로 새 액세스/리프레시 토큰을 발급합니다.",
+            authMarkdown = "- 인증 불필요(리프레시 토큰 필요)",
+        ),
         "auth-local-login" to ApiMeta(
             tag = "Local Auth",
             summary = "로컬 로그인",

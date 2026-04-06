@@ -4,7 +4,7 @@ import io.soo.springboot.core.api.controller.v1.request.AdminSmsSendReq
 import io.soo.springboot.core.api.controller.v1.response.AdminSmsLogResponse
 import io.soo.springboot.core.api.controller.v1.response.AdminSmsSendResponse
 import io.soo.springboot.core.api.controller.v1.response.AdminSmsStatResponse
-import io.soo.springboot.core.domain.SmsAdminService
+import io.soo.springboot.core.domain.sms.SmsAdminService
 import io.soo.springboot.core.support.response.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
@@ -32,7 +32,7 @@ class AdminSmsController(
         @RequestBody @Valid body: AdminSmsSendReq,
         req: HttpServletRequest,
     ): ApiResponse<AdminSmsSendResponse> {
-        val result = smsAdminService.send(body.to, body.text)
+        val result = smsAdminService.sendSms(body.to, body.text)
         return ApiResponse.success(req = req, data = AdminSmsSendResponse.from(result))
     }
 
@@ -45,7 +45,7 @@ class AdminSmsController(
         req: HttpServletRequest,
     ): ApiResponse<Page<AdminSmsLogResponse>> {
         val pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"))
-        val result = smsAdminService.logs(pageable, startDate, endDate).map { AdminSmsLogResponse.from(it) }
+        val result = smsAdminService.listLogs(pageable, startDate, endDate).map { AdminSmsLogResponse.from(it) }
         return ApiResponse.success(req = req, data = result)
     }
 
@@ -55,7 +55,7 @@ class AdminSmsController(
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) endDate: LocalDateTime?,
         req: HttpServletRequest,
     ): ApiResponse<AdminSmsStatResponse> {
-        val result = smsAdminService.stat(startDate, endDate)
+        val result = smsAdminService.getStats(startDate, endDate)
         return ApiResponse.success(req = req, data = AdminSmsStatResponse.from(result))
     }
 }
