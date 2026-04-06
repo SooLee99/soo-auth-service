@@ -24,22 +24,20 @@ Auth-Service API 문서입니다.
 |아이디 로그인 |`POST /api/v1/auth/id/login`
 |전화번호 로그인 |`POST /api/v1/auth/phone/login`
 |토큰 갱신 |`POST /api/v1/auth/token/refresh`
-|탈퇴 |`POST /api/v1/services/{serviceCode}/auth/local/withdraw`
-|OAuth2 시작 |`GET /api/v1/services/{serviceCode}/auth/oauth2/{provider}/authorize-url`
+|탈퇴(호환 경로) |`POST /api/v1/auth/local/withdraw`
+|OAuth2 시작 |`GET /api/v1/auth/oauth2/{provider}/authorize-url`
 |===
 
 ==== 프론트 구현 체크리스트
 
-- `Service Auth` 경로(`/api/v1/services/{serviceCode}/...`)를 사용하는 경우 `serviceCode`를 URL Path에 포함
 - 로그인/토큰 갱신/로그아웃 시 `X-Device-Id`를 동일 값으로 유지
 - 보호 API 호출 시 `Authorization: Bearer {accessToken}` 전달
-- `409` 응답에서 서비스 상태/서비스 코드 오류(`SERVICE_INACTIVE`, `NOT_FOUND`) 처리
 
 ==== 샘플 요청
 
 [source,http]
 ----
-POST /api/v1/services/DEFAULT/auth/local/signup
+POST /api/v1/auth/email/signup
 Content-Type: application/json
 
 {
@@ -53,7 +51,7 @@ Content-Type: application/json
 
 [source,http]
 ----
-POST /api/v1/services/DEFAULT/auth/local/token/refresh
+POST /api/v1/auth/token/refresh
 Content-Type: application/json
 X-Device-Id: web-chrome-001
 
@@ -201,7 +199,7 @@ include::{snippets}/auth-admin-health/response-fields.adoc[]
 
 == Local Auth
 
-NOTE: 아래 `Local Auth` 경로(`/api/v1/auth/local/*`)는 기존 호환 경로입니다. 신규 프론트는 `Frontend Quick Start`의 멀티서비스 경로 사용을 권장합니다.
+NOTE: 아래 `Local Auth` 경로(`/api/v1/auth/local/*`)는 기존 호환 경로입니다.
 
 === 회원가입
 ==== Curl Request
@@ -249,18 +247,18 @@ include::{snippets}/auth-local-phone-verification-confirm/response-fields.adoc[]
 
 '''
 
-=== 로그인
-* `X-Device-Id`는 선택 헤더입니다. 전달하면 refresh/로그아웃 정책에 활용됩니다.
+=== 전화번호 로그인
+* `X-Device-Id`는 필수 헤더입니다.
 ==== Curl Request
-include::{snippets}/auth-email-login/curl-request.adoc[]
+include::{snippets}/auth-local-login-phone/curl-request.adoc[]
 ==== Request Headers
-include::{snippets}/auth-email-login/request-headers.adoc[]
+include::{snippets}/auth-local-login-phone/request-headers.adoc[]
 ==== Request Fields
-include::{snippets}/auth-email-login/request-fields.adoc[]
+include::{snippets}/auth-local-login-phone/request-fields.adoc[]
 ==== Http Response
-include::{snippets}/auth-email-login/http-response.adoc[]
+include::{snippets}/auth-local-login-phone/http-response.adoc[]
 ==== Response Fields
-include::{snippets}/auth-email-login/response-fields.adoc[]
+include::{snippets}/auth-local-login-phone/response-fields.adoc[]
 
 '''
 
@@ -311,7 +309,7 @@ include::{snippets}/auth-local-withdraw/response-fields.adoc[]
 
 == OAuth2 Auth
 
-NOTE: 아래 OAuth2 경로(`/api/v1/auth/oauth2/*`)는 기존 호환 경로입니다. 신규 프론트는 `/api/v1/services/{serviceCode}/auth/oauth2/*` 사용을 권장합니다.
+NOTE: OAuth2 경로는 `/api/v1/auth/oauth2/*` 입니다.
 
 === 인가 URL 조회
 * `returnUrl`은 상대 경로만 허용됩니다. (예: `/app/callback`)
@@ -327,134 +325,6 @@ include::{snippets}/auth-oauth2-authorize-url/query-parameters.adoc[]
 include::{snippets}/auth-oauth2-authorize-url/http-response.adoc[]
 ==== Response Fields
 include::{snippets}/auth-oauth2-authorize-url/response-fields.adoc[]
-
-'''
-
-== Service Auth (Recommended)
-
-신규 프론트엔드는 아래 멀티서비스 경로를 우선 사용하세요.
-
-=== 서비스 로컬 회원가입
-==== Curl Request
-include::{snippets}/auth-service-local-signup/curl-request.adoc[]
-==== Path Parameters
-include::{snippets}/auth-service-local-signup/path-parameters.adoc[]
-==== Request Fields
-include::{snippets}/auth-service-local-signup/request-fields.adoc[]
-==== Http Response
-include::{snippets}/auth-service-local-signup/http-response.adoc[]
-==== Response Fields
-include::{snippets}/auth-service-local-signup/response-fields.adoc[]
-
-'''
-
-=== 서비스 전화번호 회원가입
-==== Curl Request
-include::{snippets}/auth-service-local-signup-phone/curl-request.adoc[]
-==== Path Parameters
-include::{snippets}/auth-service-local-signup-phone/path-parameters.adoc[]
-==== Request Fields
-include::{snippets}/auth-service-local-signup-phone/request-fields.adoc[]
-==== Http Response
-include::{snippets}/auth-service-local-signup-phone/http-response.adoc[]
-==== Response Fields
-include::{snippets}/auth-service-local-signup-phone/response-fields.adoc[]
-
-'''
-
-=== 서비스 휴대폰 인증번호 발급
-==== Curl Request
-include::{snippets}/auth-service-local-phone-verification-request/curl-request.adoc[]
-==== Path Parameters
-include::{snippets}/auth-service-local-phone-verification-request/path-parameters.adoc[]
-==== Request Fields
-include::{snippets}/auth-service-local-phone-verification-request/request-fields.adoc[]
-==== Http Response
-include::{snippets}/auth-service-local-phone-verification-request/http-response.adoc[]
-==== Response Fields
-include::{snippets}/auth-service-local-phone-verification-request/response-fields.adoc[]
-
-'''
-
-=== 서비스 휴대폰 인증번호 확인
-==== Curl Request
-include::{snippets}/auth-service-local-phone-verification-confirm/curl-request.adoc[]
-==== Path Parameters
-include::{snippets}/auth-service-local-phone-verification-confirm/path-parameters.adoc[]
-==== Request Fields
-include::{snippets}/auth-service-local-phone-verification-confirm/request-fields.adoc[]
-==== Http Response
-include::{snippets}/auth-service-local-phone-verification-confirm/http-response.adoc[]
-==== Response Fields
-include::{snippets}/auth-service-local-phone-verification-confirm/response-fields.adoc[]
-
-'''
-
-=== 서비스 토큰 갱신
-* `X-Device-Id`는 필수 헤더입니다.
-==== Curl Request
-include::{snippets}/auth-service-local-refresh/curl-request.adoc[]
-==== Request Headers
-include::{snippets}/auth-service-local-refresh/request-headers.adoc[]
-==== Path Parameters
-include::{snippets}/auth-service-local-refresh/path-parameters.adoc[]
-==== Request Fields
-include::{snippets}/auth-service-local-refresh/request-fields.adoc[]
-==== Http Response
-include::{snippets}/auth-service-local-refresh/http-response.adoc[]
-==== Response Fields
-include::{snippets}/auth-service-local-refresh/response-fields.adoc[]
-
-'''
-
-=== 서비스 로그아웃
-* `Authorization`과 `X-Device-Id`는 필수 헤더입니다.
-==== Curl Request
-include::{snippets}/auth-service-local-logout/curl-request.adoc[]
-==== Request Headers
-include::{snippets}/auth-service-local-logout/request-headers.adoc[]
-==== Path Parameters
-include::{snippets}/auth-service-local-logout/path-parameters.adoc[]
-==== Request Fields
-include::{snippets}/auth-service-local-logout/request-fields.adoc[]
-==== Http Response
-include::{snippets}/auth-service-local-logout/http-response.adoc[]
-==== Response Fields
-include::{snippets}/auth-service-local-logout/response-fields.adoc[]
-
-'''
-
-=== 서비스 회원 탈퇴(소프트 삭제)
-* `Authorization` 헤더는 필수입니다.
-==== Curl Request
-include::{snippets}/auth-service-local-withdraw/curl-request.adoc[]
-==== Request Headers
-include::{snippets}/auth-service-local-withdraw/request-headers.adoc[]
-==== Path Parameters
-include::{snippets}/auth-service-local-withdraw/path-parameters.adoc[]
-==== Request Fields
-include::{snippets}/auth-service-local-withdraw/request-fields.adoc[]
-==== Http Response
-include::{snippets}/auth-service-local-withdraw/http-response.adoc[]
-==== Response Fields
-include::{snippets}/auth-service-local-withdraw/response-fields.adoc[]
-
-'''
-
-=== 서비스 OAuth2 인가 URL 조회
-* `returnUrl`은 상대 경로만 허용됩니다. (예: `/app/callback`)
-==== Curl Request
-include::{snippets}/auth-service-oauth2-authorize-url/curl-request.adoc[]
-==== Request Headers
-include::{snippets}/auth-service-oauth2-authorize-url/request-headers.adoc[]
-==== Path Parameters
-include::{snippets}/auth-service-oauth2-authorize-url/path-parameters.adoc[]
-==== Query Parameters
-include::{snippets}/auth-service-oauth2-authorize-url/query-parameters.adoc[]
-==== Http Response
-include::{snippets}/auth-service-oauth2-authorize-url/http-response.adoc[]
-==== Response Fields
-include::{snippets}/auth-service-oauth2-authorize-url/response-fields.adoc[]
 
 '''
 
@@ -647,53 +517,3 @@ include::{snippets}/auth-admin-user-status-audits/query-parameters.adoc[]
 include::{snippets}/auth-admin-user-status-audits/http-response.adoc[]
 ==== Response Fields
 include::{snippets}/auth-admin-user-status-audits/response-fields.adoc[]
-
-'''
-
-=== 서비스 등록
-* 관리자 권한이 필요합니다.
-* 같은 `serviceCode`가 이미 있으면 `409 DUPLICATE_SERVICE_CODE`
-* `serviceCode` 규칙: `^[A-Z0-9][A-Z0-9_-]{1,63}$`
-==== Curl Request
-include::{snippets}/auth-admin-service-register/curl-request.adoc[]
-==== Request Headers
-include::{snippets}/auth-admin-service-register/request-headers.adoc[]
-==== Request Fields
-include::{snippets}/auth-admin-service-register/request-fields.adoc[]
-==== Http Response
-include::{snippets}/auth-admin-service-register/http-response.adoc[]
-==== Response Fields
-include::{snippets}/auth-admin-service-register/response-fields.adoc[]
-
-'''
-
-=== 서비스 목록 조회
-* 관리자 권한이 필요합니다.
-==== Curl Request
-include::{snippets}/auth-admin-service-list/curl-request.adoc[]
-==== Request Headers
-include::{snippets}/auth-admin-service-list/request-headers.adoc[]
-==== Query Parameters
-include::{snippets}/auth-admin-service-list/query-parameters.adoc[]
-==== Http Response
-include::{snippets}/auth-admin-service-list/http-response.adoc[]
-==== Response Fields
-include::{snippets}/auth-admin-service-list/response-fields.adoc[]
-
-'''
-
-=== 서비스 비활성화(삭제 아님)
-* 관리자 권한이 필요합니다.
-* 물리 삭제가 아니라 `INACTIVE` 상태 전환입니다.
-* `DEFAULT` 서비스는 비활성화할 수 없습니다.
-* 활성 멤버십이 있으면 비활성화할 수 없습니다. (`409 SERVICE_HAS_ACTIVE_MEMBERSHIPS`)
-==== Curl Request
-include::{snippets}/auth-admin-service-deactivate/curl-request.adoc[]
-==== Request Headers
-include::{snippets}/auth-admin-service-deactivate/request-headers.adoc[]
-==== Path Parameters
-include::{snippets}/auth-admin-service-deactivate/path-parameters.adoc[]
-==== Http Response
-include::{snippets}/auth-admin-service-deactivate/http-response.adoc[]
-==== Response Fields
-include::{snippets}/auth-admin-service-deactivate/response-fields.adoc[]
