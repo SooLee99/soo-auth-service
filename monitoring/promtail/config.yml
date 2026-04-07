@@ -9,11 +9,10 @@ clients:
   - url: http://loki:3100/loki/api/v1/push
 
 scrape_configs:
-  - job_name: soo-auth-file-logs
+  - job_name: nginx
     static_configs:
       - targets:
           - localhost
         labels:
-          job: soo-auth
-          app: core-api
+          job: nginx
           __path__: /workspace/logs/*.log

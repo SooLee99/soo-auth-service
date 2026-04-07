@@ -3,14 +3,13 @@
 인증 서버(로컬/소셜 로그인, 관리자 사용자 관리, SMS 관리) 프로젝트입니다.
 
 ## 문서
-- 프론트엔드 개발 가이드: [docs/README_FRONTEND_API.md](docs/README_FRONTEND_API.md)
-- 인증 API 흐름/시퀀스 다이어그램: [docs/README_AUTH_API.md](docs/README_AUTH_API.md)
-- API 개발 규칙/레이어 가이드: [docs/README_API_RULES.md](docs/README_API_RULES.md)
+- 문서 전체 인덱스: [docs/README.md](docs/README.md)
+- 사용자 가이드 모음: [docs/guides/README.md](docs/guides/README.md)
+- API/개발 문서 모음: [docs/api/README.md](docs/api/README.md)
 - 로컬 HTTP 테스트 가이드: [core/core-api/src/test/http/README.md](core/core-api/src/test/http/README.md)
-- 로깅/모니터링: [docs/README_LOG_MONITORING.md](docs/README_LOG_MONITORING.md)
-- 자동화 배포(CI/CD): [docs/README_DEPLOY_AUTOMATION.md](docs/README_DEPLOY_AUTOMATION.md)
-- Docker Hub 릴리즈(개발 PC): [docs/README_DOCKER_RELEASE.md](docs/README_DOCKER_RELEASE.md)
-- 기존 서버 업데이트(운영 반영 + CI/CD): [docs/README_SERVER_UPDATE.md](docs/README_SERVER_UPDATE.md)
+- 배포 문서 모음: [docs/deploy/README.md](docs/deploy/README.md)
+- 모니터링 문서 모음: [docs/monitoring/README.md](docs/monitoring/README.md)
+- 장애/이슈 보고서 모음: [docs/issues/README.md](docs/issues/README.md)
 
 ---
 ## 모듈 구성

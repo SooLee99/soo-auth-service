@@ -8,7 +8,7 @@
 - Redoc: `http://localhost:8080/docs/index.html`
 - Swagger: `http://localhost:8080/docs/swagger/index.html`
 - OpenAPI 원본: `http://localhost:8080/docs/openapi3.yaml`
-- 사용자 요약 문서: [core/core-api/src/main/resources/static/docs/frontend-api-guide.md](../core/core-api/src/main/resources/static/docs/frontend-api-guide.md)
+- 사용자 요약 문서: [core/core-api/src/main/resources/static/docs/frontend-api-guide.md](../../core/core-api/src/main/resources/static/docs/frontend-api-guide.md)
 
 ## 2) 사용자 API 카테고리
 
