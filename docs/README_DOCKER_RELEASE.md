@@ -28,7 +28,7 @@ docker --version
 ## 1) Docker Hub 로그인
 
 ```bash
-docker login
+docker login -u <dockerhub-username>
 ```
 
 - 사용자명/비밀번호(또는 Access Token) 입력 후 로그인합니다.
@@ -38,7 +38,7 @@ docker login
 ## 2) 최신 이미지 빌드 (`latest`)
 
 ```bash
-docker build -t <dockerhub-username>/soo-auth-service:latest .
+sudo docker build -t <dockerhub-username>/soo-auth-service:latest .
 ```
 
 ---
@@ -46,7 +46,7 @@ docker build -t <dockerhub-username>/soo-auth-service:latest .
 ## 3) 최신 이미지 푸시 (`latest`)
 
 ```bash
-docker push <dockerhub-username>/soo-auth-service:latest
+sudo docker push <dockerhub-username>/soo-auth-service:latest
 ```
 
 ---
