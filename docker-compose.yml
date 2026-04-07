@@ -153,7 +153,7 @@ services:
       - backend
 
   frontend:
-    image: ${FRONTEND_IMAGE}
+    image: ${DOCKER_HUB_USERNAME}/auth-admin-frontend:latest
     pull_policy: always
     restart: unless-stopped
     read_only: true
