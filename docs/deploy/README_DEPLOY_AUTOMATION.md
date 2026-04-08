@@ -401,7 +401,7 @@ http {
 
 # 9. default.conf 작성
 
-```bash
+```shell
 sudo nano /opt/soo-auth-service/nginx/conf.d/default.conf
 ```
 
@@ -424,6 +424,10 @@ server {
 ```
 
 인증서 적용 후 HTTPS 설정:
+```shell
+sudo sh -c '(cat soo_it.kr_cert.crt; echo; cat soo_it.kr_chain_cert.crt; echo) > www.soo.it.kr_fullchain.crt'
+```
+
 
 ```nginx
 server {
