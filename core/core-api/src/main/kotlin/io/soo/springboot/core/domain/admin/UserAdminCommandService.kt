@@ -61,7 +61,7 @@ class UserAdminCommandService(
                 phoneVerified = command.phoneVerified,
                 adminUserId = adminUserId,
                 now = Instant.now(),
-            )
+            ),
         )
     }
 
@@ -89,7 +89,7 @@ class UserAdminCommandService(
                 userId = credential.userId,
                 userEmail = credential.userEmail,
                 passwordHash = passwordEncoder.encode(newPassword),
-            )
+            ),
         )
         tokenRevocationService.revokeAllByUserId(userId)
         return user

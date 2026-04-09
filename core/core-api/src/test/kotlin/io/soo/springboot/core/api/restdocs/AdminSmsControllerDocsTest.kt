@@ -71,7 +71,7 @@ class AdminSmsControllerDocsTest : RestDocsTest() {
                         fieldWithPath("text").type(JsonFieldType.STRING).description("발송 메시지"),
                     ),
                     relaxedResponseFields(*sendResponseDescriptors().toTypedArray()),
-                )
+                ),
             )
     }
 
@@ -114,7 +114,7 @@ class AdminSmsControllerDocsTest : RestDocsTest() {
                         parameterWithName("endDate").optional().description("조회 종료 시각 (ISO-8601)"),
                     ),
                     relaxedResponseFields(*logsResponseDescriptors().toTypedArray()),
-                )
+                ),
             )
     }
 
@@ -146,7 +146,7 @@ class AdminSmsControllerDocsTest : RestDocsTest() {
                         parameterWithName("endDate").optional().description("조회 종료 시각 (ISO-8601)"),
                     ),
                     relaxedResponseFields(*statsResponseDescriptors().toTypedArray()),
-                )
+                ),
             )
     }
 

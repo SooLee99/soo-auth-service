@@ -60,9 +60,11 @@ class UserBlockServiceTest {
     @Test
     fun `차단 목록 조회 성공`() {
         val pageable = PageRequest.of(0, 20)
-        every { userRepository.blocked(pageable) } returns PageImpl(listOf(
-            activeUser().copy(userStatus = UserStatus.BLOCKED, blocked = true, blockedReason = "policy_violation")
-        ))
+        every { userRepository.blocked(pageable) } returns PageImpl(
+            listOf(
+                activeUser().copy(userStatus = UserStatus.BLOCKED, blocked = true, blockedReason = "policy_violation"),
+            ),
+        )
 
         val page = service.blocked(pageable)
         assertEquals(1, page.totalElements)

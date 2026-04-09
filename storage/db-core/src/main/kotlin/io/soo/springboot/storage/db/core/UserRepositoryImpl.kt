@@ -11,7 +11,7 @@ import java.time.Instant
 
 @Repository
 class UserRepositoryImpl(
-    private val jpaRepository: UserJpaRepository
+    private val jpaRepository: UserJpaRepository,
 ) : UserRepository {
 
     override fun save(user: User): User {

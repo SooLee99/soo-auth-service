@@ -11,6 +11,6 @@ interface LoginHistoryJpaRepository : JpaRepository<LoginHistoryEntity, Long> {
         userId: Long,
         startDate: LocalDateTime,
         endDate: LocalDateTime,
-        pageable: Pageable
+        pageable: Pageable,
     ): Page<LoginHistoryEntity>
 }

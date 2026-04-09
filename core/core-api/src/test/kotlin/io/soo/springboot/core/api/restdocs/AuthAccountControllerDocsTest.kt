@@ -98,7 +98,7 @@ class AuthAccountControllerDocsTest : RestDocsTest() {
                         fieldWithPath("birthyear").type(JsonFieldType.STRING).optional().description("출생연도 (yyyy)"),
                         fieldWithPath("birthday").type(JsonFieldType.STRING).optional().description("생일 (MM-DD)"),
                     ),
-                )
+                ),
             )
     }
 
@@ -125,7 +125,7 @@ class AuthAccountControllerDocsTest : RestDocsTest() {
                         fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("휴대폰 번호"),
                         fieldWithPath("phoneVerificationToken").type(JsonFieldType.STRING).description("휴대폰 인증 완료 토큰"),
                     ),
-                )
+                ),
             )
     }
 
@@ -154,7 +154,7 @@ class AuthAccountControllerDocsTest : RestDocsTest() {
                 PhoneLoginRequest(
                     phoneNumber = "+821012345678",
                     phoneVerificationToken = "verified-phone-token",
-                )
+                ),
             )
             .`when`()
             .post("/api/v1/auth/phone/login")
@@ -173,7 +173,7 @@ class AuthAccountControllerDocsTest : RestDocsTest() {
                         fieldWithPath("phoneVerificationToken").type(JsonFieldType.STRING).description("휴대폰 인증 완료 토큰"),
                     ),
                     responseFields(*responseDescriptors.toTypedArray()),
-                )
+                ),
             )
     }
 
@@ -204,7 +204,7 @@ class AuthAccountControllerDocsTest : RestDocsTest() {
                         fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("휴대폰 번호"),
                         fieldWithPath("phoneVerificationToken").type(JsonFieldType.STRING).description("휴대폰 인증 완료 토큰"),
                     ),
-                )
+                ),
             )
     }
 
@@ -247,7 +247,7 @@ class AuthAccountControllerDocsTest : RestDocsTest() {
                         fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호"),
                     ),
                     responseFields(*responseDescriptors.toTypedArray()),
-                )
+                ),
             )
     }
 
@@ -289,7 +289,7 @@ class AuthAccountControllerDocsTest : RestDocsTest() {
                         fieldWithPath("refreshToken").type(JsonFieldType.STRING).description("리프레시 토큰"),
                     ),
                     responseFields(*responseDescriptors.toTypedArray()),
-                )
+                ),
             )
     }
 }

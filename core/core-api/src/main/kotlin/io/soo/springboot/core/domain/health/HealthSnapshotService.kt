@@ -1,18 +1,18 @@
 package io.soo.springboot.core.domain.health
 
+import com.zaxxer.hikari.HikariDataSource
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.boot.info.BuildProperties
 import org.springframework.boot.info.GitProperties
 import org.springframework.core.env.Environment
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Service
-import com.zaxxer.hikari.HikariDataSource
-import jakarta.servlet.http.HttpServletRequest
 import java.lang.management.ManagementFactory
 import java.net.HttpURLConnection
 import java.net.URI
-import java.nio.file.Files
 import java.nio.file.FileStore
+import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Instant
 import javax.sql.DataSource

@@ -17,15 +17,14 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDateTime
 
-
 @RestController
 @RequestMapping("/api/v1/auth/admin")
 class AdminLoginHistoryController(
     private val loginHistoryService: LoginHistoryService,
     private val userIdResolver: UserIdResolver,
-){
+) {
 
-    @GetMapping("/login-history",produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping("/login-history", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun listLoginHistory(
         authentication: Authentication,
         @RequestParam(defaultValue = "0") page: Int,

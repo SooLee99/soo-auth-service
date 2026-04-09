@@ -1,11 +1,11 @@
 package io.soo.springboot.core.api.security.local
 
 import io.soo.springboot.core.api.security.response.SecurityErrorResponseWriter
-import io.soo.springboot.core.support.error.AccountStatusDeniedException
-import io.soo.springboot.core.enums.LoginType
-import io.soo.springboot.core.enums.LoginDenyReason
 import io.soo.springboot.core.domain.login.LocalLoginAttemptPolicy
 import io.soo.springboot.core.domain.login.LoginHistoryService
+import io.soo.springboot.core.enums.LoginDenyReason
+import io.soo.springboot.core.enums.LoginType
+import io.soo.springboot.core.support.error.AccountStatusDeniedException
 import io.soo.springboot.storage.db.core.UserRepository
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -29,7 +29,7 @@ class LocalLoginFailureHandler(
         exception: AuthenticationException,
     ) {
         val payload = request.getAttribute(LocalJsonLoginFilter.ATTR_AUTH_ERROR)
-                as? LocalJsonLoginFilter.AuthErrorPayload
+            as? LocalJsonLoginFilter.AuthErrorPayload
 
         val ip = request.remoteAddr
         val ua = request.getHeader("User-Agent")

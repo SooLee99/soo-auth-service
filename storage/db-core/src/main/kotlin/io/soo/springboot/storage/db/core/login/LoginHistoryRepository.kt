@@ -24,6 +24,6 @@ interface LoginHistoryRepository {
         userId: Long,
         startDate: LocalDateTime,
         endDate: LocalDateTime,
-        pageable: Pageable
+        pageable: Pageable,
     ): Page<LoginHistory>
 }

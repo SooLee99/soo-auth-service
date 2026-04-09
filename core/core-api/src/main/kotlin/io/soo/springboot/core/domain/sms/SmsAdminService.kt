@@ -1,6 +1,5 @@
 package io.soo.springboot.core.domain.sms
 
-import io.soo.springboot.core.domain.sms.SmsSender
 import io.soo.springboot.storage.db.core.sms.SmsLog
 import io.soo.springboot.storage.db.core.sms.SmsLogRepository
 import org.springframework.data.domain.Page

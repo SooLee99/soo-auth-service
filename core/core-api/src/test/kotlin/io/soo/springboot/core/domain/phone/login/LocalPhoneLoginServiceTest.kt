@@ -49,7 +49,7 @@ class LocalPhoneLoginServiceTest {
                 deviceId = "device-001",
                 ipAddress = "127.0.0.1",
                 userAgent = "JUnit",
-            )
+            ),
         )
 
         assertEquals(tokens, result)

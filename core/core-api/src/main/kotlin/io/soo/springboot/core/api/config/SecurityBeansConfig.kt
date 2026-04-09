@@ -21,7 +21,6 @@ class SecurityBeansConfig {
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
-
     @Bean
     fun daoAuthProvider(
         passwordEncoder: PasswordEncoder,

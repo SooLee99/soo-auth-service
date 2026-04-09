@@ -4,4 +4,3 @@ enum class ServiceStatus {
     ACTIVE,
     INACTIVE,
 }
-

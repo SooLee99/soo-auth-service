@@ -21,9 +21,9 @@ import io.soo.springboot.core.enums.LoginStatus
 import io.soo.springboot.core.enums.LoginType
 import io.soo.springboot.core.enums.Role
 import io.soo.springboot.core.enums.UserStatus
-import io.soo.springboot.storage.db.core.login.LoginHistory
 import io.soo.springboot.storage.db.core.User
 import io.soo.springboot.storage.db.core.UserStatusAuditLog
+import io.soo.springboot.storage.db.core.login.LoginHistory
 import io.soo.springboot.test.api.RestDocsTest
 import io.soo.springboot.test.api.RestDocsUtils
 import io.soo.springboot.test.api.mockMvcDocument
@@ -154,7 +154,7 @@ class AdminUserApiDocsTest : RestDocsTest() {
                         parameterWithName("endDate").optional().description("조회 종료 시각 (ISO-8601)"),
                     ),
                     relaxedResponseFields(*responseDescriptors.toTypedArray()),
-                )
+                ),
             )
     }
 
@@ -189,7 +189,7 @@ class AdminUserApiDocsTest : RestDocsTest() {
                         fieldWithPath("reason").type(JsonFieldType.STRING).optional().description("차단 사유"),
                     ),
                     relaxedResponseFields(*adminUserStateResponseDescriptors().toTypedArray()),
-                )
+                ),
             )
     }
 
@@ -224,7 +224,7 @@ class AdminUserApiDocsTest : RestDocsTest() {
                         parameterWithName("userId").description("차단 해제 대상 사용자 ID"),
                     ),
                     relaxedResponseFields(*adminUserStateResponseDescriptors().toTypedArray()),
-                )
+                ),
             )
     }
 
@@ -253,7 +253,7 @@ class AdminUserApiDocsTest : RestDocsTest() {
                         parameterWithName("userId").description("조회 대상 사용자 ID"),
                     ),
                     relaxedResponseFields(*adminUserDetailResponseDescriptors().toTypedArray()),
-                )
+                ),
             )
     }
 
@@ -276,7 +276,7 @@ class AdminUserApiDocsTest : RestDocsTest() {
                     nickname = "updated-nickname",
                     role = Role.ADMIN,
                     blocked = false,
-                )
+                ),
             )
             .`when`()
             .patch("/api/v1/auth/admin/users/{userId}", 1)
@@ -312,7 +312,7 @@ class AdminUserApiDocsTest : RestDocsTest() {
                         fieldWithPath("phoneVerified").type(JsonFieldType.BOOLEAN).optional().description("휴대폰 인증 여부"),
                     ),
                     relaxedResponseFields(*adminUserDetailResponseDescriptors().toTypedArray()),
-                )
+                ),
             )
     }
 
@@ -347,7 +347,7 @@ class AdminUserApiDocsTest : RestDocsTest() {
                         fieldWithPath("reason").type(JsonFieldType.STRING).optional().description("삭제 사유"),
                     ),
                     relaxedResponseFields(*adminUserStateResponseDescriptors().toTypedArray()),
-                )
+                ),
             )
     }
 
@@ -388,7 +388,7 @@ class AdminUserApiDocsTest : RestDocsTest() {
                         parameterWithName("authProvider").optional().description("인증 제공자 필터(LOCAL/GOOGLE/NAVER/KAKAO)"),
                     ),
                     relaxedResponseFields(*adminUserListResponseDescriptors().toTypedArray()),
-                )
+                ),
             )
     }
 
@@ -422,7 +422,7 @@ class AdminUserApiDocsTest : RestDocsTest() {
                         fieldWithPath("newPassword").type(JsonFieldType.STRING).description("새 비밀번호"),
                     ),
                     relaxedResponseFields(*adminUserDetailResponseDescriptors().toTypedArray()),
-                )
+                ),
             )
     }
 
@@ -451,7 +451,7 @@ class AdminUserApiDocsTest : RestDocsTest() {
                         parameterWithName("userId").description("토큰 강제 만료 대상 사용자 ID"),
                     ),
                     relaxedResponseFields(*adminUserDetailResponseDescriptors().toTypedArray()),
-                )
+                ),
             )
     }
 
@@ -484,7 +484,7 @@ class AdminUserApiDocsTest : RestDocsTest() {
                         parameterWithName("size").optional().description("페이지 크기"),
                     ),
                     relaxedResponseFields(*adminUserPageResponseDescriptors().toTypedArray()),
-                )
+                ),
             )
     }
 
@@ -517,7 +517,7 @@ class AdminUserApiDocsTest : RestDocsTest() {
                         parameterWithName("size").optional().description("페이지 크기"),
                     ),
                     relaxedResponseFields(*adminUserPageResponseDescriptors().toTypedArray()),
-                )
+                ),
             )
     }
 
@@ -590,7 +590,7 @@ class AdminUserApiDocsTest : RestDocsTest() {
                         parameterWithName("size").optional().description("페이지 크기"),
                     ),
                     relaxedResponseFields(*responseDescriptors.toTypedArray()),
-                )
+                ),
             )
     }
 

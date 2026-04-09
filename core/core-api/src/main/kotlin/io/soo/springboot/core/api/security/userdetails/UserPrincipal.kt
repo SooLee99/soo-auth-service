@@ -1,9 +1,9 @@
 package io.soo.springboot.core.api.security.userdetails
 
+import io.soo.springboot.core.enums.AuthProvider
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
-import io.soo.springboot.core.enums.AuthProvider
 
 data class UserPrincipal(
     val userId: Long,

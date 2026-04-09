@@ -43,7 +43,7 @@ class LoginHistoryRepositoryImpl(
         userId: Long,
         startDate: LocalDateTime,
         endDate: LocalDateTime,
-        pageable: Pageable
+        pageable: Pageable,
     ): Page<LoginHistory> {
         return jpaRepository.findByUserIdAndCreatedAtBetween(userId, startDate, endDate, pageable)
             .map { LoginHistory.from(it) }

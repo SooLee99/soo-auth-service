@@ -29,7 +29,7 @@ class HealthControllerDocsTest : RestDocsTest() {
                 "docs" to mapOf(
                     "swagger" to "https://api.example.com/docs/swagger/index.html",
                     "docs" to "https://api.example.com/docs/index.html",
-                )
+                ),
             ),
         )
         every { healthSnapshotService.adminDetails(any<HttpServletRequest>()) } returns mapOf(
@@ -77,7 +77,7 @@ class HealthControllerDocsTest : RestDocsTest() {
                         fieldWithPath("data.links.docs.swagger").type(JsonFieldType.STRING).description("Swagger UI URL"),
                         fieldWithPath("data.links.docs.docs").type(JsonFieldType.STRING).description("API 문서 URL"),
                     ),
-                )
+                ),
             )
     }
 
@@ -123,7 +123,7 @@ class HealthControllerDocsTest : RestDocsTest() {
                         fieldWithPath("data.links.logs.lokiQuery").type(JsonFieldType.STRING).description("Loki Query API URL"),
                         fieldWithPath("data.links.logs.grafanaExplore").type(JsonFieldType.STRING).description("Grafana Explore URL"),
                     ),
-                )
+                ),
             )
     }
 }

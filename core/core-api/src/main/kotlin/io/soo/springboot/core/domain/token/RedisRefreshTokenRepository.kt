@@ -77,7 +77,7 @@ class RedisRefreshTokenRepository(
                 token.copy(
                     revokedAt = now,
                     lastAccessedAt = now,
-                )
+                ),
             )
         }
         return activeTokens.size
@@ -92,7 +92,7 @@ class RedisRefreshTokenRepository(
                 token.copy(
                     revokedAt = now,
                     lastAccessedAt = now,
-                )
+                ),
             )
         }
         return activeTokens.size

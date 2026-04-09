@@ -1,5 +1,6 @@
 package io.soo.springboot.core.api.security.token
 
+import io.soo.springboot.core.api.config.AppJwtProperties
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm
 import org.springframework.security.oauth2.jwt.JwsHeader
@@ -9,9 +10,6 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters
 import org.springframework.stereotype.Service
 import java.time.Instant
 import java.util.UUID
-
-import io.soo.springboot.core.api.config.AppJwtProperties
-
 
 @Service
 class AccessTokenIssuer(

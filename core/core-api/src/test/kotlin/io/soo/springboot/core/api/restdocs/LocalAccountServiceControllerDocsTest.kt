@@ -4,9 +4,9 @@ import io.mockk.every
 import io.mockk.mockk
 import io.soo.springboot.core.api.controller.v1.LocalAccountController
 import io.soo.springboot.core.api.controller.v1.request.PhoneLoginRequest
+import io.soo.springboot.core.api.controller.v1.request.PhoneSignUpRequest
 import io.soo.springboot.core.api.controller.v1.request.RefreshRequest
 import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
-import io.soo.springboot.core.api.controller.v1.request.PhoneSignUpRequest
 import io.soo.springboot.core.api.controller.v1.request.WithdrawRequest
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
 import io.soo.springboot.core.api.security.token.AuthTokenManager
@@ -89,8 +89,8 @@ class LocalAccountServiceControllerDocsTest : RestDocsTest() {
                         fieldWithPath("thumbnailImageUrl").type(JsonFieldType.STRING).optional().description("썸네일 이미지 URL"),
                         fieldWithPath("birthyear").type(JsonFieldType.STRING).optional().description("출생연도 (yyyy)"),
                         fieldWithPath("birthday").type(JsonFieldType.STRING).optional().description("생일 (MM-DD)"),
-                    )
-                )
+                    ),
+                ),
             )
     }
 
@@ -116,8 +116,8 @@ class LocalAccountServiceControllerDocsTest : RestDocsTest() {
                     requestFields(
                         fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("휴대폰 번호"),
                         fieldWithPath("phoneVerificationToken").type(JsonFieldType.STRING).description("휴대폰 인증 완료 토큰"),
-                    )
-                )
+                    ),
+                ),
             )
     }
 
@@ -159,7 +159,7 @@ class LocalAccountServiceControllerDocsTest : RestDocsTest() {
                         fieldWithPath("refreshToken").type(JsonFieldType.STRING).description("리프레시 토큰"),
                     ),
                     responseFields(*responseDescriptors.toTypedArray()),
-                )
+                ),
             )
     }
 
@@ -188,7 +188,7 @@ class LocalAccountServiceControllerDocsTest : RestDocsTest() {
                 PhoneLoginRequest(
                     phoneNumber = "+821012345678",
                     phoneVerificationToken = "verified-phone-token",
-                )
+                ),
             )
             .`when`()
             .post("/api/v1/auth/local/login/phone")
@@ -207,7 +207,7 @@ class LocalAccountServiceControllerDocsTest : RestDocsTest() {
                         fieldWithPath("phoneVerificationToken").type(JsonFieldType.STRING).description("휴대폰 인증 완료 토큰"),
                     ),
                     responseFields(*responseDescriptors.toTypedArray()),
-                )
+                ),
             )
     }
 
@@ -254,7 +254,7 @@ class LocalAccountServiceControllerDocsTest : RestDocsTest() {
                             fieldWithPath("logoutAll").type(JsonFieldType.BOOLEAN).optional().description("전체 로그아웃 여부"),
                         ),
                         responseFields(*responseDescriptors.toTypedArray()),
-                    )
+                    ),
                 )
         } finally {
             SecurityContextHolder.clearContext()
@@ -298,7 +298,7 @@ class LocalAccountServiceControllerDocsTest : RestDocsTest() {
                             fieldWithPath("reason").type(JsonFieldType.STRING).optional().description("탈퇴 사유"),
                         ),
                         responseFields(*responseDescriptors.toTypedArray()),
-                    )
+                    ),
                 )
         } finally {
             SecurityContextHolder.clearContext()

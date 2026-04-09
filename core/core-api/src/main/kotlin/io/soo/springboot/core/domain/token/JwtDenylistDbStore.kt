@@ -1,15 +1,13 @@
 package io.soo.springboot.core.domain.token
 
-import org.springframework.dao.DataIntegrityViolationException
+import io.soo.springboot.storage.db.core.JwtDenylistRepository
 import org.springframework.context.annotation.Profile
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
-
-import io.soo.springboot.storage.db.core.JwtDenylistRepository
-
 
 @Service
 @Profile("local", "test")

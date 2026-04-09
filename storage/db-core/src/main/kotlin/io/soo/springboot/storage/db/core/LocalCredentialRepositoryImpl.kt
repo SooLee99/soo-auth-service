@@ -1,11 +1,10 @@
 package io.soo.springboot.storage.db.core
 
 import org.springframework.stereotype.Repository
-import java.time.LocalDateTime
 
 @Repository
 class LocalCredentialRepositoryImpl(
-    private val jpaRepository: LocalCredentialJpaRepository
+    private val jpaRepository: LocalCredentialJpaRepository,
 ) : LocalCredentialRepository {
 
     override fun save(credential: LocalCredential): LocalCredential {

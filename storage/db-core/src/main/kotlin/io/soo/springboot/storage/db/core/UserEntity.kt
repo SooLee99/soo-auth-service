@@ -4,7 +4,14 @@ import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.core.enums.Role
 import io.soo.springboot.core.enums.UserStatus
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.Index
+import jakarta.persistence.Lob
+import jakarta.persistence.Table
+import jakarta.persistence.UniqueConstraint
 import java.time.Instant
 
 @Entity
@@ -13,14 +20,14 @@ import java.time.Instant
     uniqueConstraints = [
         UniqueConstraint(
             name = "uk_user_oauth_provider",
-            columnNames = ["authProvider", "oauthProviderUserId"]
-        )
+            columnNames = ["authProvider", "oauthProviderUserId"],
+        ),
     ],
     indexes = [
         Index(name = "ix_user_email", columnList = "email"),
         Index(name = "ix_user_login_id", columnList = "loginId"),
         Index(name = "ix_user_oauth", columnList = "authProvider, oauthProviderUserId"),
-    ]
+    ],
 )
 class UserEntity(
 
@@ -55,11 +62,13 @@ class UserEntity(
     @Enumerated(EnumType.STRING)
     var gender: Gender = Gender.UNKNOWN,
 
+    // "MM-DD"
     @Column
-    var birthday: String? = null,   // "MM-DD"
+    var birthday: String? = null,
 
+    // "YYYY"
     @Column
-    var birthyear: String? = null,  // "YYYY"
+    var birthyear: String? = null,
 
     @Column
     var ageRange: String? = null,

@@ -50,7 +50,8 @@ data class ApiResponse<T>(
     data class Error(
         val code: String,
         val message: String,
-        val fields: Any? = null, // validation errors / duplicate field 등 (민감정보 금지)
+        // validation errors / duplicate field 등 (민감정보 금지)
+        val fields: Any? = null,
     )
 
     companion object {

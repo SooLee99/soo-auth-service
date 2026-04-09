@@ -1,5 +1,7 @@
 package io.soo.springboot.core.api.controller.v1
 
+import io.soo.springboot.core.support.error.ErrorType
+import io.soo.springboot.core.support.response.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpSession
 import org.springframework.web.bind.annotation.GetMapping
@@ -8,10 +10,6 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-
-import io.soo.springboot.core.support.error.ErrorType
-import io.soo.springboot.core.support.response.ApiResponse
-
 
 @RestController
 @RequestMapping("/api/v1/auth/oauth2")
@@ -29,7 +27,7 @@ class OAuth2AccountController {
             return ApiResponse.error(
                 type = ErrorType.INVALID_REQUEST,
                 message = "returnUrl은 상대경로만 허용합니다.",
-                req = req
+                req = req,
             )
         }
 

@@ -36,7 +36,8 @@ data class ErrorBody(
 data class ErrorResponse(
     val result: ResultType = ResultType.ERROR,
     val meta: ErrorContext,
-    val data: Any? = null,   // 성공 payload가 아니므로 ERROR에서는 보통 null 유지
+    // 성공 payload가 아니므로 ERROR에서는 보통 null 유지
+    val data: Any? = null,
     val error: ErrorBody,
 ) {
     companion object {
@@ -48,7 +49,7 @@ data class ErrorResponse(
                     code = type.code.name,
                     message = type.message,
                     fields = fields,
-                )
+                ),
             )
 
         fun of(type: ErrorType, message: String, meta: ErrorContext, fields: Any? = null): ErrorResponse =
@@ -59,7 +60,7 @@ data class ErrorResponse(
                     code = type.code.name,
                     message = message,
                     fields = fields,
-                )
+                ),
             )
     }
 }

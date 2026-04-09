@@ -61,8 +61,8 @@ class Rs256JwtCodecConfig(
         } catch (e: Exception) {
             throw IllegalStateException(
                 "Failed to load PKCS12 keystore. location=$location, alias=$alias. " +
-                        "Check file integrity (not empty/corrupted) and passwords.",
-                e
+                    "Check file integrity (not empty/corrupted) and passwords.",
+                e,
             )
         }
 

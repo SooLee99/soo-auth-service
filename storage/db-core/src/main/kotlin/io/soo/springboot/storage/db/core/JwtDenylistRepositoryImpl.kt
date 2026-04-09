@@ -1,12 +1,11 @@
 package io.soo.springboot.storage.db.core
 
-
 import org.springframework.stereotype.Repository
 import java.time.Instant
 
 @Repository
 class JwtDenylistRepositoryImpl(
-    private val jpaRepository: JpaJwtDenylistRepository
+    private val jpaRepository: JpaJwtDenylistRepository,
 ) : JwtDenylistRepository {
 
     override fun save(jti: String, expiresAt: Instant) {

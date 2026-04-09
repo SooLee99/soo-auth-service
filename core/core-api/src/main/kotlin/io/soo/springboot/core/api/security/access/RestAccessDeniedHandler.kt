@@ -33,7 +33,7 @@ class RestAccessDeniedHandler(
                 type = type,
                 req = request,
                 fields = mapOf("reason" to "ACCESS_DENIED"),
-            )
+            ),
         )
     }
 }

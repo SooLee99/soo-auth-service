@@ -71,7 +71,6 @@ class AdminUserStatusController(
         return ApiResponse.success(req = req, data = AdminUserBlockResponse.from(unblocked))
     }
 
-
     @GetMapping("/users/deleted", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun listDeletedUsers(
         @RequestParam(defaultValue = "0") page: Int,

@@ -79,7 +79,7 @@ enum class ErrorType(
         HttpStatus.TOO_MANY_REQUESTS,
         ErrorCode.E429,
         "로그인 시도 횟수가 초과되었습니다. 잠시 후 다시 시도해 주세요.",
-        LogLevel.WARN
+        LogLevel.WARN,
     ),
 
     // 500

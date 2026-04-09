@@ -2,10 +2,10 @@ package io.soo.springboot.core.api.security.userdetails
 
 import io.mockk.every
 import io.mockk.mockk
-import io.soo.springboot.core.support.error.AccountStatusDeniedException
 import io.soo.springboot.core.domain.UserStatusPolicy
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.UserStatus
+import io.soo.springboot.core.support.error.AccountStatusDeniedException
 import io.soo.springboot.storage.db.core.LocalCredential
 import io.soo.springboot.storage.db.core.LocalCredentialRepository
 import io.soo.springboot.storage.db.core.User

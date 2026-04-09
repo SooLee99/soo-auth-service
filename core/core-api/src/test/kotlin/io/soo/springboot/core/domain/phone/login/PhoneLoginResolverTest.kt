@@ -21,7 +21,7 @@ class PhoneLoginResolverTest {
             NonLocalUserPhoneLoginPolicy(userStatusPolicy),
             DeletedPhoneLoginPolicy(userStatusPolicy),
             MissingPhoneLoginPolicy(),
-        )
+        ),
     )
 
     @Test

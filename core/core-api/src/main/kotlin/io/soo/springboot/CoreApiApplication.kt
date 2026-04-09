@@ -8,8 +8,11 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @ConfigurationPropertiesScan
 @EnableScheduling
 @SpringBootApplication
-class CoreApiApplication
-
-fun main(args: Array<String>) {
-    runApplication<CoreApiApplication>(*args)
+class CoreApiApplication {
+    companion object {
+        @JvmStatic
+        fun main(args: Array<String>) {
+            runApplication<CoreApiApplication>(*args)
+        }
+    }
 }

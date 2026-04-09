@@ -15,7 +15,7 @@ import java.time.Instant
     indexes = [
         Index(name = "ix_user_status_audit_log_user_id", columnList = "targetUserId"),
         Index(name = "ix_user_status_audit_log_created_at", columnList = "actionAt"),
-    ]
+    ],
 )
 class UserStatusAuditLogEntity(
     @Column(nullable = false)

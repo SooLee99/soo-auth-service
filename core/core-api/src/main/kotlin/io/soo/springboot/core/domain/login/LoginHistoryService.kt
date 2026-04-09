@@ -63,7 +63,7 @@ class LoginHistoryService(
         userId: Long,
         startDate: LocalDateTime,
         endDate: LocalDateTime,
-        pageable: Pageable
+        pageable: Pageable,
     ): Page<LoginHistory> {
         return loginHistoryRepository.findByUserIdAndDateRange(userId, startDate, endDate, pageable)
     }

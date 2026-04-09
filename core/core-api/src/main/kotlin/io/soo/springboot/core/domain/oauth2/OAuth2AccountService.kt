@@ -3,9 +3,9 @@ package io.soo.springboot.core.domain.oauth2
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.soo.springboot.core.domain.UserStatusPolicy
 import io.soo.springboot.core.enums.AuthProvider
+import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.storage.db.core.User
 import io.soo.springboot.storage.db.core.UserRepository
-import io.soo.springboot.core.enums.Gender
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
@@ -27,9 +27,12 @@ data class OAuth2Profile(
 
     // 선택 정보 (동의/제공 여부에 따라 null 가능)
     val gender: Gender? = null,
-    val birthday: String? = null,   // "MM-DD" 로 정규화
-    val birthyear: String? = null,  // "YYYY"
-    val ageRange: String? = null,   // "20~29" or "20-29" 등 provider별 원본
+    // "MM-DD" 로 정규화
+    val birthday: String? = null,
+    // "YYYY"
+    val birthyear: String? = null,
+    // "20~29" or "20-29" 등 provider별 원본
+    val ageRange: String? = null,
 
     val phoneNumber: String? = null,
     val phoneNumberE164: String? = null,

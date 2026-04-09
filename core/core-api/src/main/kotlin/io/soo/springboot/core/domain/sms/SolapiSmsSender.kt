@@ -1,7 +1,6 @@
 package io.soo.springboot.core.domain.sms
 
 import io.soo.springboot.client.solapi.SolapiSmsSend
-import io.soo.springboot.core.domain.sms.SmsSender
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty

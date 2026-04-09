@@ -58,7 +58,7 @@ class LocalPhoneVerificationControllerDocsTest : RestDocsTest() {
                         fieldWithPath("phoneNumber").type(JsonFieldType.STRING).description("인증 요청할 휴대폰 번호"),
                     ),
                     responseFields(*responseDescriptors.toTypedArray()),
-                )
+                ),
             )
     }
 
@@ -83,7 +83,7 @@ class LocalPhoneVerificationControllerDocsTest : RestDocsTest() {
                     phoneNumber = "+82 10-1234-5678",
                     verificationId = "verification-id-001",
                     code = "123456",
-                )
+                ),
             )
             .`when`()
             .post("/api/v1/auth/local/phone-verifications/confirm")
@@ -100,7 +100,7 @@ class LocalPhoneVerificationControllerDocsTest : RestDocsTest() {
                         fieldWithPath("code").type(JsonFieldType.STRING).description("6자리 인증번호"),
                     ),
                     responseFields(*responseDescriptors.toTypedArray()),
-                )
+                ),
             )
     }
 }

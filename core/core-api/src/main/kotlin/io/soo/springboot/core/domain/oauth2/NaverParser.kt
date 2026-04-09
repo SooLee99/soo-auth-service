@@ -39,4 +39,3 @@ class NaverParser : OAuth2ParserBase(), OAuth2Parser {
         )
     }
 }
-

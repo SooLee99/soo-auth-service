@@ -46,7 +46,7 @@ class IdAccountService(
                 phoneVerified = true,
                 gender = Gender.UNKNOWN,
                 locale = "ko-KR",
-            )
+            ),
         )
 
         localCredentialRepository.save(
@@ -54,7 +54,7 @@ class IdAccountService(
                 userId = user.id,
                 userEmail = user.email,
                 passwordHash = passwordEncoder.encode(command.password),
-            )
+            ),
         )
         return user
     }

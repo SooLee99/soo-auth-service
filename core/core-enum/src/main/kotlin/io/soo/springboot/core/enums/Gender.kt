@@ -1,8 +1,8 @@
 package io.soo.springboot.core.enums
 
-enum class Gender{
+enum class Gender {
     MALE,
     FEMALE,
     OTHER,
-    UNKNOWN
+    UNKNOWN,
 }

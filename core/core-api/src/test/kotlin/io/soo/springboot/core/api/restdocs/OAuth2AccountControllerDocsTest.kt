@@ -52,7 +52,7 @@ class OAuth2AccountControllerDocsTest : RestDocsTest() {
                         parameterWithName("returnUrl").optional().description("로그인 완료 후 리다이렉트할 상대 경로"),
                     ),
                     responseFields(*responseDescriptors.toTypedArray()),
-                )
+                ),
             )
     }
 }

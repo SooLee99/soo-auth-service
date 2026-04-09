@@ -1,7 +1,7 @@
 package io.soo.springboot.core.api.security.local
 
-import io.soo.springboot.core.enums.LoginDenyReason
 import io.soo.springboot.core.domain.login.LocalLoginAttemptPolicy
+import io.soo.springboot.core.enums.LoginDenyReason
 import io.soo.springboot.core.support.error.AccountStatusDeniedException
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
@@ -55,4 +55,3 @@ class DefaultFailureReasonPolicy : LocalLoginFailureReasonPolicy {
     override fun resolve(context: LocalLoginFailureReasonContext): String? =
         if (context.isStatusDenied) "ACCOUNT_STATUS_DENIED" else "AUTHENTICATION_FAILED"
 }
-

@@ -3,13 +3,13 @@ package io.soo.springboot.core.api.security.oauth2
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.soo.springboot.core.api.controller.v1.response.LoginSuccessResponse
 import io.soo.springboot.core.api.security.response.SecurityErrorResponseWriter
-import io.soo.springboot.core.api.security.userdetails.UserPrincipalLoader
-import io.soo.springboot.core.support.error.AccountStatusDeniedException
-import io.soo.springboot.core.domain.login.LoginHistoryService
 import io.soo.springboot.core.api.security.token.AuthTokenManager
+import io.soo.springboot.core.api.security.userdetails.UserPrincipalLoader
+import io.soo.springboot.core.domain.login.LoginHistoryService
 import io.soo.springboot.core.domain.oauth2.OAuth2Login
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.LoginType
+import io.soo.springboot.core.support.error.AccountStatusDeniedException
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.response.ApiResponse
@@ -84,7 +84,7 @@ class OAuth2LoginSuccessHandler(
                 provider = provider.name,
                 email = principal.email,
                 roles = roles,
-            )
+            ),
         )
 
         // 로그인 성공 기록
@@ -106,8 +106,10 @@ class OAuth2LoginSuccessHandler(
         response.characterEncoding = "UTF-8"
         response.contentType = MediaType.APPLICATION_JSON_VALUE
         response.writer.use {
-            it.write(objectMapper.writeValueAsString(
-                ApiResponse.success(req = request, data = payload))
+            it.write(
+                objectMapper.writeValueAsString(
+                    ApiResponse.success(req = request, data = payload),
+                ),
             )
         }
     }

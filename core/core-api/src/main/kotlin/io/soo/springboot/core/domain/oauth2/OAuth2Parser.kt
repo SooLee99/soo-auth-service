@@ -6,4 +6,3 @@ interface OAuth2Parser {
     val provider: AuthProvider
     fun parse(attrs: Map<String, Any?>): OAuth2Profile
 }
-

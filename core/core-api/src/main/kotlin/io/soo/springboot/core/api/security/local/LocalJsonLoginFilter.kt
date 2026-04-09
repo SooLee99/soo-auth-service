@@ -39,7 +39,7 @@ class LocalJsonLoginFilter(
         // 3) JSON 파싱 + 필수값 검증 + 정규화
         val (normalizedEmail, password) = validateAndNormalize(
             parseLoginRequest(request, body),
-            request
+            request,
         )
 
         // 4) AuthenticationManager로 인증 위임

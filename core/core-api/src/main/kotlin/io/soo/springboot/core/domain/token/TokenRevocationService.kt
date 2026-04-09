@@ -44,4 +44,3 @@ class TokenRevocationService(
         return (jwt.claims["uid"] as? Number)?.toLong()
     }
 }
-

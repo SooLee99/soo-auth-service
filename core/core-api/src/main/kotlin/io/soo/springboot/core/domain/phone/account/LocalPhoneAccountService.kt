@@ -44,7 +44,7 @@ class LocalPhoneAccountService(
                 nickname = null,
                 gender = Gender.UNKNOWN,
                 locale = "ko-KR",
-            )
+            ),
         )
 
         localCredentialRepository.save(
@@ -52,7 +52,7 @@ class LocalPhoneAccountService(
                 userId = user.id,
                 userEmail = internalAccount.email,
                 passwordHash = encodedPassword,
-            )
+            ),
         )
         return user
     }
@@ -73,7 +73,7 @@ class LocalPhoneAccountService(
             PhoneLoginContext(
                 activeUser = activeUser,
                 userIncludingDeleted = userIncludingDeleted,
-            )
+            ),
         )
     }
 }

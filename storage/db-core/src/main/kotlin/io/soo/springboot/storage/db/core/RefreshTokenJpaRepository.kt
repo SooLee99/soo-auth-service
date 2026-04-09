@@ -1,12 +1,12 @@
 package io.soo.springboot.storage.db.core
 
+import jakarta.persistence.LockModeType
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Lock
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import java.time.Instant
-import jakarta.persistence.LockModeType
 
 interface RefreshTokenJpaRepository : JpaRepository<RefreshTokenEntity, Long> {
 
@@ -17,13 +17,15 @@ interface RefreshTokenJpaRepository : JpaRepository<RefreshTokenEntity, Long> {
     fun findForUpdateByHash(@Param("hash") hash: String): RefreshTokenEntity?
 
     @Modifying
-    @Query("""
+    @Query(
+        """
         update RefreshTokenEntity r
         set r.revokedAt = :now
         where r.userId = :userId
           and r.revokedAt is null
           and r.expiresAt > :now
-    """)
+    """,
+    )
     fun revokeAllActiveByUser(@Param("userId") userId: Long, @Param("now") now: Instant): Int
 
     @Modifying
@@ -37,7 +39,7 @@ interface RefreshTokenJpaRepository : JpaRepository<RefreshTokenEntity, Long> {
           and r.deviceId = :deviceId
           and r.revokedAt is null
           and r.expiresAt > :now
-        """
+        """,
     )
     fun findActiveByUserIdAndDeviceId(
         @Param("userId") userId: Long,
@@ -51,7 +53,7 @@ interface RefreshTokenJpaRepository : JpaRepository<RefreshTokenEntity, Long> {
         where r.userId = :userId
           and r.revokedAt is null
           and r.expiresAt > :now
-        """
+        """,
     )
     fun findActiveByUserId(
         @Param("userId") userId: Long,
@@ -65,7 +67,7 @@ interface RefreshTokenJpaRepository : JpaRepository<RefreshTokenEntity, Long> {
            set r.revokedAt = :now
          where r.userId = :userId
            and r.revokedAt is null
-        """
+        """,
     )
     fun revokeAllActiveByUserId(
         @Param("userId") userId: Long,
@@ -80,7 +82,7 @@ interface RefreshTokenJpaRepository : JpaRepository<RefreshTokenEntity, Long> {
          where r.userId = :userId
            and r.deviceId = :deviceId
            and r.revokedAt is null
-        """
+        """,
     )
     fun revokeAllActiveByUserIdAndDeviceId(
         @Param("userId") userId: Long,

@@ -1,7 +1,7 @@
 package io.soo.springboot.core.domain.local
 
-import io.soo.springboot.core.domain.phone.verification.PhoneVerificationService
 import io.soo.springboot.core.domain.phone.verification.PhoneNumberNormalizer
+import io.soo.springboot.core.domain.phone.verification.PhoneVerificationService
 import io.soo.springboot.core.domain.token.TokenRevocationService
 import io.soo.springboot.core.domain.user.UserLifecycleService
 import io.soo.springboot.core.enums.Gender
@@ -64,7 +64,7 @@ class LocalAccountService(
                 birthday = command.birthday,
                 profileImageUrl = command.profileImageUrl,
                 thumbnailImageUrl = command.thumbnailImageUrl,
-            )
+            ),
         )
 
         localCredentialRepository.save(
@@ -72,7 +72,7 @@ class LocalAccountService(
                 userId = user.id,
                 userEmail = command.email,
                 passwordHash = passwordEncoder.encode(command.password),
-            )
+            ),
         )
         return user
     }

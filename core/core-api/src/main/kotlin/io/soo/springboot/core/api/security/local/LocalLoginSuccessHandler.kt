@@ -2,11 +2,11 @@ package io.soo.springboot.core.api.security.local
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.soo.springboot.core.api.security.auth.UserIdResolver
-import io.soo.springboot.core.enums.AuthProvider
-import io.soo.springboot.core.enums.LoginType
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.api.security.userdetails.UserPrincipal
 import io.soo.springboot.core.domain.login.LoginHistoryService
+import io.soo.springboot.core.enums.AuthProvider
+import io.soo.springboot.core.enums.LoginType
 import io.soo.springboot.core.support.response.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -25,7 +25,7 @@ class LocalLoginSuccessHandler(
     override fun onAuthenticationSuccess(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        authentication: Authentication
+        authentication: Authentication,
     ) {
         val ip = request.remoteAddr
         val ua = request.getHeader("User-Agent")
@@ -45,8 +45,10 @@ class LocalLoginSuccessHandler(
         )
 
         response.contentType = "application/json;charset=UTF-8"
-        response.writer.write(objectMapper.writeValueAsString(
-            ApiResponse.success(req = request, data = tokens))
+        response.writer.write(
+            objectMapper.writeValueAsString(
+                ApiResponse.success(req = request, data = tokens),
+            ),
         )
     }
 }

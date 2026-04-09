@@ -3,7 +3,6 @@ package io.soo.springboot.core.api.config
 import io.soo.springboot.core.api.security.access.RestAccessDeniedHandler
 import io.soo.springboot.core.api.security.entrypoint.UnauthorizedEntryPoint
 import io.soo.springboot.core.api.security.local.LocalJsonLoginFilter
-import io.soo.springboot.core.api.security.oauth2.OAuth2LoginSuccessHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
@@ -89,7 +88,6 @@ class ApiSecurityConfig(
         localJsonLoginFilter: LocalJsonLoginFilter,
         daoAuthProvider: DaoAuthenticationProvider,
     ): SecurityFilterChain {
-
         // ✅ /h2-console/** 는 이 체인에서 제외
         http.securityMatcher(NegatedRequestMatcher(AntPathRequestMatcher(H2_CONSOLE)))
 
@@ -101,11 +99,11 @@ class ApiSecurityConfig(
         http.exceptionHandling { ex ->
             ex.defaultAuthenticationEntryPointFor(
                 unauthorizedEntryPoint,
-                AntPathRequestMatcher("/api/**")
+                AntPathRequestMatcher("/api/**"),
             )
             ex.defaultAccessDeniedHandlerFor(
                 restAccessDeniedHandler,
-                AntPathRequestMatcher("/api/**")
+                AntPathRequestMatcher("/api/**"),
             )
         }
 

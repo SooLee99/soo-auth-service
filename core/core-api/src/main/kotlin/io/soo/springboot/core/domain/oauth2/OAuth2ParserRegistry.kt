@@ -15,4 +15,3 @@ class OAuth2ParserRegistry(
         return parser.parse(attrs)
     }
 }
-

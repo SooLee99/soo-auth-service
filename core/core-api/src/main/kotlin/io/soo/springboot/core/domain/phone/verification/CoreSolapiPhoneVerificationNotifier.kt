@@ -2,7 +2,6 @@ package io.soo.springboot.core.domain.phone.verification
 
 import io.soo.springboot.client.solapi.SolapiSmsNotifier
 import io.soo.springboot.core.domain.sms.SmsAdminService
-import io.soo.springboot.core.domain.phone.verification.PhoneVerificationNotifier
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty

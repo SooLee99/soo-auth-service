@@ -5,14 +5,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.stereotype.Component
 
 @Component
-class OAuth2LoginConfig (
+class OAuth2LoginConfig(
     private val oAuth2LoginSuccessHandler: OAuth2LoginSuccessHandler,
-    ) {
-        fun configure(http: HttpSecurity) {
-            http.oauth2Login { oauth ->
-                oauth.authorizationEndpoint { ep -> ep.baseUri("/oauth2/authorization") }
-                oauth.redirectionEndpoint { ep -> ep.baseUri("/login/oauth2/code/*") }
-                oauth.successHandler(oAuth2LoginSuccessHandler)
-            }
+) {
+    fun configure(http: HttpSecurity) {
+        http.oauth2Login { oauth ->
+            oauth.authorizationEndpoint { ep -> ep.baseUri("/oauth2/authorization") }
+            oauth.redirectionEndpoint { ep -> ep.baseUri("/login/oauth2/code/*") }
+            oauth.successHandler(oAuth2LoginSuccessHandler)
         }
     }
+}

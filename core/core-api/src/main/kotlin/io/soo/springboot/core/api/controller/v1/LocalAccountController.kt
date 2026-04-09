@@ -1,17 +1,17 @@
 package io.soo.springboot.core.api.controller.v1
 
-import io.soo.springboot.core.api.controller.v1.request.RefreshRequest
-import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
 import io.soo.springboot.core.api.controller.v1.request.PhoneLoginRequest
 import io.soo.springboot.core.api.controller.v1.request.PhoneSignUpRequest
+import io.soo.springboot.core.api.controller.v1.request.RefreshRequest
+import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
 import io.soo.springboot.core.api.controller.v1.request.WithdrawRequest
 import io.soo.springboot.core.api.controller.v1.response.LogoutRequest
+import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.domain.local.LocalAccountService
+import io.soo.springboot.core.domain.local.LocalSignUpCommand
 import io.soo.springboot.core.domain.phone.account.LocalPhoneAccountService
 import io.soo.springboot.core.domain.phone.login.LocalPhoneLoginCommand
 import io.soo.springboot.core.domain.phone.login.LocalPhoneLoginService
-import io.soo.springboot.core.domain.local.LocalSignUpCommand
-import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.response.ApiResponse
@@ -20,7 +20,11 @@ import jakarta.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/auth/local")
@@ -46,7 +50,7 @@ class LocalAccountController(
                 thumbnailImageUrl = request.thumbnailImageUrl,
                 birthyear = request.birthyear,
                 birthday = request.birthday,
-            )
+            ),
         )
     }
 
@@ -71,7 +75,7 @@ class LocalAccountController(
                 deviceId = deviceId,
                 ipAddress = req.remoteAddr,
                 userAgent = req.getHeader("User-Agent"),
-            )
+            ),
         )
 
         return ApiResponse.success(req = req, data = tokens)
@@ -82,7 +86,7 @@ class LocalAccountController(
         @RequestHeader("X-Device-Id") deviceId: String,
         @RequestBody request: RefreshRequest,
         req: HttpServletRequest,
-    ): ApiResponse<Any?>{
+    ): ApiResponse<Any?> {
         val issued = authTokenManager.refresh(request.refreshToken, deviceId)
         return ApiResponse.success(req = req, data = issued)
     }

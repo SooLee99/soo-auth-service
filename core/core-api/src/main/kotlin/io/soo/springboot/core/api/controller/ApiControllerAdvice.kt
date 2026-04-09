@@ -7,7 +7,6 @@ import io.soo.springboot.core.support.error.FieldErrorDetail
 import io.soo.springboot.core.support.response.ApiResponse
 import jakarta.persistence.EntityNotFoundException
 import jakarta.servlet.http.HttpServletRequest
-import jakarta.validation.ConstraintViolationException as ValidationConstraintViolationException
 import org.slf4j.LoggerFactory
 import org.springframework.boot.logging.LogLevel
 import org.springframework.dao.DataIntegrityViolationException
@@ -23,13 +22,14 @@ import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
-import org.springframework.web.servlet.NoHandlerFoundException
 import org.springframework.web.multipart.MaxUploadSizeExceededException
+import org.springframework.web.servlet.NoHandlerFoundException
 import org.springframework.web.servlet.resource.NoResourceFoundException
-import java.nio.file.AccessDeniedException as FileAccessDeniedException
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
 import java.util.UUID
+import jakarta.validation.ConstraintViolationException as ValidationConstraintViolationException
+import java.nio.file.AccessDeniedException as FileAccessDeniedException
 
 @RestControllerAdvice
 class ApiControllerAdvice {
@@ -135,11 +135,11 @@ class ApiControllerAdvice {
                 "파라미터 '$paramName': '$valueText' 는 올바른 날짜가 아닙니다. yyyy-MM-dd 형식으로 입력해 주세요."
 
             required == Int::class.java || required == Integer.TYPE ||
-                    required == Long::class.java || required == java.lang.Long.TYPE ->
+                required == Long::class.java || required == java.lang.Long.TYPE ->
                 "파라미터 '$paramName': '$valueText' 는 정수로 변환할 수 없습니다."
 
             required == Double::class.java || required == java.lang.Double.TYPE ||
-                    required == Float::class.java || required == java.lang.Float.TYPE ->
+                required == Float::class.java || required == java.lang.Float.TYPE ->
                 "파라미터 '$paramName': '$valueText' 는 숫자(실수)로 변환할 수 없습니다."
 
             required == Boolean::class.java || required == java.lang.Boolean.TYPE ->
@@ -350,7 +350,7 @@ class ApiControllerAdvice {
 
     @ExceptionHandler(NoResourceFoundException::class)
     fun ignoreNoResource(
-        e: NoResourceFoundException
+        e: NoResourceFoundException,
     ): ResponseEntity<Void> {
         return ResponseEntity.notFound().build()
     }
@@ -374,7 +374,6 @@ class ApiControllerAdvice {
         detail: String?,
         extra: Map<String, Any?> = emptyMap(),
     ): ResponseEntity<ApiResponse<Nothing>> {
-
         val fields = linkedMapOf<String, Any?>(
             "detail" to detail,
         ).apply {

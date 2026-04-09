@@ -1,10 +1,10 @@
 package io.soo.springboot.core.domain.token
 
 import io.soo.springboot.core.enums.AuthProvider
-import io.soo.springboot.storage.db.core.RefreshToken
-import io.soo.springboot.storage.db.core.RefreshTokenRepository
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType
+import io.soo.springboot.storage.db.core.RefreshToken
+import io.soo.springboot.storage.db.core.RefreshTokenRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.MessageDigest
@@ -63,7 +63,7 @@ class RefreshTokenManager(
                 deviceId = deviceId,
                 provider = provider,
                 lastAccessedAt = now,
-            )
+            ),
         )
 
         return RefreshTokenIssueResult(token = raw, expiresInSec = ChronoUnit.SECONDS.between(now, expiresAt))
@@ -103,7 +103,7 @@ class RefreshTokenManager(
 
         // old 토큰 used 처리
         repository.save(
-            old.markUsed(at = now, nextTokenHash = newHash)
+            old.markUsed(at = now, nextTokenHash = newHash),
         )
 
         // 새 토큰 저장
@@ -115,7 +115,7 @@ class RefreshTokenManager(
                 deviceId = old.deviceId,
                 provider = old.provider,
                 lastAccessedAt = now,
-            )
+            ),
         )
 
         val issued = RefreshTokenIssueResult(

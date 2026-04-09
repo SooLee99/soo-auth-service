@@ -56,7 +56,7 @@ data class SignUpRequest(
     @field:Size(max = 20, message = "휴대폰 번호가 너무 깁니다.")
     @field:Pattern(
         regexp = """^\+?\d[\d\s-]{7,18}\d$""",
-        message = "휴대폰 번호 형식이 올바르지 않습니다."
+        message = "휴대폰 번호 형식이 올바르지 않습니다.",
     )
     val phoneNumber: String? = null,
 
@@ -64,7 +64,7 @@ data class SignUpRequest(
 
     @field:Pattern(
         regexp = """^[a-zA-Z]{2,3}(-[a-zA-Z]{4})?(-[a-zA-Z]{2}|\d{3})?$""",
-        message = "locale 형식이 올바르지 않습니다. (예: ko-KR, en-US)"
+        message = "locale 형식이 올바르지 않습니다. (예: ko-KR, en-US)",
     )
     val locale: String = "ko-KR",
 
@@ -79,7 +79,7 @@ data class SignUpRequest(
 
     @field:Pattern(
         regexp = """^(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$""",
-        message = "birthday는 MM-DD 형식이어야 합니다."
+        message = "birthday는 MM-DD 형식이어야 합니다.",
     )
     val birthday: String? = null,
 )
@@ -89,7 +89,7 @@ data class PhoneSignUpRequest(
     @field:Size(max = 20, message = "휴대폰 번호가 너무 깁니다.")
     @field:Pattern(
         regexp = """^\+?\d[\d\s-]{7,18}\d$""",
-        message = "휴대폰 번호 형식이 올바르지 않습니다."
+        message = "휴대폰 번호 형식이 올바르지 않습니다.",
     )
     val phoneNumber: String,
 
@@ -102,7 +102,7 @@ data class PhoneLoginRequest(
     @field:Size(max = 20, message = "휴대폰 번호가 너무 깁니다.")
     @field:Pattern(
         regexp = """^\+?\d[\d\s-]{7,18}\d$""",
-        message = "휴대폰 번호 형식이 올바르지 않습니다."
+        message = "휴대폰 번호 형식이 올바르지 않습니다.",
     )
     val phoneNumber: String,
 
@@ -131,7 +131,7 @@ data class IdSignUpRequest(
     @field:Size(max = 20, message = "휴대폰 번호가 너무 깁니다.")
     @field:Pattern(
         regexp = """^\+?\d[\d\s-]{7,18}\d$""",
-        message = "휴대폰 번호 형식이 올바르지 않습니다."
+        message = "휴대폰 번호 형식이 올바르지 않습니다.",
     )
     val phoneNumber: String,
 
@@ -152,7 +152,7 @@ data class PhoneVerificationIssueRequest(
     @field:Size(max = 20, message = "휴대폰 번호가 너무 깁니다.")
     @field:Pattern(
         regexp = """^\+?\d[\d\s-]{7,18}\d$""",
-        message = "휴대폰 번호 형식이 올바르지 않습니다."
+        message = "휴대폰 번호 형식이 올바르지 않습니다.",
     )
     val phoneNumber: String,
 )
@@ -162,7 +162,7 @@ data class PhoneVerificationConfirmRequest(
     @field:Size(max = 20, message = "휴대폰 번호가 너무 깁니다.")
     @field:Pattern(
         regexp = """^\+?\d[\d\s-]{7,18}\d$""",
-        message = "휴대폰 번호 형식이 올바르지 않습니다."
+        message = "휴대폰 번호 형식이 올바르지 않습니다.",
     )
     val phoneNumber: String,
 

@@ -52,7 +52,7 @@ class AuthAccountController(
                 thumbnailImageUrl = request.thumbnailImageUrl,
                 birthyear = request.birthyear,
                 birthday = request.birthday,
-            )
+            ),
         )
     }
 
@@ -74,7 +74,7 @@ class AuthAccountController(
                 deviceId = deviceId,
                 ipAddress = req.remoteAddr,
                 userAgent = req.getHeader("User-Agent"),
-            )
+            ),
         )
         return ApiResponse.success(req = req, data = tokens)
     }
@@ -87,7 +87,7 @@ class AuthAccountController(
                 password = request.password,
                 phoneNumber = request.phoneNumber,
                 phoneVerificationToken = request.phoneVerificationToken,
-            )
+            ),
         )
     }
 
@@ -104,7 +104,7 @@ class AuthAccountController(
                 deviceId = deviceId,
                 ipAddress = req.remoteAddr,
                 userAgent = req.getHeader("User-Agent"),
-            )
+            ),
         )
         return ApiResponse.success(req = req, data = tokens)
     }

@@ -42,4 +42,3 @@ abstract class OAuth2ParserBase {
             else -> Gender.UNKNOWN
         }
 }
-

@@ -31,4 +31,3 @@ class GoogleParser : OAuth2ParserBase(), OAuth2Parser {
         )
     }
 }
-

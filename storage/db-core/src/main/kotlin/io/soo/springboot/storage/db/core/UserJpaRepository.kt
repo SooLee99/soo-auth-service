@@ -4,10 +4,10 @@ import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.UserStatus
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.data.jpa.repository.Modifying
-import org.springframework.data.jpa.repository.Query
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import org.springframework.data.jpa.repository.Modifying
+import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import java.time.Instant
 
@@ -26,7 +26,7 @@ interface UserJpaRepository : JpaRepository<UserEntity, Long>, JpaSpecificationE
     fun existsByPhoneNumber(phoneNumber: String): Boolean
     fun findByAuthProviderAndOauthProviderUserId(
         authProvider: AuthProvider,
-        oauthProviderUserId: String
+        oauthProviderUserId: String,
     ): UserEntity?
     fun findByAuthProviderAndOauthProviderUserIdAndUserStatusNot(
         authProvider: AuthProvider,
@@ -44,7 +44,7 @@ interface UserJpaRepository : JpaRepository<UserEntity, Long>, JpaSpecificationE
         where u.userStatus = :status
           and u.retentionUntil is not null
           and u.retentionUntil < :now
-        """
+        """,
     )
     fun purgeSoftDeletedUsers(@Param("status") status: UserStatus, @Param("now") now: Instant): Int
 }

@@ -17,7 +17,7 @@ data class LoginSuccessResponse(
         val expiresIn: Long?,
         val issuedAt: Instant = Instant.now(),
         val refreshToken: String?,
-        val refreshExpiresIn: Long?
+        val refreshExpiresIn: Long?,
     )
 
     data class User(

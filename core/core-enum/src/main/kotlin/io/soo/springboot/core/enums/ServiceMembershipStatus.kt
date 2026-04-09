@@ -5,4 +5,3 @@ enum class ServiceMembershipStatus {
     WITHDRAWN,
     BLOCKED,
 }
-

@@ -1,9 +1,9 @@
 package io.soo.springboot.core.api.security.userdetails
 
+import io.soo.springboot.core.domain.UserStatusPolicy
 import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.core.enums.Role
 import io.soo.springboot.core.support.error.AccountStatusDeniedException
-import io.soo.springboot.core.domain.UserStatusPolicy
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.storage.db.core.LocalCredentialRepository

@@ -1,6 +1,7 @@
 package io.soo.springboot.storage.db.core
 
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
 import java.time.LocalDateTime
 
 @Entity
@@ -14,7 +15,7 @@ class LocalCredentialEntity(
     @Column(nullable = false, length = 200)
     var passwordHash: String,
 
-    @Column( nullable = false)
+    @Column(nullable = false)
     var passwordUpdatedAt: LocalDateTime = LocalDateTime.now(),
 
     @Column(nullable = false)
@@ -26,6 +27,4 @@ class LocalCredentialEntity(
     @Column
     var lockUntil: LocalDateTime? = null,
 
-) : BaseEntity() {
-
-}
+) : BaseEntity()

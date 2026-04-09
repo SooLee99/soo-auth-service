@@ -39,7 +39,7 @@ class UserLifecycleService(
                 reason = trimmedReason,
                 anonymizedEmail = anonymizedEmail,
                 anonymizedPhone = anonymizedPhone,
-            )
+            ),
         )
 
         localCredentialRepository.deleteByUserId(userId)
@@ -53,10 +53,10 @@ class UserLifecycleService(
     }
 
     private fun buildDeletedEmail(userId: Long, at: Instant): String {
-        return "deleted+${userId}.${at.epochSecond}@deleted.local"
+        return "deleted+$userId.${at.epochSecond}@deleted.local"
     }
 
     private fun buildDeletedPhone(userId: Long, at: Instant): String {
-        return "deleted-${userId}-${at.epochSecond}"
+        return "deleted-$userId-${at.epochSecond}"
     }
 }

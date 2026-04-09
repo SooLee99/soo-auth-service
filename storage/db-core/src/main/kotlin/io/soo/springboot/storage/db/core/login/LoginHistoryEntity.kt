@@ -3,14 +3,21 @@ package io.soo.springboot.storage.db.core.login
 import io.soo.springboot.core.enums.LoginStatus
 import io.soo.springboot.core.enums.LoginType
 import io.soo.springboot.storage.db.core.BaseEntity
-import jakarta.persistence.*
-import java.time.LocalDateTime
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.Index
+import jakarta.persistence.Table
 
 @Entity
-@Table(name = "login_history", indexes = [
-    Index(name = "idx_login_history_user_id", columnList = "userId"),
-    Index(name = "idx_login_history_created_at", columnList = "createdAt")
-])
+@Table(
+    name = "login_history",
+    indexes = [
+        Index(name = "idx_login_history_user_id", columnList = "userId"),
+        Index(name = "idx_login_history_created_at", columnList = "createdAt"),
+    ],
+)
 class LoginHistoryEntity(
     @Column(nullable = false)
     var userId: Long,
@@ -38,5 +45,4 @@ class LoginHistoryEntity(
     @Column(length = 200)
     var failureReason: String? = null,
 
-) : BaseEntity() {
-}
+) : BaseEntity()

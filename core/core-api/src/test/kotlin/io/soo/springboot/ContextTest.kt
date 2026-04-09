@@ -11,7 +11,7 @@ import org.springframework.test.context.TestConstructor
         "app.security.jwt.keystore.password=admin123",
         "app.security.jwt.keystore.alias=jwt",
         "app.security.jwt.keystore.key-password=admin123",
-    ]
+    ],
 )
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 abstract class ContextTest

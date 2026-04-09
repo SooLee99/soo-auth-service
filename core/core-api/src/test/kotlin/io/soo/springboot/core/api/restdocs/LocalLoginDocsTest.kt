@@ -18,9 +18,9 @@ import io.soo.springboot.core.enums.AuthProvider
 import io.soo.springboot.test.api.RestDocsTest
 import io.soo.springboot.test.api.RestDocsUtils
 import io.soo.springboot.test.api.mockMvcDocument
+import io.soo.springboot.test.api.relaxedResponseFields
 import io.soo.springboot.test.api.requestFields
 import io.soo.springboot.test.api.requestHeaders
-import io.soo.springboot.test.api.relaxedResponseFields
 import jakarta.servlet.http.HttpServletRequest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -132,7 +132,7 @@ class LocalLoginDocsTest : RestDocsTest() {
                         fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호"),
                     ),
                     relaxedResponseFields(*responseDescriptors.toTypedArray()),
-                )
+                ),
             )
     }
 }

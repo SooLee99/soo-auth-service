@@ -7,11 +7,10 @@ import io.soo.springboot.core.enums.AuthProvider
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UserDetails
-import org.springframework.stereotype.Service
 import org.springframework.security.oauth2.jwt.Jwt
+import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.Instant
-
 
 data class IssuedTokens(
     val accessToken: String,
@@ -51,7 +50,7 @@ class AuthTokenManager(
      * ✅ refresh rotate
      * - old refresh가 유효하면 새 access + 새 refresh 반환
      */
-    fun refresh(oldRefreshToken: String, deviceId: String): IssuedTokens{
+    fun refresh(oldRefreshToken: String, deviceId: String): IssuedTokens {
         val rotated = refreshTokenManager.rotate(oldRefreshToken, deviceId)
 
         val user: UserDetails = userPrincipalLoader.loadByUserId(rotated.userId)

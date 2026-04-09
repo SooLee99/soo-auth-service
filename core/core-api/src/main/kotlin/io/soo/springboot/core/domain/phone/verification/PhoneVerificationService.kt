@@ -32,7 +32,7 @@ class PhoneVerificationService(
                 phoneNumber = normalizedPhone,
                 code = code,
                 expiresAt = expiresAt,
-            )
+            ),
         )
 
         notifier.sendCode(normalizedPhone, code, CHALLENGE_TTL.seconds)
@@ -68,7 +68,7 @@ class PhoneVerificationService(
                 proofToken = proofToken,
                 phoneNumber = normalizedPhone,
                 expiresAt = expiresAt,
-            )
+            ),
         )
 
         return PhoneVerificationConfirmResult(

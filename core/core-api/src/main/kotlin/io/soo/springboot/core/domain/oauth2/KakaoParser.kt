@@ -61,4 +61,3 @@ class KakaoParser : OAuth2ParserBase(), OAuth2Parser {
         )
     }
 }
-

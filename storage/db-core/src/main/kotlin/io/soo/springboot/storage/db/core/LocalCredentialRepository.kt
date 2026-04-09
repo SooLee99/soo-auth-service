@@ -1,7 +1,5 @@
 package io.soo.springboot.storage.db.core
 
-import java.time.LocalDateTime
-
 interface LocalCredentialRepository {
     fun save(credential: LocalCredential): LocalCredential
     fun findByUserId(userId: Long): LocalCredential?
