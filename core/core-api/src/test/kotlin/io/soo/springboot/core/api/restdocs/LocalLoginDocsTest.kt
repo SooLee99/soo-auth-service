@@ -79,7 +79,7 @@ class LocalLoginDocsTest : RestDocsTest() {
 
         val loginFilter = LocalJsonLoginFilter(objectMapper).apply {
             setAuthenticationManager(authenticationManager)
-            setFilterProcessesUrl("/api/v1/auth/email/login")
+            setFilterProcessesUrl("/api/v1/auth/local/login")
             setAuthenticationSuccessHandler(successHandler)
         }
 
@@ -116,12 +116,12 @@ class LocalLoginDocsTest : RestDocsTest() {
             .header("X-Device-Id", "device-001")
             .body(request)
             .`when`()
-            .post("/api/v1/auth/email/login")
+            .post("/api/v1/auth/local/login")
             .then()
             .statusCode(200)
             .apply(
                 mockMvcDocument(
-                    "auth-email-login",
+                    "auth-local-login",
                     RestDocsUtils.requestPreprocessor(),
                     RestDocsUtils.responsePreprocessor(),
                     requestHeaders(

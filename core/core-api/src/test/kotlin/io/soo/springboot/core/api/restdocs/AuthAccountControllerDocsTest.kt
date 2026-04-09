@@ -7,10 +7,7 @@ import io.soo.springboot.core.api.controller.v1.request.IdLoginRequest
 import io.soo.springboot.core.api.controller.v1.request.IdSignUpRequest
 import io.soo.springboot.core.api.controller.v1.request.PhoneLoginRequest
 import io.soo.springboot.core.api.controller.v1.request.PhoneSignUpRequest
-import io.soo.springboot.core.api.controller.v1.request.RefreshRequest
 import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
-import io.soo.springboot.core.api.security.token.AuthTokenManager
-import io.soo.springboot.core.api.security.token.IssuedTokens
 import io.soo.springboot.core.domain.id.IdAccountService
 import io.soo.springboot.core.domain.id.IdLoginService
 import io.soo.springboot.core.domain.local.LocalAccountService
@@ -38,7 +35,6 @@ class AuthAccountControllerDocsTest : RestDocsTest() {
     private val localPhoneLoginService = mockk<LocalPhoneLoginService>()
     private val idAccountService = mockk<IdAccountService>(relaxed = true)
     private val idLoginService = mockk<IdLoginService>()
-    private val authTokenManager = mockk<AuthTokenManager>()
     private lateinit var controller: AuthAccountController
 
     @BeforeEach
@@ -49,7 +45,6 @@ class AuthAccountControllerDocsTest : RestDocsTest() {
             localPhoneLoginService = localPhoneLoginService,
             idAccountService = idAccountService,
             idLoginService = idLoginService,
-            authTokenManager = authTokenManager,
         )
         mockMvc = mockController(controller)
     }
@@ -75,7 +70,7 @@ class AuthAccountControllerDocsTest : RestDocsTest() {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(request)
             .`when`()
-            .post("/api/v1/auth/email/signup")
+            .post("/api/v1/auth/local/email/signup")
             .then()
             .statusCode(200)
             .apply(
@@ -113,7 +108,7 @@ class AuthAccountControllerDocsTest : RestDocsTest() {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(request)
             .`when`()
-            .post("/api/v1/auth/phone/signup")
+            .post("/api/v1/auth/local/phone/signup")
             .then()
             .statusCode(200)
             .apply(
@@ -157,7 +152,7 @@ class AuthAccountControllerDocsTest : RestDocsTest() {
                 ),
             )
             .`when`()
-            .post("/api/v1/auth/phone/login")
+            .post("/api/v1/auth/local/phone/login")
             .then()
             .statusCode(200)
             .apply(
@@ -190,7 +185,7 @@ class AuthAccountControllerDocsTest : RestDocsTest() {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(request)
             .`when`()
-            .post("/api/v1/auth/id/signup")
+            .post("/api/v1/auth/local/id/signup")
             .then()
             .statusCode(200)
             .apply(
@@ -231,7 +226,7 @@ class AuthAccountControllerDocsTest : RestDocsTest() {
             .header("X-Device-Id", "device-001")
             .body(IdLoginRequest(loginId = "test-user", password = "P@ssw0rd!"))
             .`when`()
-            .post("/api/v1/auth/id/login")
+            .post("/api/v1/auth/local/id/login")
             .then()
             .statusCode(200)
             .apply(
@@ -245,48 +240,6 @@ class AuthAccountControllerDocsTest : RestDocsTest() {
                     requestFields(
                         fieldWithPath("loginId").type(JsonFieldType.STRING).description("로그인 아이디"),
                         fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호"),
-                    ),
-                    responseFields(*responseDescriptors.toTypedArray()),
-                ),
-            )
-    }
-
-    @Test
-    fun refreshToken() {
-        every { authTokenManager.refresh(any(), any()) } returns IssuedTokens(
-            accessToken = "access-token",
-            accessExpiresInSec = 3600,
-            refreshToken = "refresh-token",
-            refreshExpiresInSec = 1209600,
-        )
-
-        val responseDescriptors =
-            ApiResponseFieldDescriptors.successCommon() + listOf(
-                fieldWithPath("data").type(JsonFieldType.OBJECT).description("토큰 정보"),
-                fieldWithPath("data.accessToken").type(JsonFieldType.STRING).description("액세스 토큰"),
-                fieldWithPath("data.accessExpiresInSec").type(JsonFieldType.NUMBER).description("액세스 토큰 만료(초)"),
-                fieldWithPath("data.refreshToken").type(JsonFieldType.STRING).description("리프레시 토큰"),
-                fieldWithPath("data.refreshExpiresInSec").type(JsonFieldType.NUMBER).description("리프레시 토큰 만료(초)"),
-            )
-
-        given()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .header("X-Device-Id", "device-001")
-            .body(RefreshRequest(refreshToken = "refresh-token"))
-            .`when`()
-            .post("/api/v1/auth/token/refresh")
-            .then()
-            .statusCode(200)
-            .apply(
-                mockMvcDocument(
-                    "auth-token-refresh",
-                    RestDocsUtils.requestPreprocessor(),
-                    RestDocsUtils.responsePreprocessor(),
-                    requestHeaders(
-                        headerWithName("X-Device-Id").description("디바이스 식별자"),
-                    ),
-                    requestFields(
-                        fieldWithPath("refreshToken").type(JsonFieldType.STRING).description("리프레시 토큰"),
                     ),
                     responseFields(*responseDescriptors.toTypedArray()),
                 ),

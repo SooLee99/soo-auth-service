@@ -65,6 +65,12 @@ subprojects {
         }
     }
 
+    tasks.withType<Test>().configureEach {
+        // Keep tests deterministic regardless of local env/.env profile overrides.
+        systemProperty("spring.profiles.active", "local")
+        environment("SPRING_PROFILES_ACTIVE", "local")
+    }
+
     tasks.test {
         useJUnitPlatform {
             excludeTags("develop", "restdocs")

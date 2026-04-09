@@ -101,6 +101,21 @@
 ```
 
 ---
+## 환경 독립 테스트/검증
+
+- 테스트는 로컬 환경변수(`.env`, `SPRING_PROFILES_ACTIVE`)에 영향받지 않도록 Gradle에서 `local` 프로필로 강제됩니다.
+- CI/로컬 공통 권장 검증 순서:
+
+```bash
+./gradlew clean
+./gradlew :core:core-api:compileKotlin :core:core-api:testClasses
+./gradlew :storage:db-core:compileKotlin
+./gradlew ktlintCheck
+./gradlew build
+./gradlew :core:core-api:generateApiDocs
+```
+
+---
 ## 권장 설정
 
 ### Git Hook

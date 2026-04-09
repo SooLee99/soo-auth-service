@@ -4,9 +4,7 @@ import io.soo.springboot.core.api.controller.v1.request.IdLoginRequest
 import io.soo.springboot.core.api.controller.v1.request.IdSignUpRequest
 import io.soo.springboot.core.api.controller.v1.request.PhoneLoginRequest
 import io.soo.springboot.core.api.controller.v1.request.PhoneSignUpRequest
-import io.soo.springboot.core.api.controller.v1.request.RefreshRequest
 import io.soo.springboot.core.api.controller.v1.request.SignUpRequest
-import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.domain.id.IdAccountService
 import io.soo.springboot.core.domain.id.IdLoginCommand
 import io.soo.springboot.core.domain.id.IdLoginService
@@ -27,14 +25,13 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/v1/auth/local")
 class AuthAccountController(
     private val localAccountService: LocalAccountService,
     private val localPhoneAccountService: LocalPhoneAccountService,
     private val localPhoneLoginService: LocalPhoneLoginService,
     private val idAccountService: IdAccountService,
     private val idLoginService: IdLoginService,
-    private val authTokenManager: AuthTokenManager,
 ) {
     @PostMapping("/email/signup")
     fun signUpWithEmail(@RequestBody @Valid request: SignUpRequest) {
@@ -107,15 +104,5 @@ class AuthAccountController(
             ),
         )
         return ApiResponse.success(req = req, data = tokens)
-    }
-
-    @PostMapping("/token/refresh", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun refreshTokens(
-        @RequestHeader("X-Device-Id") deviceId: String,
-        @RequestBody request: RefreshRequest,
-        req: HttpServletRequest,
-    ): ApiResponse<Any?> {
-        val issued = authTokenManager.refresh(request.refreshToken, deviceId)
-        return ApiResponse.success(req = req, data = issued)
     }
 }

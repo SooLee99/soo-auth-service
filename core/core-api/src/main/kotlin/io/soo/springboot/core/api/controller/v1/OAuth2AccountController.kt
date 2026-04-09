@@ -23,7 +23,7 @@ class OAuth2AccountController {
         session: HttpSession,
         req: HttpServletRequest,
     ): ApiResponse<out String> {
-        if (returnUrl != null && !returnUrl.startsWith("/")) {
+        if (returnUrl != null && !isRelativeReturnUrl(returnUrl)) {
             return ApiResponse.error(
                 type = ErrorType.INVALID_REQUEST,
                 message = "returnUrl은 상대경로만 허용합니다.",
@@ -36,5 +36,11 @@ class OAuth2AccountController {
 
         val authorizePath = "/oauth2/authorization/$provider"
         return ApiResponse.success(req = req, data = authorizePath)
+    }
+
+    private fun isRelativeReturnUrl(returnUrl: String): Boolean {
+        return returnUrl.startsWith("/") &&
+            !returnUrl.startsWith("//") &&
+            !returnUrl.contains("://")
     }
 }

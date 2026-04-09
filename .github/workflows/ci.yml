@@ -12,6 +12,8 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      SPRING_PROFILES_ACTIVE: local
 
     steps:
       - uses: actions/checkout@v3
@@ -24,7 +26,19 @@ jobs:
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
           arguments: ktlintCheck
+      - name: Compile core-api
+        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        with:
+          arguments: :core:core-api:compileKotlin :core:core-api:testClasses
+      - name: Compile db-core
+        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        with:
+          arguments: :storage:db-core:compileKotlin
       - name: Test
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
-          arguments: test
+          arguments: build
+      - name: Generate API Docs
+        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        with:
+          arguments: :core:core-api:generateApiDocs
