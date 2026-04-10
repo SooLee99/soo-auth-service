@@ -7,6 +7,7 @@ data class HealthLinksProperties(
     val docs: Docs = Docs(),
     val monitoring: Monitoring = Monitoring(),
     val logs: Logs = Logs(),
+    val database: Database = Database(),
 ) {
     data class Docs(
         val swagger: String = "{baseUrl}/docs/swagger/index.html",
@@ -22,5 +23,9 @@ data class HealthLinksProperties(
     data class Logs(
         val lokiQuery: String = "{scheme}://{host}:3100/loki/api/v1/query_range",
         val grafanaExplore: String = "{scheme}://{host}:3000/explore",
+    )
+
+    data class Database(
+        val phpMyAdmin: String = "{scheme}://{host}:8081",
     )
 }

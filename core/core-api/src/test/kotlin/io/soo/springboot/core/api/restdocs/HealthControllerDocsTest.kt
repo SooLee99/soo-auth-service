@@ -49,6 +49,7 @@ class HealthControllerDocsTest : RestDocsTest() {
                 "docs" to mapOf("swagger" to "https://api.example.com/docs/swagger/index.html", "docs" to "https://api.example.com/docs/index.html"),
                 "monitoring" to mapOf("grafana" to "https://api.example.com:3000", "prometheus" to "https://api.example.com/actuator/prometheus", "loki" to "https://api.example.com:3100"),
                 "logs" to mapOf("lokiQuery" to "https://api.example.com:3100/loki/api/v1/query_range", "grafanaExplore" to "https://api.example.com:3000/explore"),
+                "database" to mapOf("phpMyAdmin" to "https://api.example.com:8081"),
             ),
         )
         mockMvc = mockController(HealthController(healthSnapshotService))
@@ -122,6 +123,7 @@ class HealthControllerDocsTest : RestDocsTest() {
                         fieldWithPath("data.links.monitoring.loki").type(JsonFieldType.STRING).description("Loki URL"),
                         fieldWithPath("data.links.logs.lokiQuery").type(JsonFieldType.STRING).description("Loki Query API URL"),
                         fieldWithPath("data.links.logs.grafanaExplore").type(JsonFieldType.STRING).description("Grafana Explore URL"),
+                        fieldWithPath("data.links.database.phpMyAdmin").type(JsonFieldType.STRING).description("phpMyAdmin URL"),
                     ),
                 ),
             )

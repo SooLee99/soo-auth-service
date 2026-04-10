@@ -18,6 +18,8 @@ app:
       logs:
         loki-query: ${HEALTH_LINK_LOKI_QUERY:http://localhost:3100/loki/api/v1/query_range}
         grafana-explore: ${HEALTH_LINK_GRAFANA_EXPLORE:http://localhost:3000/explore}
+      database:
+        php-my-admin: ${HEALTH_LINK_PHP_MY_ADMIN:http://localhost:8081}
   security:
     jwt:
       issuer: "soo-auth-service"

@@ -272,6 +272,9 @@ class HealthSnapshotService(
                 "lokiQuery" to resolveLink(healthLinksProperties.logs.lokiQuery, req),
                 "grafanaExplore" to resolveLink(healthLinksProperties.logs.grafanaExplore, req),
             ),
+            "database" to linkedMapOf(
+                "phpMyAdmin" to resolveLink(healthLinksProperties.database.phpMyAdmin, req),
+            ),
         )
     }
 
