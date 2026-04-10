@@ -96,15 +96,15 @@ include::{snippets}/auth-email-signup/http-response.adoc[]
 === 이메일 로그인
 * `X-Device-Id`는 선택 헤더입니다.
 ==== Curl Request
-include::{snippets}/auth-email-login/curl-request.adoc[]
+include::{snippets}/auth-local-login/curl-request.adoc[]
 ==== Request Headers
-include::{snippets}/auth-email-login/request-headers.adoc[]
+include::{snippets}/auth-local-login/request-headers.adoc[]
 ==== Request Fields
-include::{snippets}/auth-email-login/request-fields.adoc[]
+include::{snippets}/auth-local-login/request-fields.adoc[]
 ==== Http Response
-include::{snippets}/auth-email-login/http-response.adoc[]
+include::{snippets}/auth-local-login/http-response.adoc[]
 ==== Response Fields
-include::{snippets}/auth-email-login/response-fields.adoc[]
+include::{snippets}/auth-local-login/response-fields.adoc[]
 
 '''
 
@@ -161,15 +161,15 @@ include::{snippets}/auth-phone-login/response-fields.adoc[]
 === 토큰 갱신
 * `X-Device-Id`는 필수 헤더입니다.
 ==== Curl Request
-include::{snippets}/auth-token-refresh/curl-request.adoc[]
+include::{snippets}/auth-local-refresh/curl-request.adoc[]
 ==== Request Headers
-include::{snippets}/auth-token-refresh/request-headers.adoc[]
+include::{snippets}/auth-local-refresh/request-headers.adoc[]
 ==== Request Fields
-include::{snippets}/auth-token-refresh/request-fields.adoc[]
+include::{snippets}/auth-local-refresh/request-fields.adoc[]
 ==== Http Response
-include::{snippets}/auth-token-refresh/http-response.adoc[]
+include::{snippets}/auth-local-refresh/http-response.adoc[]
 ==== Response Fields
-include::{snippets}/auth-token-refresh/response-fields.adoc[]
+include::{snippets}/auth-local-refresh/response-fields.adoc[]
 
 
 == Health
@@ -218,8 +218,6 @@ include::{snippets}/auth-local-signup-phone/curl-request.adoc[]
 include::{snippets}/auth-local-signup-phone/request-fields.adoc[]
 ==== Http Response
 include::{snippets}/auth-local-signup-phone/http-response.adoc[]
-==== Response Fields
-include::{snippets}/auth-local-signup-phone/response-fields.adoc[]
 
 '''
 
@@ -517,3 +515,50 @@ include::{snippets}/auth-admin-user-status-audits/query-parameters.adoc[]
 include::{snippets}/auth-admin-user-status-audits/http-response.adoc[]
 ==== Response Fields
 include::{snippets}/auth-admin-user-status-audits/response-fields.adoc[]
+
+'''
+
+== Admin SMS
+
+=== SMS 발송
+* 관리자 권한이 필요합니다.
+==== Curl Request
+include::{snippets}/auth-admin-sms-send/curl-request.adoc[]
+==== Request Headers
+include::{snippets}/auth-admin-sms-send/request-headers.adoc[]
+==== Request Fields
+include::{snippets}/auth-admin-sms-send/request-fields.adoc[]
+==== Http Response
+include::{snippets}/auth-admin-sms-send/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-admin-sms-send/response-fields.adoc[]
+
+'''
+
+=== SMS 발송 이력 조회
+* 관리자 권한이 필요합니다.
+==== Curl Request
+include::{snippets}/auth-admin-sms-logs/curl-request.adoc[]
+==== Request Headers
+include::{snippets}/auth-admin-sms-logs/request-headers.adoc[]
+==== Query Parameters
+include::{snippets}/auth-admin-sms-logs/query-parameters.adoc[]
+==== Http Response
+include::{snippets}/auth-admin-sms-logs/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-admin-sms-logs/response-fields.adoc[]
+
+'''
+
+=== SMS 통계 조회
+* 관리자 권한이 필요합니다.
+==== Curl Request
+include::{snippets}/auth-admin-sms-stats/curl-request.adoc[]
+==== Request Headers
+include::{snippets}/auth-admin-sms-stats/request-headers.adoc[]
+==== Query Parameters
+include::{snippets}/auth-admin-sms-stats/query-parameters.adoc[]
+==== Http Response
+include::{snippets}/auth-admin-sms-stats/http-response.adoc[]
+==== Response Fields
+include::{snippets}/auth-admin-sms-stats/response-fields.adoc[]

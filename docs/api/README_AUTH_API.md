@@ -255,3 +255,53 @@ sequenceDiagram
     Token-->>API: 신규 access/refresh 반환
     API-->>Client: 200 + access/refresh
 ```
+
+## 7. 최신 API 엔드포인트 보강 (2026-04-10 기준)
+
+기존 본문은 흐름 설명 중심(레거시 경로 포함)이며, 최신 엔드포인트 기준은 아래와 같습니다.
+
+- 기준 문서: `core/core-api/src/main/resources/static/docs/openapi3.yaml`
+
+### 7.1 Health
+
+- `GET /health`
+- `GET /api/v1/auth/admin/health`
+
+### 7.2 Local Auth / Local Phone / OAuth2
+
+- `POST /api/v1/auth/local/signup`
+- `POST /api/v1/auth/local/signup/phone`
+- `POST /api/v1/auth/local/login` (Spring Security 로그인 엔드포인트)
+- `POST /api/v1/auth/local/logout`
+- `POST /api/v1/auth/local/withdraw`
+- `POST /api/v1/auth/local/email/signup`
+- `POST /api/v1/auth/local/id/signup`
+- `POST /api/v1/auth/local/id/login`
+- `POST /api/v1/auth/local/phone/signup`
+- `POST /api/v1/auth/local/phone/login`
+- `POST /api/v1/auth/local/login/phone`
+- `POST /api/v1/auth/local/token/refresh`
+- `POST /api/v1/auth/local/phone-verifications/request`
+- `POST /api/v1/auth/local/phone-verifications/confirm`
+- `GET /api/v1/auth/oauth2/{provider}/authorize-url`
+
+### 7.3 Admin Users / Audit / Status
+
+- `GET /api/v1/auth/admin/login-history`
+- `GET /api/v1/auth/admin/users`
+- `GET /api/v1/auth/admin/users/{userId}`
+- `PATCH /api/v1/auth/admin/users/{userId}`
+- `POST /api/v1/auth/admin/users/{userId}/password/reset`
+- `POST /api/v1/auth/admin/users/{userId}/delete`
+- `POST /api/v1/auth/admin/users/{userId}/tokens/revoke`
+- `GET /api/v1/auth/admin/users/blocked`
+- `POST /api/v1/auth/admin/users/{userId}/block`
+- `POST /api/v1/auth/admin/users/{userId}/unblock`
+- `GET /api/v1/auth/admin/users/deleted`
+- `GET /api/v1/auth/admin/users/{userId}/status-audits`
+
+### 7.4 Admin SMS
+
+- `POST /api/v1/auth/admin/sms/send`
+- `GET /api/v1/auth/admin/sms/logs`
+- `GET /api/v1/auth/admin/sms/stats`
