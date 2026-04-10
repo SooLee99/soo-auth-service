@@ -3,6 +3,7 @@ package io.soo.springboot.core.api.config
 import io.soo.springboot.core.api.security.access.RestAccessDeniedHandler
 import io.soo.springboot.core.api.security.entrypoint.UnauthorizedEntryPoint
 import io.soo.springboot.core.api.security.local.LocalJsonLoginFilter
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
@@ -35,6 +36,7 @@ class ApiSecurityConfig(
 
             // local auth API
             "/api/v1/auth/local/login",
+            "/api/v1/auth/admin/login",
             "/api/v1/auth/local/signup",
             "/api/v1/auth/local/signup/phone",
             "/api/v1/auth/local/email/signup",
@@ -81,7 +83,8 @@ class ApiSecurityConfig(
     @Order(1)
     fun securityFilterChain(
         http: HttpSecurity,
-        localJsonLoginFilter: LocalJsonLoginFilter,
+        @Qualifier("localJsonLoginFilter") localJsonLoginFilter: LocalJsonLoginFilter,
+        @Qualifier("adminJsonLoginFilter") adminJsonLoginFilter: LocalJsonLoginFilter,
         daoAuthProvider: DaoAuthenticationProvider,
     ): SecurityFilterChain {
         // ✅ /h2-console/** 는 이 체인에서 제외
@@ -137,6 +140,7 @@ class ApiSecurityConfig(
             auth.requestMatchers("/api/**").authenticated()
             auth.anyRequest().authenticated()
         }
+        http.addFilterBefore(adminJsonLoginFilter, UsernamePasswordAuthenticationFilter::class.java)
         http.addFilterAt(localJsonLoginFilter, UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()

@@ -106,6 +106,12 @@ private object ApiDocCatalog {
             description = "관리자 권한으로 DB/Redis/System/링크 상세 상태를 조회합니다.",
             authMarkdown = "- `Authorization: Bearer {accessToken}` 필요\n- 권한: `ROLE_ADMIN` 필요",
         ),
+        "auth-admin-login" to ApiMeta(
+            tag = "Admin Auth",
+            summary = "관리자 로그인",
+            description = "이메일/비밀번호로 관리자 로그인 후 액세스/리프레시 토큰을 발급합니다. 관리자 권한이 아닌 계정은 로그인할 수 없습니다.",
+            authMarkdown = "- 인증 불필요",
+        ),
         "auth-email-login" to ApiMeta(
             tag = "Auth",
             summary = "이메일 로그인",

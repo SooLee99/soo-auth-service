@@ -287,6 +287,7 @@ sequenceDiagram
 
 ### 7.3 Admin Users / Audit / Status
 
+- `POST /api/v1/auth/admin/login`
 - `GET /api/v1/auth/admin/login-history`
 - `GET /api/v1/auth/admin/users`
 - `GET /api/v1/auth/admin/users/{userId}`
