@@ -164,6 +164,73 @@ class LocalAccountServiceControllerDocsTest : RestDocsTest() {
     }
 
     @Test
+    fun sessionStatusLoggedOut() {
+        val responseDescriptors =
+            ApiResponseFieldDescriptors.successCommon() + listOf(
+                fieldWithPath("data").type(JsonFieldType.OBJECT).description("세션 상태"),
+                fieldWithPath("data.authenticated").type(JsonFieldType.BOOLEAN).description("로그인 여부"),
+                fieldWithPath("data.userId").type(JsonFieldType.NULL).optional().description("로그인 사용자 ID"),
+                fieldWithPath("data.subject").type(JsonFieldType.NULL).optional().description("로그인 사용자 식별자"),
+            )
+
+        given()
+            .`when`()
+            .get("/api/v1/auth/local/session")
+            .then()
+            .statusCode(200)
+            .apply(
+                mockMvcDocument(
+                    "auth-local-session-logged-out",
+                    RestDocsUtils.requestPreprocessor(),
+                    RestDocsUtils.responsePreprocessor(),
+                    responseFields(*responseDescriptors.toTypedArray()),
+                ),
+            )
+    }
+
+    @Test
+    fun sessionStatusLoggedIn() {
+        val jwt = Jwt.withTokenValue("token")
+            .header("alg", "none")
+            .claim("uid", 1L)
+            .subject("user@example.com")
+            .issuedAt(Instant.now())
+            .expiresAt(Instant.now().plusSeconds(3600))
+            .build()
+        SecurityContextHolder.getContext().authentication = JwtAuthenticationToken(jwt)
+
+        val responseDescriptors =
+            ApiResponseFieldDescriptors.successCommon() + listOf(
+                fieldWithPath("data").type(JsonFieldType.OBJECT).description("세션 상태"),
+                fieldWithPath("data.authenticated").type(JsonFieldType.BOOLEAN).description("로그인 여부"),
+                fieldWithPath("data.userId").type(JsonFieldType.NUMBER).description("로그인 사용자 ID"),
+                fieldWithPath("data.subject").type(JsonFieldType.STRING).description("로그인 사용자 식별자"),
+            )
+
+        try {
+            given()
+                .header("Authorization", "Bearer token")
+                .`when`()
+                .get("/api/v1/auth/local/session")
+                .then()
+                .statusCode(200)
+                .apply(
+                    mockMvcDocument(
+                        "auth-local-session-logged-in",
+                        RestDocsUtils.requestPreprocessor(),
+                        RestDocsUtils.responsePreprocessor(),
+                        requestHeaders(
+                            headerWithName("Authorization").description("Bearer 액세스 토큰"),
+                        ),
+                        responseFields(*responseDescriptors.toTypedArray()),
+                    ),
+                )
+        } finally {
+            SecurityContextHolder.clearContext()
+        }
+    }
+
+    @Test
     fun loginWithPhone() {
         every { localPhoneLoginService.login(any()) } returns LocalIssuedTokens(
             accessToken = "access-token",

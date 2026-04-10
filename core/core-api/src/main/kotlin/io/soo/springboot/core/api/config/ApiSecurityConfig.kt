@@ -47,6 +47,7 @@ class ApiSecurityConfig(
             "/api/v1/auth/local/phone-verifications/request",
             "/api/v1/auth/local/phone-verifications/confirm",
             "/api/v1/auth/local/token/refresh",
+            "/api/v1/auth/local/session",
 
             // ✅ OAuth2 시작/콜백
             "/oauth2/authorization/**",
