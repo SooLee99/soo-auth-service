@@ -1,4 +1,4 @@
-rootProject.name = "auth-service-template"
+rootProject.name = "soo-auth-service"
 
 include(
     "core:core-enum",
