@@ -6,81 +6,82 @@
 - 문서 전체 인덱스: [docs/README.md](docs/README.md)
 - 사용자 가이드 모음: [docs/guides/README.md](docs/guides/README.md)
 - API/개발 문서 모음: [docs/api/README.md](docs/api/README.md)
-- 로컬 HTTP 테스트 가이드: [core/core-api/src/test/http/README.md](core/core-api/src/test/http/README.md)
 - 배포 문서 모음: [docs/deploy/README.md](docs/deploy/README.md)
 - 모니터링 문서 모음: [docs/monitoring/README.md](docs/monitoring/README.md)
 - 장애/이슈 보고서 모음: [docs/issues/README.md](docs/issues/README.md)
 
 ---
-## 모듈 구성
+## 모듈 구성 (2026-04-13 기준)
 
 ### Core
-- 이 모듈의 각 하위 모듈은 하나의 도메인 서비스를 담당합니다.
-- 서비스의 성장에 맞춰 모듈 구조도 함께 확장해야 합니다.
 - `core:core-auth-common`
-  - 인증 방식 공통 도메인(토큰, 로그인 이력, 상태 정책, 공통 에러/응답 타입)을 담당합니다.
+  - 실행 진입점(`CoreApiApplication`), 공통 보안/설정, Health, 인증방식 토글 공통 도메인
 - `core:core-admin`
-  - 관리자 인증/관리 API(사용자 관리, SMS 관리, 인증 방식 on/off)를 담당합니다.
-- `core:core-api`
-  - 이 모듈은 프로젝트에서 유일한 실행 가능한 모듈입니다.
-  - API 제공, 보안/필터 설정, 모듈 조립(빈 구성)만 담당합니다.
+  - 관리자 API(사용자 관리, SMS 관리, 인증 방식 on/off)
 - `core:core-email`
-  - 이메일 기반 가입/인증 도메인을 담당합니다.
+  - 이메일 기반 회원가입/공통 로컬 API(세션/토큰/로그아웃/탈퇴)
 - `core:core-id`
-  - 아이디 기반 가입/로그인 도메인을 담당합니다.
+  - 아이디 기반 회원가입/로그인
 - `core:core-sms`
-  - 휴대폰/SMS 인증 및 전화번호 기반 인증 도메인을 담당합니다.
+  - 휴대폰 인증/휴대폰 기반 로그인 및 SMS
 - `core:core-oauth2`
-  - OAuth2 기반 인증 도메인을 담당합니다.
+  - OAuth2 인가 URL/로그인 처리
+- `core:core-support`
+  - 공통 에러/응답 타입
+- `core:core-token-common`
+  - 토큰/리프레시/denylist 도메인
+- `core:core-user-common`
+  - 사용자 상태/생명주기/중복 정책
+- `core:core-login-common`
+  - 로그인 시도 정책/로그인 이력
+- `core:core-phone-common`
+  - 휴대폰 인증/정규화 공통 도메인
 - `core:core-enum`
-  - 여러 모듈에서 공통으로 사용하는 열거형/공통 타입을 포함합니다.
+  - 여러 모듈에서 공통으로 사용하는 enum/type
+- `core:core-api`
+  - 현재 소스 없는 placeholder 모듈(실행/도메인 책임 없음)
 
 ### Clients
-- 이 모듈의 하위 모듈은 외부 시스템과의 통합을 담당합니다.
-- `clients:client-example` (`clients:clients-example` 표기의 기존 예시와 동일한 대상 모듈)
-  - 이 모듈은 Spring-Cloud-Open-Feign을 사용한 HTTP 통신 예시를 제공합니다.
+- `clients:client-solapi`
+  - SOLAPI 클라이언트 연동
 
 ### Storage
-- 이 모듈의 하위 모듈은 다양한 저장소와의 통합을 담당합니다.
 - `storage:db-core`
-  - 이 모듈은 Spring-Data-JPA를 사용하여 MySql에 연결하는 예시를 제공합니다.
+  - Spring Data JPA(MySQL) 저장소 계층
 
 ### Support
-- 이 모듈의 하위 모듈은 추가적인 지원을 담당합니다.
 - `support:logging`
-  - 이 모듈은 서비스의 로깅을 지원하며, 분산 추적을 위한 종속성을 추가로 제공합니다.
-  - 또한 Sentry를 지원하는 종속성도 포함하고 있습니다.
 - `support:monitoring`
-  - 이 모듈은 서비스 모니터링을 지원합니다.
 
 ### Tests
-- 이 모듈의 하위 모듈은 테스트 코드를 작성하는 데 편리함을 제공합니다.
 - `tests:api-docs`
-  - 이 모듈은 spring-rest-docs를 편리하게 작성할 수 있도록 지원합니다.
+  - RestDocs/OpenAPI 스니펫 테스트 유틸
+
 ---
 ## 코드 작성 규칙(요약)
 
 1. Controller는 요청/응답 변환과 인증 정보 추출만 담당
-2. Business 흐름은 `core-api/domain`에서 오케스트레이션
+2. Business 흐름은 각 도메인 모듈의 `domain/*`에서 오케스트레이션
 3. 상세 구현은 구현 레이어로 분리하고 재사용 가능한 단위로 작성
 4. 저장소 접근은 `storage:db-core`로 격리
-5. 레이어 참조는 상위 -> 하위 단방향 유지 
-6. 클래스명은 대상(도메인/역할/책임)을 나타낸다. 
-7. 메서드명은 해당 클래스 맥락에서 수행하는 동작을 나타낸다. 
-8. 클래스가 대상을 충분히 설명하는 경우, 메서드명은 `list`, `create`, `update`처럼 행위 중심으로 작성할 수 있다. 
-9. 단, 의미가 모호해지는 경우에는 `getById`, `listActive`, `createAdmin`, `reissueToken`처럼 조건/목적/대상을 보강한다. 
-10. 저장소 계층은 `findBy...`, `existsBy...`, `save`, `deleteBy...` 등 조회/저장 의도가 드러나는 이름을 사용한다. 
-11. 구현 레이어는 재사용 가능한 역할이 드러나도록 `UserFinder`, `UserAppender`, `SmsSender`와 같이 작성한다.
-12. DDD 기준으로 애그리게이트 경계를 넘는 상태 변경은 각 애그리게이트 루트를 통해 수행한다.
-13. 엔티티의 상태 변경 규칙/불변식은 엔티티 메서드에 캡슐화하고, 서비스에서 필드 `copy`를 남발하지 않는다.
-14. Domain Service는 유스케이스 오케스트레이션과 트랜잭션 경계에 집중하고, 엔티티가 표현 가능한 규칙은 엔티티에 위임한다.
-15. 외부 시스템/DB/프레임워크 의존 로직은 도메인 모델 밖(Repository/Adapter)으로 분리한다.
-16. 도메인 용어(유비쿼터스 언어)를 클래스/메서드명에 일관되게 반영한다.
+5. 레이어 참조는 상위 -> 하위 단방향 유지
+6. 클래스명은 대상(도메인/역할/책임)을 나타낸다
+7. 메서드명은 해당 클래스 맥락에서 수행 동작을 나타낸다
+8. 클래스가 충분히 대상을 설명하면 메서드명은 `list`, `create`, `update`처럼 행위 중심으로 작성 가능
+9. 모호하면 `getById`, `listActive`, `createAdmin`, `reissueToken`처럼 조건/목적/대상을 보강
+10. 저장소 계층은 `findBy...`, `existsBy...`, `save`, `deleteBy...` 등 의도가 드러나는 이름 사용
+11. 구현 레이어는 `UserFinder`, `UserAppender`, `SmsSender`처럼 재사용 역할이 드러나게 작성
+12. 애그리게이트 경계를 넘는 상태 변경은 루트 엔티티를 통해 수행
+13. 상태 변경 규칙/불변식은 엔티티 메서드에 캡슐화
+14. Domain Service는 유스케이스 오케스트레이션/트랜잭션 경계에 집중
+15. 외부 시스템/DB/프레임워크 의존 로직은 도메인 모델 밖(Repository/Adapter)으로 분리
+16. 도메인 용어를 클래스/메서드명에 일관 반영
+
 ---
 ## 종속성 관리
 
-- 모든 종속성 버전 관리는 `gradle.properties` 파일을 통해 수행됩니다.
-- 새로운 종속성을 추가하려면 `gradle.properties`에 버전을 추가하고, 이를 `build.gradle`에서 로드하면 됩니다.
+- 종속성 버전은 `gradle.properties`에서 관리합니다.
+
 ---
 ## 실행 프로필
 
@@ -89,61 +90,49 @@
 - `dev`: 개발 서버 배포
 - `staging`: 스테이징 배포
 - `live`: 운영 배포
+
 ---
 ## 테스트 작업/태그
 
-- `test`
-  - 이 작업은 CI에서 실행하고 싶은 테스트 작업들의 모음입니다.
-  - 설정을 변경하려면 `build.gradle` 파일을 수정하십시오.
-- `unitTest`
-  - 이 작업은 일반적으로 의존성이 없고, 빠르게 실행되며 단일 기능을 테스트하는 테스트들입니다.
-- `contextTest`
-  - 이 작업은 SpringContext와 함께 실행되며, 통합 테스트를 수행합니다.
-- `restDocsTest`
-  - 이 작업은 spring-rest-docs를 기반으로 asciidoc을 생성하는 작업입니다.
-- `developTest`
-  - 이 작업은 CI에서 실행되지 않아야 하는 테스트 작업입니다.
-  - 테스트 작성에 익숙하지 않다면 이 태그를 사용하는 것이 좋습니다.
----
-
-## 문서 재생성
-```bash
-./gradlew :core:core-api:generateApiDocs
-```
+- `test`: CI 대상 테스트 묶음
+- `unitTest`: 빠른 단위 테스트
+- `contextTest`: SpringContext 통합 테스트
+- `restDocsTest`: RestDocs 생성 테스트
+- `developTest`: CI 제외 개발용 테스트
 
 ---
-## 환경 독립 테스트/검증
-
-- 테스트는 로컬 환경변수(`.env`, `SPRING_PROFILES_ACTIVE`)에 영향받지 않도록 Gradle에서 `local` 프로필로 강제됩니다.
-- CI/로컬 공통 권장 검증 순서:
+## 로컬 실행/검증
 
 ```bash
-./gradlew clean
-./gradlew :core:core-api:compileKotlin :core:core-api:testClasses
-./gradlew :storage:db-core:compileKotlin
+./gradlew :core:core-auth-common:bootRun
+./gradlew :core:core-auth-common:compileKotlin
+./gradlew :core:core-email:compileKotlin :core:core-id:compileKotlin :core:core-sms:compileKotlin :core:core-oauth2:compileKotlin :core:core-admin:compileKotlin
+./gradlew :core:core-api:testClasses
 ./gradlew ktlintCheck
-./gradlew build
-./gradlew :core:core-api:generateApiDocs
 ```
+
+## API 문서 확인
+
+- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
+- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
+
+주의:
+- 기존 `:core:core-api:generateApiDocs` 태스크는 현재 프로젝트에 없습니다.
+- 정적 OpenAPI 산출물 대신 springdoc 런타임 문서를 사용합니다.
 
 ---
 ## 권장 설정
 
 ### Git Hook
-- 이 설정은 커밋 시마다 lint를 실행하도록 설정합니다.
 
 ```bash
 git config core.hookspath .githooks
 ```
 
 ### IntelliJ IDEA
-- 이 설정은 test code를 바로 실행할 수 있도록 설정합니다.
 
 ```text
-// IntelliJ IDEA에서 Gradle 빌드 및 실행
 Build, Execution, Deployment > Build Tools > Gradle > Run tests using > IntelliJ IDEA
 ```
 
-- IntelliJ IDEA의 포맷에 lint 설정을 적용하려면 아래 가이드를 참조하십시오.
-- Spring Java Format IntelliJ IDEA: https://github.com/spring-io/spring-javaformat#intellij-idea
----
+- Spring Java Format IntelliJ 가이드: https://github.com/spring-io/spring-javaformat#intellij-idea
