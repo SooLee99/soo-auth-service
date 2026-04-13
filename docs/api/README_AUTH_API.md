@@ -269,8 +269,8 @@ sequenceDiagram
 
 ### 7.2 Local Auth / Local Phone / OAuth2
 
-- `POST /api/v1/auth/local/signup`
-- `POST /api/v1/auth/local/signup/phone`
+- `POST /api/v1/auth/local/email/signup`
+- `POST /api/v1/auth/local/phone/signup`
 - `POST /api/v1/auth/local/login` (Spring Security 로그인 엔드포인트)
 - `POST /api/v1/auth/local/logout`
 - `POST /api/v1/auth/local/withdraw`
@@ -279,7 +279,7 @@ sequenceDiagram
 - `POST /api/v1/auth/local/id/login`
 - `POST /api/v1/auth/local/phone/signup`
 - `POST /api/v1/auth/local/phone/login`
-- `POST /api/v1/auth/local/login/phone`
+- `POST /api/v1/auth/local/phone/login`
 - `POST /api/v1/auth/local/token/refresh`
 - `POST /api/v1/auth/local/phone-verifications/request`
 - `POST /api/v1/auth/local/phone-verifications/confirm`

@@ -20,10 +20,10 @@
 - `POST /api/v1/auth/local/phone-verifications/confirm`
 
 ### C. Local Auth (회원가입/로그인/세션)
-- `POST /api/v1/auth/local/signup`
-- `POST /api/v1/auth/local/signup/phone`
+- `POST /api/v1/auth/local/email/signup`
+- `POST /api/v1/auth/local/phone/signup`
 - `POST /api/v1/auth/local/login`
-- `POST /api/v1/auth/local/login/phone`
+- `POST /api/v1/auth/local/phone/login`
 - `POST /api/v1/auth/local/token/refresh`
 - `POST /api/v1/auth/local/logout`
 - `POST /api/v1/auth/local/withdraw`
@@ -192,12 +192,12 @@ sequenceDiagram
 ```
 
 ### C. 이메일 회원가입
-- `POST /api/v1/auth/local/signup`
+- `POST /api/v1/auth/local/email/signup`
 - 필수: `email`, `password`, `gender`, `phoneNumber`, `phoneVerificationToken`
 - 선택: `name`, `nickname`, `locale`, `profileImageUrl`, `thumbnailImageUrl`, `birthyear`, `birthday`
 
 ### D. 휴대폰 간편 회원가입
-- `POST /api/v1/auth/local/signup/phone`
+- `POST /api/v1/auth/local/phone/signup`
 - Request
 ```json
 {
@@ -219,7 +219,7 @@ sequenceDiagram
 - Response `data`: `accessToken`, `refreshToken`, 만료 시간
 
 ### E-2. 휴대폰 로그인
-- `POST /api/v1/auth/local/login/phone`
+- `POST /api/v1/auth/local/phone/login`
 - Header: `X-Device-Id` 필수
 - Request
 ```json

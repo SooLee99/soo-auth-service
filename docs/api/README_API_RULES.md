@@ -8,6 +8,29 @@
   - 사용자: `/api/v1/auth/local/*`, `/api/v1/auth/oauth2/*`
   - 관리자: `/api/v1/auth/admin/*`
 
+### 회원가입 방식별 모듈 분리 원칙
+
+- 가입/로그인 방식별로 Controller를 분리합니다.
+  - 이메일 가입: `LocalEmailController` (`/api/v1/auth/local/email/*`)
+  - 아이디 가입/로그인: `LocalIdController` (`/api/v1/auth/local/id/*`)
+  - 휴대폰(SMS 인증) 가입/로그인: `LocalPhoneController` (`/api/v1/auth/local/phone/*`)
+- 공통 로컬 인증 API도 책임별 Controller로 분리합니다.
+  - 세션 상태: `LocalSessionController` (`/api/v1/auth/local/session`)
+  - 토큰/로그아웃: `LocalTokenController` (`/api/v1/auth/local/token/*`, `/api/v1/auth/local/logout`)
+  - 사용자 탈퇴: `LocalUserController` (`/api/v1/auth/local/withdraw`)
+- 인증 방식별 패키지를 분리합니다.
+  - 이메일: `core/api/controller/v1/auth/email/*`
+  - 아이디: `core/api/controller/v1/auth/id/*`
+  - SMS: `core/api/controller/v1/auth/sms/*`
+  - OAuth2: `core/api/controller/v1/auth/oauth2/*`
+  - 공통 로컬: `core/api/controller/v1/auth/common/*`
+- 인증 방식 토글(Admin)을 제공합니다.
+  - 목록 조회: `GET /api/v1/auth/admin/auth-methods`
+  - 활성/비활성 변경: `PATCH /api/v1/auth/admin/auth-methods/{method}`
+  - `method`: `EMAIL`, `ID`, `SMS`, `OAUTH2`
+- Controller는 도메인 서비스 구현체에 직접 의존하고, 불필요한 인터페이스를 추가하지 않습니다.
+- 각 Controller는 자신의 가입/로그인 방식과 관련된 서비스만 주입받아 클래스 간 결합을 최소화합니다.
+
 ## 2) 레이어 규칙
 
 기본 레이어:
