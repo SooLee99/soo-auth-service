@@ -1,4 +1,4 @@
-package io.soo.springboot.core.api.controller.v1.admin.authmethod
+package io.soo.springboot.core.api.controller.v1
 
 import io.soo.springboot.core.api.controller.v1.request.AdminAuthMethodUpdateRequest
 import io.soo.springboot.core.api.controller.v1.response.AdminAuthMethodResponse
@@ -24,7 +24,7 @@ class AdminAuthMethodController(
 ) {
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     fun list(req: HttpServletRequest): ApiResponse<List<AdminAuthMethodResponse>> {
-        val data = authMethodConfigService.list().map(AdminAuthMethodResponse::from)
+        val data = authMethodConfigService.list().map(AdminAuthMethodResponse.Companion::from)
         return ApiResponse.success(req = req, data = data)
     }
 

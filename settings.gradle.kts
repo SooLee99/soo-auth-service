@@ -2,7 +2,12 @@ rootProject.name = "soo-auth-service"
 
 include(
     "core:core-enum",
+    "core:core-support",
     "core:core-auth-common",
+    "core:core-token-common",
+    "core:core-user-common",
+    "core:core-login-common",
+    "core:core-phone-common",
     "core:core-admin",
     "core:core-email",
     "core:core-id",

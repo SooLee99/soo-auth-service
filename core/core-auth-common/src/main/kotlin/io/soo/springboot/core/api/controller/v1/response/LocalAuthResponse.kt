@@ -33,8 +33,3 @@ data class LogoutRequest(
     val logoutAll: Boolean = false,
 )
 
-data class AuthSessionStatusResponse(
-    val authenticated: Boolean,
-    val userId: Long? = null,
-    val subject: String? = null,
-)
