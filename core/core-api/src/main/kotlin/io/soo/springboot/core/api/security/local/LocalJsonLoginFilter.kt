@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
+import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -16,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 class LocalJsonLoginFilter(
     private val objectMapper: ObjectMapper,
+    private val beforeAttempt: (() -> Unit)? = null,
 ) : UsernamePasswordAuthenticationFilter() {
     companion object {
         const val ATTR_NORMALIZED_EMAIL = "ATTR_NORMALIZED_EMAIL"
@@ -30,6 +32,21 @@ class LocalJsonLoginFilter(
     )
 
     override fun attemptAuthentication(request: HttpServletRequest, response: HttpServletResponse): Authentication {
+        if (beforeAttempt != null) {
+            try {
+                beforeAttempt.invoke()
+            } catch (e: CoreException) {
+                val extra = mapData(e.data)
+                fail(
+                    request = request,
+                    type = e.errorType,
+                    userMessage = e.errorType.message,
+                    detail = e.message,
+                    extra = extra,
+                )
+            }
+        }
+
         // 1) JSON 요청인지 확인
         validateJsonContentType(request)
 
@@ -159,5 +176,13 @@ class LocalJsonLoginFilter(
         )
         System.out.println("LocalJsonLoginFilter.fail: $error")
         throw AuthenticationServiceException(userMessage)
+    }
+
+    private fun mapData(data: Any?): Map<String, Any?> {
+        return if (data is Map<*, *>) {
+            data.entries.associate { it.key.toString() to it.value }
+        } else {
+            emptyMap()
+        }
     }
 }

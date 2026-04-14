@@ -1,5 +1,7 @@
 package io.soo.springboot.core.api.controller.v1
 
+import io.soo.springboot.core.domain.auth.AuthFeature
+import io.soo.springboot.core.domain.auth.AuthFeatureGuard
 import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.response.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
@@ -13,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/auth/oauth2")
-class OAuth2AccountController {
+class OAuth2AccountController(
+    private val authFeatureGuard: AuthFeatureGuard,
+) {
 
     @GetMapping("/{provider}/authorize-url")
     fun getAuthorizeUrl(
@@ -23,6 +27,7 @@ class OAuth2AccountController {
         session: HttpSession,
         req: HttpServletRequest,
     ): ApiResponse<out String> {
+        authFeatureGuard.assertEnabled(AuthFeature.OAUTH2)
         if (returnUrl != null && !isRelativeReturnUrl(returnUrl)) {
             return ApiResponse.error(
                 type = ErrorType.INVALID_REQUEST,

@@ -26,7 +26,7 @@ class ApiSecurityConfig(
     private val securityContextRepository: SecurityContextRepository,
     private val unauthorizedEntryPoint: UnauthorizedEntryPoint,
     private val restAccessDeniedHandler: RestAccessDeniedHandler,
-    private val oAuth2LoginConfig: OAuth2LoginConfig,
+    private val oAuth2SecurityConfigurer: OAuth2SecurityConfigurer,
 ) {
     companion object {
         private val PUBLIC_ENDPOINTS = arrayOf(
@@ -118,7 +118,7 @@ class ApiSecurityConfig(
 
         http.httpBasic { it.disable() }
 
-        oAuth2LoginConfig.configure(http)
+        oAuth2SecurityConfigurer.configure(http)
 
         http.oauth2ResourceServer { resourceServer ->
             resourceServer.jwt { jwt ->

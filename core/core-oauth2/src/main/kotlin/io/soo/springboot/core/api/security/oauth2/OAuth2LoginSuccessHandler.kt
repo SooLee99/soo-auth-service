@@ -5,6 +5,8 @@ import io.soo.springboot.core.api.controller.v1.response.LoginSuccessResponse
 import io.soo.springboot.core.api.security.response.SecurityErrorResponseWriter
 import io.soo.springboot.core.api.security.token.AuthTokenManager
 import io.soo.springboot.core.api.security.userdetails.UserPrincipalLoader
+import io.soo.springboot.core.domain.auth.AuthFeature
+import io.soo.springboot.core.domain.auth.AuthFeatureGuard
 import io.soo.springboot.core.domain.login.LoginHistoryService
 import io.soo.springboot.core.domain.oauth2.OAuth2Login
 import io.soo.springboot.core.enums.AuthProvider
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Component
 @Component
 class OAuth2LoginSuccessHandler(
     private val objectMapper: ObjectMapper,
+    private val authFeatureGuard: AuthFeatureGuard,
     private val oAuth2LoginUseCase: OAuth2Login,
     private val userPrincipalLoader: UserPrincipalLoader,
     private val errorWriter: SecurityErrorResponseWriter,
@@ -36,6 +39,10 @@ class OAuth2LoginSuccessHandler(
         response: HttpServletResponse,
         authentication: Authentication,
     ) {
+        if (!authFeatureGuard.isEnabled(AuthFeature.OAUTH2)) {
+            errorWriter.writeError(response, request, ErrorType.AUTH_METHOD_DISABLED, fields = mapOf("feature" to "OAUTH2"))
+            return
+        }
         val ip = request.remoteAddr
         val ua = request.getHeader("User-Agent")
         val session = request.getSession(false)

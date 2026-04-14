@@ -20,6 +20,12 @@ app:
         grafana-explore: ${HEALTH_LINK_GRAFANA_EXPLORE:http://localhost:3000/explore}
       database:
         php-my-admin: ${HEALTH_LINK_PHP_MY_ADMIN:http://localhost:8081}
+  auth:
+    features:
+      email: ${AUTH_FEATURE_EMAIL:true}
+      phone: ${AUTH_FEATURE_PHONE:true}
+      id: ${AUTH_FEATURE_ID:true}
+      oauth2: ${AUTH_FEATURE_OAUTH2:true}
   security:
     jwt:
       issuer: "soo-auth-service"
@@ -49,7 +55,7 @@ spring:
     import:
       - monitoring.yml
       - logging.yml
-      - redis.yml
+#      - redis.yml
       - db-core.yml
       - optional:file:.env[.properties]
 

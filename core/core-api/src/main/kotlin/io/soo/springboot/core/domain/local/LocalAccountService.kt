@@ -1,7 +1,6 @@
 package io.soo.springboot.core.domain.local
 
 import io.soo.springboot.core.domain.phone.verification.PhoneNumberNormalizer
-import io.soo.springboot.core.domain.phone.verification.PhoneVerificationService
 import io.soo.springboot.core.domain.token.TokenRevocationService
 import io.soo.springboot.core.domain.user.UserLifecycleService
 import io.soo.springboot.core.enums.Gender
@@ -35,13 +34,12 @@ class LocalAccountService(
     private val localCredentialRepository: LocalCredentialRepository,
     private val passwordEncoder: PasswordEncoder,
     private val tokenRevocationService: TokenRevocationService,
-    private val phoneVerificationService: PhoneVerificationService,
     private val userUniquenessPolicy: UserUniquenessPolicy,
-    private val phoneNumberNormalizer: PhoneNumberNormalizer,
     private val userLifecycleService: UserLifecycleService,
+    private val phoneNumberNormalizer: PhoneNumberNormalizer,
 ) {
     @Transactional
-    fun signUp(command: LocalSignUpCommand): User {
+    fun signUp(command: LocalSignUpCommand) {
         val normalizedPhone = command.phoneNumber?.let(phoneNumberNormalizer::normalize)
 
         userUniquenessPolicy.validateSignUp(
@@ -74,7 +72,6 @@ class LocalAccountService(
                 passwordHash = passwordEncoder.encode(command.password),
             ),
         )
-        return user
     }
 
     @Transactional

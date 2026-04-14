@@ -2,8 +2,8 @@ plugins {
     id("com.epages.restdocs-api-spec")
 }
 
-tasks.getByName("bootJar") { enabled = true }
-tasks.getByName("jar") { enabled = false }
+tasks.getByName("bootJar") { enabled = false }
+tasks.getByName("jar") { enabled = true }
 
 dependencies {
     implementation(project(":core:core-enum"))
@@ -12,6 +12,10 @@ dependencies {
     implementation(project(":storage:db-core"))
     implementation(project(":clients:client-solapi"))
     testImplementation(project(":tests:api-docs"))
+    testImplementation(project(":core:core-email"))
+    testImplementation(project(":core:core-phone"))
+    testImplementation(project(":core:core-id"))
+    testImplementation(project(":core:core-oauth2"))
 
     testImplementation("com.epages:restdocs-api-spec-mockmvc")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${property("springDocVersion")}")

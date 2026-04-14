@@ -1,8 +1,7 @@
 package io.soo.springboot.core.domain.id
 
 import io.soo.springboot.core.domain.local.UserUniquenessPolicy
-import io.soo.springboot.core.domain.phone.verification.PhoneNumberNormalizer
-import io.soo.springboot.core.domain.phone.verification.PhoneVerificationService
+import io.soo.springboot.core.domain.local.PhoneVerificationTokenService
 import io.soo.springboot.core.enums.Gender
 import io.soo.springboot.storage.db.core.LocalCredential
 import io.soo.springboot.storage.db.core.LocalCredentialRepository
@@ -24,16 +23,15 @@ class IdAccountService(
     private val userRepository: UserRepository,
     private val localCredentialRepository: LocalCredentialRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val phoneVerificationService: PhoneVerificationService,
+    private val phoneVerificationTokenService: PhoneVerificationTokenService,
     private val userUniquenessPolicy: UserUniquenessPolicy,
-    private val phoneNumberNormalizer: PhoneNumberNormalizer,
 ) {
     @Transactional
     fun signUp(command: IdSignUpCommand): User {
         val normalizedLoginId = command.loginId.trim().lowercase()
-        phoneVerificationService.consumeVerificationToken(command.phoneNumber, command.phoneVerificationToken)
+        phoneVerificationTokenService.consumeVerifiedToken(command.phoneNumber, command.phoneVerificationToken)
 
-        val normalizedPhone = phoneNumberNormalizer.normalize(command.phoneNumber)
+        val normalizedPhone = phoneVerificationTokenService.normalize(command.phoneNumber)
         userUniquenessPolicy.validateLoginIdAvailable(normalizedLoginId)
         userUniquenessPolicy.validatePhoneAvailable(command.phoneNumber, normalizedPhone)
 

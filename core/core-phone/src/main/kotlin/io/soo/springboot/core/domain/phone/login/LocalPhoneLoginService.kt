@@ -1,6 +1,8 @@
 package io.soo.springboot.core.domain.phone.login
 
 import io.soo.springboot.core.domain.login.LoginHistoryService
+import io.soo.springboot.core.domain.local.login.LocalIssuedTokens
+import io.soo.springboot.core.domain.local.login.LocalLoginTokenIssuer
 import io.soo.springboot.core.domain.phone.account.LocalPhoneAccountService
 import io.soo.springboot.core.enums.LoginType
 import org.springframework.stereotype.Service

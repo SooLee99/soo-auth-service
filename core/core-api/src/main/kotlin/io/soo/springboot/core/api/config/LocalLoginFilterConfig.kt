@@ -5,6 +5,8 @@ import io.soo.springboot.core.api.security.local.AdminLoginSuccessHandler
 import io.soo.springboot.core.api.security.local.LocalJsonLoginFilter
 import io.soo.springboot.core.api.security.local.LocalLoginFailureHandler
 import io.soo.springboot.core.api.security.local.LocalLoginSuccessHandler
+import io.soo.springboot.core.domain.auth.AuthFeature
+import io.soo.springboot.core.domain.auth.AuthFeatureGuard
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -14,6 +16,7 @@ import org.springframework.security.authentication.AuthenticationManager
 @Configuration
 class LocalLoginFilterConfig(
     private val objectMapper: ObjectMapper,
+    private val authFeatureGuard: AuthFeatureGuard,
     private val localLoginSuccessHandler: LocalLoginSuccessHandler,
     private val adminLoginSuccessHandler: AdminLoginSuccessHandler,
     private val localLoginFailureHandler: LocalLoginFailureHandler,
@@ -21,7 +24,10 @@ class LocalLoginFilterConfig(
 
     @Bean("localJsonLoginFilter")
     fun localJsonLoginFilter(authenticationManager: AuthenticationManager): LocalJsonLoginFilter {
-        return LocalJsonLoginFilter(objectMapper).apply {
+        return LocalJsonLoginFilter(
+            objectMapper = objectMapper,
+            beforeAttempt = { authFeatureGuard.assertEnabled(AuthFeature.EMAIL) },
+        ).apply {
             setAuthenticationManager(authenticationManager)
             setFilterProcessesUrl("/api/v1/auth/local/login")
             setAuthenticationSuccessHandler(localLoginSuccessHandler)
@@ -31,7 +37,7 @@ class LocalLoginFilterConfig(
 
     @Bean("adminJsonLoginFilter")
     fun adminJsonLoginFilter(authenticationManager: AuthenticationManager): LocalJsonLoginFilter {
-        return LocalJsonLoginFilter(objectMapper).apply {
+        return LocalJsonLoginFilter(objectMapper = objectMapper).apply {
             setAuthenticationManager(authenticationManager)
             setFilterProcessesUrl("/api/v1/auth/admin/login")
             setAuthenticationSuccessHandler(adminLoginSuccessHandler)

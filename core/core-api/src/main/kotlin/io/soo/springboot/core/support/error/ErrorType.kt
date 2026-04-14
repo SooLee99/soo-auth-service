@@ -47,6 +47,7 @@ enum class ErrorType(
     // 403
     FORBIDDEN(HttpStatus.FORBIDDEN, ErrorCode.E403, "접근 권한이 없습니다.", LogLevel.WARN),
     ACCOUNT_DISABLED(HttpStatus.FORBIDDEN, ErrorCode.E403, "비활성화된 계정입니다.", LogLevel.WARN),
+    AUTH_METHOD_DISABLED(HttpStatus.FORBIDDEN, ErrorCode.E403, "비활성화된 인증 방식입니다.", LogLevel.WARN),
     ACCOUNT_BLOCKED(HttpStatus.FORBIDDEN, ErrorCode.E403, "차단된 계정입니다.", LogLevel.WARN),
     ACCOUNT_SOFT_DELETED(HttpStatus.FORBIDDEN, ErrorCode.E403, "탈퇴 처리된 계정입니다.", LogLevel.WARN),
 

@@ -2,6 +2,8 @@ package io.soo.springboot.core.api.controller.v1
 
 import io.soo.springboot.core.api.controller.v1.request.PhoneVerificationConfirmRequest
 import io.soo.springboot.core.api.controller.v1.request.PhoneVerificationIssueRequest
+import io.soo.springboot.core.domain.auth.AuthFeature
+import io.soo.springboot.core.domain.auth.AuthFeatureGuard
 import io.soo.springboot.core.domain.phone.verification.PhoneVerificationService
 import io.soo.springboot.core.support.response.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/v1/auth/local/phone-verifications")
 class LocalPhoneVerificationController(
+    private val authFeatureGuard: AuthFeatureGuard,
     private val phoneVerificationService: PhoneVerificationService,
 ) {
     @PostMapping("/request", produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -22,6 +25,7 @@ class LocalPhoneVerificationController(
         @RequestBody @Valid request: PhoneVerificationIssueRequest,
         req: HttpServletRequest,
     ): ApiResponse<Any?> {
+        authFeatureGuard.assertAnyEnabled(AuthFeature.PHONE, AuthFeature.ID)
         val issued = phoneVerificationService.createVerification(request.phoneNumber)
         return ApiResponse.success(
             req = req,
@@ -37,6 +41,7 @@ class LocalPhoneVerificationController(
         @RequestBody @Valid request: PhoneVerificationConfirmRequest,
         req: HttpServletRequest,
     ): ApiResponse<Any?> {
+        authFeatureGuard.assertAnyEnabled(AuthFeature.PHONE, AuthFeature.ID)
         val confirmed = phoneVerificationService.confirmVerification(
             phoneNumber = request.phoneNumber,
             verificationId = request.verificationId,

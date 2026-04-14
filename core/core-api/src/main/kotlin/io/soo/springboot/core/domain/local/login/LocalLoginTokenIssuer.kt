@@ -1,4 +1,4 @@
-package io.soo.springboot.core.domain.phone.login
+package io.soo.springboot.core.domain.local.login
 
 import io.soo.springboot.storage.db.core.User
 

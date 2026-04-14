@@ -3,8 +3,8 @@ package io.soo.springboot.core.domain.id
 import io.soo.springboot.core.domain.UserStatusPolicy
 import io.soo.springboot.core.domain.login.LocalLoginAttemptPolicy
 import io.soo.springboot.core.domain.login.LoginHistoryService
-import io.soo.springboot.core.domain.phone.login.LocalIssuedTokens
-import io.soo.springboot.core.domain.phone.login.LocalLoginTokenIssuer
+import io.soo.springboot.core.domain.local.login.LocalIssuedTokens
+import io.soo.springboot.core.domain.local.login.LocalLoginTokenIssuer
 import io.soo.springboot.core.enums.LoginType
 import io.soo.springboot.core.support.error.CoreException
 import io.soo.springboot.core.support.error.ErrorType

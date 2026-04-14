@@ -17,10 +17,19 @@
 ### Core
 - 이 모듈의 각 하위 모듈은 하나의 도메인 서비스를 담당합니다.
 - 서비스의 성장에 맞춰 모듈 구조도 함께 확장해야 합니다.
+- `core:core-app`
+  - 실행 모듈입니다. 인증 모듈(`email/phone/id/oauth2`)을 조합해 애플리케이션을 구성합니다.
 - `core:core-api`
-  - 이 모듈은 프로젝트에서 유일한 실행 가능한 모듈입니다.
-  - 초기 개발 생산성을 극대화할 수 있도록 도메인 구조가 설정되어 있습니다.
-  - 이 모듈은 또한 API를 제공하고 서비스의 프레임워크 설정을 담당합니다.
+  - 공통 API/Security/Local 인증 코어와 공통 도메인을 제공합니다.
+  - 인증 체계별 모듈(`core-email`, `core-phone`, `core-id`, `core-oauth2`)이 이 모듈을 기반으로 동작합니다.
+- `core:core-email`
+  - 이메일 기반 로컬 회원가입 API를 담당합니다.
+- `core:core-phone`
+  - 휴대폰 기반 로컬 가입/로그인 API를 담당합니다.
+- `core:core-id`
+  - ID 기반 로컬 가입/로그인 API를 담당합니다.
+- `core:core-oauth2`
+  - OAuth2 로그인/프로필 파싱/후처리를 담당합니다.
 - `core:core-enum`
   - 이 모듈은 `core-api`에서 사용되며 외부 모듈로 전달해야 하는 열거형을 포함하고 있습니다.
 
@@ -50,7 +59,7 @@
 ## 코드 작성 규칙(요약)
 
 1. Controller는 요청/응답 변환과 인증 정보 추출만 담당
-2. Business 흐름은 `core-api/domain`에서 오케스트레이션
+2. Business 흐름은 각 도메인 모듈의 `domain/*`에서 오케스트레이션
 3. 상세 구현은 구현 레이어로 분리하고 재사용 가능한 단위로 작성
 4. 저장소 접근은 `storage:db-core`로 격리
 5. 레이어 참조는 상위 -> 하위 단방향 유지 
@@ -78,6 +87,52 @@
 - `dev`: 개발 서버 배포
 - `staging`: 스테이징 배포
 - `live`: 운영 배포
+
+---
+## 인증 체계 토글
+
+- 인증 체계별로 API 동작을 비활성화할 수 있습니다.
+- 기본값은 모두 `true` 입니다.
+
+```yaml
+app:
+  auth:
+    features:
+      email: true
+      phone: true
+      id: true
+      oauth2: true
+```
+
+- 환경변수:
+  - `AUTH_FEATURE_EMAIL`
+  - `AUTH_FEATURE_PHONE`
+  - `AUTH_FEATURE_ID`
+  - `AUTH_FEATURE_OAUTH2`
+
+- 예시(Email/OAuth2만 활성화):
+
+```bash
+AUTH_FEATURE_EMAIL=true \
+AUTH_FEATURE_PHONE=false \
+AUTH_FEATURE_ID=false \
+AUTH_FEATURE_OAUTH2=true \
+./gradlew :core:core-app:bootRun
+```
+
+- 빌드 시 인증 모듈 조합을 바꾸려면 아래 속성을 사용합니다(기본 `true`).
+  - `-Pauth.module.email.enabled`
+  - `-Pauth.module.phone.enabled`
+  - `-Pauth.module.id.enabled`
+  - `-Pauth.module.oauth2.enabled`
+
+- 예시(Email + ID만 포함):
+
+```bash
+./gradlew :core:core-app:compileKotlin \
+  -Pauth.module.phone.enabled=false \
+  -Pauth.module.oauth2.enabled=false
+```
 ---
 ## 테스트 작업/태그
 
