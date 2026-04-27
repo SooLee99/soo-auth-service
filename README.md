@@ -1,138 +1,86 @@
-# soo-auth-service
+# Soo Auth Service
 
-인증 서버(로컬/소셜 로그인, 관리자 사용자 관리, SMS 관리) 프로젝트입니다.
+Kotlin/Spring 기반 인증 서버입니다.
 
-## 문서
-- 문서 전체 인덱스: [docs/README.md](docs/README.md)
-- 사용자 가이드 모음: [docs/guides/README.md](docs/guides/README.md)
-- API/개발 문서 모음: [docs/api/README.md](docs/api/README.md)
-- 배포 문서 모음: [docs/deploy/README.md](docs/deploy/README.md)
-- 모니터링 문서 모음: [docs/monitoring/README.md](docs/monitoring/README.md)
-- 장애/이슈 보고서 모음: [docs/issues/README.md](docs/issues/README.md)
+이 저장소는 공통 인증 기능과 Triplan MVP 백엔드 API 확장을 담당합니다.
 
----
-## 모듈 구성 (2026-04-13 기준)
+## 목적
 
-### Core
-- `core:core-auth-common`
-  - 실행 진입점(`CoreApiApplication`), 공통 보안/설정, Health, 인증방식 토글 공통 도메인
-- `core:core-admin`
-  - 관리자 API(사용자 관리, SMS 관리, 인증 방식 on/off)
-- `core:core-email`
-  - 이메일 기반 회원가입/공통 로컬 API(세션/토큰/로그아웃/탈퇴)
-- `core:core-id`
-  - 아이디 기반 회원가입/로그인
-- `core:core-sms`
-  - 휴대폰 인증/휴대폰 기반 로그인 및 SMS
-- `core:core-oauth2`
-  - OAuth2 인가 URL/로그인 처리
-- `core:core-support`
-  - 공통 에러/응답 타입
-- `core:core-token-common`
-  - 토큰/리프레시/denylist 도메인
-- `core:core-user-common`
-  - 사용자 상태/생명주기/중복 정책
-- `core:core-login-common`
-  - 로그인 시도 정책/로그인 이력
-- `core:core-phone-common`
-  - 휴대폰 인증/정규화 공통 도메인
-- `core:core-enum`
-  - 여러 모듈에서 공통으로 사용하는 enum/type
-- `core:core-api`
-  - 현재 소스 없는 placeholder 모듈(실행/도메인 책임 없음)
+- 공통 인증 서버 구현
+- 인증/인가 API 제공
+- 관리자 프론트엔드와 연동
+- Triplan MVP API 단계적 추가
 
-### Clients
-- `clients:client-solapi`
-  - SOLAPI 클라이언트 연동
+## Triplan MVP API
 
-### Storage
-- `storage:db-core`
-  - Spring Data JPA(MySQL) 저장소 계층
+초기 MVP는 다음 API를 우선 구현합니다.
 
-### Support
-- `support:logging`
-- `support:monitoring`
+1. POST /recommendations/destinations
+2. POST /itineraries/calculate
+3. POST /itineraries
 
-### Tests
-- `tests:api-docs`
-  - RestDocs/OpenAPI 스니펫 테스트 유틸
+## 추천 엔진 MVP
 
----
-## 코드 작성 규칙(요약)
+추천 API는 다음 외부 데이터 소스를 조합합니다.
 
-1. Controller는 요청/응답 변환과 인증 정보 추출만 담당
-2. Business 흐름은 각 도메인 모듈의 `domain/*`에서 오케스트레이션
-3. 상세 구현은 구현 레이어로 분리하고 재사용 가능한 단위로 작성
-4. 저장소 접근은 `storage:db-core`로 격리
-5. 레이어 참조는 상위 -> 하위 단방향 유지
-6. 클래스명은 대상(도메인/역할/책임)을 나타낸다
-7. 메서드명은 해당 클래스 맥락에서 수행 동작을 나타낸다
-8. 클래스가 충분히 대상을 설명하면 메서드명은 `list`, `create`, `update`처럼 행위 중심으로 작성 가능
-9. 모호하면 `getById`, `listActive`, `createAdmin`, `reissueToken`처럼 조건/목적/대상을 보강
-10. 저장소 계층은 `findBy...`, `existsBy...`, `save`, `deleteBy...` 등 의도가 드러나는 이름 사용
-11. 구현 레이어는 `UserFinder`, `UserAppender`, `SmsSender`처럼 재사용 역할이 드러나게 작성
-12. 애그리게이트 경계를 넘는 상태 변경은 루트 엔티티를 통해 수행
-13. 상태 변경 규칙/불변식은 엔티티 메서드에 캡슐화
-14. Domain Service는 유스케이스 오케스트레이션/트랜잭션 경계에 집중
-15. 외부 시스템/DB/프레임워크 의존 로직은 도메인 모델 밖(Repository/Adapter)으로 분리
-16. 도메인 용어를 클래스/메서드명에 일관 반영
+- TourAPI
+  - 관광지
+  - 행사
+  - 숙박
+  - 이미지
+- Kakao Local
+  - 카페
+  - 음식점
 
----
-## 종속성 관리
+백엔드 추천 서비스는 다음 역할을 담당합니다.
 
-- 종속성 버전은 `gradle.properties`에서 관리합니다.
+- 후보 정규화
+- 중복 제거
+- 스타일 기반 점수화
+- placeType 혼합 비율 제어
+- source, externalId, placeType 유지
 
----
-## 실행 프로필
+## 핵심 도메인 규칙
 
-- `local`: 로컬 독립 개발
-- `local-dev`: 로컬에서 DEV 연동
-- `dev`: 개발 서버 배포
-- `staging`: 스테이징 배포
-- `live`: 운영 배포
+추천, 계산, 저장 전체 흐름에서 다음 장소 식별자를 유지해야 합니다.
 
----
-## 테스트 작업/태그
+- source
+- externalId
+- placeType
 
-- `test`: CI 대상 테스트 묶음
-- `unitTest`: 빠른 단위 테스트
-- `contextTest`: SpringContext 통합 테스트
-- `restDocsTest`: RestDocs 생성 테스트
-- `developTest`: CI 제외 개발용 테스트
+## 개발 원칙
 
----
-## 로컬 실행/검증
+- Controller는 요청/응답 변환과 인증 정보 추출 중심으로 얇게 유지합니다.
+- 비즈니스 로직은 domain 계층에서 처리합니다.
+- 저장소 접근은 storage 계층으로 격리합니다.
+- 모듈 간 참조 방향을 깨지 않습니다.
+- DB migration은 사람 승인 후 실행합니다.
+- develop/main 브랜치 직접 push를 금지합니다.
 
-```bash
-./gradlew :core:core-auth-common:bootRun
-./gradlew :core:core-auth-common:compileKotlin
-./gradlew :core:core-email:compileKotlin :core:core-id:compileKotlin :core:core-sms:compileKotlin :core:core-oauth2:compileKotlin :core:core-admin:compileKotlin
-./gradlew :core:core-api:testClasses
-./gradlew ktlintCheck
-```
+## 실행
 
-## API 문서 확인
+    ./gradlew bootRun
 
-- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
-- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
+## 테스트
 
-주의:
-- 기존 `:core:core-api:generateApiDocs` 태스크는 현재 프로젝트에 없습니다.
-- 정적 OpenAPI 산출물 대신 springdoc 런타임 문서를 사용합니다.
+    ./gradlew test
 
----
-## 권장 설정
+## Lint
 
-### Git Hook
+    ./gradlew ktlintCheck
 
-```bash
-git config core.hookspath .githooks
-```
+## 환경변수
 
-### IntelliJ IDEA
+`.env.example`을 참고하세요.
+실제 `.env` 파일은 커밋하지 않습니다.
 
-```text
-Build, Execution, Deployment > Build Tools > Gradle > Run tests using > IntelliJ IDEA
-```
+## OpenClaw 작업 규칙
 
-- Spring Java Format IntelliJ 가이드: https://github.com/spring-io/spring-javaformat#intellij-idea
+- 모든 변경은 PR 기반으로 진행합니다.
+- DB migration 실행은 승인 필요입니다.
+- 운영 설정 변경은 승인 필요입니다.
+- secret, token, .env 파일 커밋은 금지입니다.
+
+## 보안
+
+자세한 내용은 `SECURITY.md`를 참고하세요.

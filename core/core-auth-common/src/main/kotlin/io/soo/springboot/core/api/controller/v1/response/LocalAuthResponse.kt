@@ -32,4 +32,3 @@ data class LogoutRequest(
     val refreshToken: String? = null,
     val logoutAll: Boolean = false,
 )
-

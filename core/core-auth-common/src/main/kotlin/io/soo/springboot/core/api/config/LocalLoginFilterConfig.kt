@@ -4,10 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.soo.springboot.core.api.security.local.LocalJsonLoginFilter
 import io.soo.springboot.core.api.security.local.LocalLoginFailureHandler
 import io.soo.springboot.core.api.security.local.LocalLoginSuccessHandler
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.security.authentication.AuthenticationManager
 
 @Configuration
@@ -35,5 +35,4 @@ class LocalLoginFilterConfig(
             isEnabled = false
         }
     }
-
 }

@@ -3,7 +3,6 @@ package io.soo.springboot.core.api.controller.v1.auth.common
 import io.soo.springboot.core.api.controller.v1.response.AuthSessionStatusResponse
 import io.soo.springboot.core.api.security.userdetails.UserPrincipal
 import io.soo.springboot.core.support.response.ApiResponse
-
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.MediaType
 import org.springframework.security.authentication.AnonymousAuthenticationToken

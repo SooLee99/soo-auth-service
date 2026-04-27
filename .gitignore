@@ -1,25 +1,45 @@
-.gradle
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Build outputs
+dist/
 build/
-!gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**
-!**/src/test/**
-
-### IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
 out/
+target/
+.gradle/
+.next/
 
-*/*/src/main/resources/*.yml
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# nginx ssl / private keys
-nginx/ssl/*
-!nginx/ssl/.gitkeep
+# OS / Editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
 
-# logs
-logs/*
-!logs/.gitkeep
+# Environment files
+.env
+.env.*
+!.env.example
 
-nginx/logs/*
-!nginx/logs/.gitkeep
+# Secrets / credentials
+*.pem
+*.key
+*.p12
+*.jks
+id_rsa
+id_ed25519
+credentials.json
+token.json
+service-account*.json
+
+# Local OpenClaw
+.openclaw-local/
+openclaw-session/

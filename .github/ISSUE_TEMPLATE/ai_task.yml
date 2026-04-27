@@ -1,0 +1,81 @@
+name: AI Development Task
+description: OpenClaw 에이전트가 수행할 개발 작업
+title: "[AI-TASK] "
+labels: ["ai-task"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Figma
+        - Frontend
+        - Backend
+        - Auth
+        - QA
+        - DevOps
+        - Security
+        - Docs
+    validations:
+      required: true
+
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Target Agent
+      options:
+        - PM
+        - Designer
+        - Frontend
+        - Backend
+        - QA
+        - Reviewer
+    validations:
+      required: true
+
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: 이 작업의 목표
+    validations:
+      required: true
+
+  - type: textarea
+    id: figma
+    attributes:
+      label: Figma / Design Reference
+      description: Figma 링크, 화면명, 참고 이미지
+
+  - type: textarea
+    id: api
+    attributes:
+      label: API Requirements
+      description: 필요한 백엔드 API, mock 여부, OpenAPI 링크
+
+  - type: textarea
+    id: security
+    attributes:
+      label: Security Considerations
+      value: |
+        - [ ] secret 또는 .env 파일을 커밋하지 않는다.
+        - [ ] 위험 작업은 사람 승인을 받는다.
+        - [ ] 사용자 입력/외부 API 응답 검증을 고려한다.
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      value: |
+        - [ ] 요구사항이 구현되었다.
+        - [ ] 중복 코드가 정리되었다.
+        - [ ] 빌드 또는 테스트가 통과했다.
+        - [ ] 보안상 민감정보가 포함되지 않았다.
+        - [ ] PR 설명에 변경 요약과 검증 결과가 포함되어 있다.
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
