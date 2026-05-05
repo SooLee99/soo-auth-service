@@ -1,0 +1,15 @@
+services:
+  nginx:
+    profiles: ["dev", "web"]
+    volumes:
+      - ../nginx/conf.d/dev.conf.local:/etc/nginx/conf.d/default.conf:ro
+
+  mariadb:
+    profiles: ["dev", "core"]
+    ports:
+      - "3306:3306"
+
+  redis:
+    profiles: ["dev", "core"]
+    ports:
+      - "6379:6379"

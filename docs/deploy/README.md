@@ -8,3 +8,4 @@
 - [Docker Hub 릴리즈 (개발자용)](README_DOCKER_RELEASE.md): 이미지를 빌드하여 Docker Hub에 올리는 방법.
 - [자동화 배포 (CI/CD)](README_DEPLOY_AUTOMATION.md): GitHub Actions 등을 이용한 자동화 가이드.
 - [기존 서버 업데이트](README_SERVER_UPDATE.md): 이미 실행 중인 서버의 설정/이미지 업데이트 방법.
+- **[도커 로그 확인 가이드](README_DOCKER_LOGS.md)**: `docker compose logs`를 이용한 서비스 모니터링 및 문제 진단.

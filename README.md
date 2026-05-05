@@ -131,6 +131,8 @@ cd soo-auth-service && git sparse-checkout set deploy nginx docker-compose.yml .
 ./deploy/deploy.sh --core --web --common --oauth2 --admin # 예: OAuth2 + 관리자
 ```
 
+> **주의 (Mac 사용자)**: 실행 시 `failed to connect to the docker API` 에러가 나면 Docker Desktop 앱이 실행 중인지 확인하고, 터미널에서 `docker context use default` 명령을 실행해 보세요.
+
 ### 3. 주요 실행 시나리오 (복사용)
 | 시나리오 | 실행 명령어 |
 | :--- | :--- |
@@ -138,21 +140,93 @@ cd soo-auth-service && git sparse-checkout set deploy nginx docker-compose.yml .
 | **ID/PW 로그인** | `./deploy/deploy.sh --core --web --common --id --admin` |
 | **SMS 로그인** | `./deploy/deploy.sh --core --web --common --sms --admin` |
 | **OAuth2 로그인** | `./deploy/deploy.sh --core --web --common --oauth2 --admin` |
+| **로컬 개발 모드** | `./deploy/deploy.sh --core --web --common --oauth2 --admin --dev` |
+
+---
+## 4. 로컬 접속 방법 (Local Quick Start)
+
+로컬 개발 환경에서 도커로 실행 중인 서비스에 접속하는 방법입니다.
+
+### 4.1 로컬 hosts 파일 설정 (필수)
+브라우저에서 `soo.it.kr` 도메인으로 접근하기 위해 로컬 PC의 `hosts` 파일을 수정해야 합니다.
+
+*   **파일 위치**:
+    *   Mac/Linux: `/etc/hosts` (명령어: `sudo nano /etc/hosts`)
+    *   Windows: `C:\Windows\System32\drivers\etc\hosts` (메모장을 관리자 권한으로 실행)
+*   **추가 내용**:
+    ```text
+    127.0.0.1  soo.it.kr
+    ```
+
+### 4.2 주요 서비스 URL 및 포트
+모든 서비스는 Nginx를 통해 **HTTPS(443)** 포트로 통합 관리됩니다.
+
+| 서비스 | 접속 주소 (URL) | 설명 |
+| :--- | :--- | :--- |
+| **관리자 UI** | [https://soo.it.kr/](https://soo.it.kr/) | 사용자 및 시스템 관리 화면 |
+| **API 문서** | [https://soo.it.kr/docs/](https://soo.it.kr/docs/) | Swagger UI (API 명세서) |
+| **DB 관리** | [https://soo.it.kr/phpmyadmin/](https://soo.it.kr/phpmyadmin/) | MariaDB 웹 관리도구 (`--tools` 필요) |
+| **메트릭** | [https://soo.it.kr/prometheus](https://soo.it.kr/prometheus) | 시스템 성능 지표 확인 |
+
+### 4.3 브라우저 보안 경고 해결
+자체 서명(Self-signed) 인증서를 사용하므로 최초 접속 시 보안 경고가 발생합니다.
+1.  브라우저에서 "연결이 비공개로 설정되어 있지 않습니다" 경고 확인
+2.  **'고급'** 버튼 클릭
+3.  **'soo.it.kr(으)로 이동(안전하지 않음)'** 링크 클릭
+
+### 4.4 포트 및 내부 서비스 정보
+모든 외부 요청은 Nginx(80, 443)를 통해 각 내부 서비스로 전달됩니다.
+
+| 구분 | 포트 (Port) | 접근 주소 | 비고 |
+| :--- | :--- | :--- | :--- |
+| **HTTP** | `80` | `http://127.0.0.1` | HTTPS(443)로 자동 리다이렉트 |
+| **HTTPS** | `443` | `https://127.0.0.1` | **메인 서비스 접속 포트** |
+| **API 서버** | `8080` | `http://app-*:8080` | 컨테이너 내부 통신용 (외부 노출 X) |
+| **MariaDB** | `3306` | `mariadb:3306` | 컨테이너 내부 통신용 (외부 노출 X) |
+| **Redis** | `6379` | `redis:6379` | 컨테이너 내부 통신용 (외부 노출 X) |
+
+> **Tip**: 외부 DB 도구(DBeaver, Sequel Pro 등)로 DB에 직접 접속하려면 `./deploy/deploy.sh` 실행 시 `--dev` 옵션을 사용하거나, `docker-compose.yml`의 `mariadb` 서비스에 `ports: - "3306:3306"` 설정을 추가해야 합니다.
+
+---
+## 5. 로컬 개발자 모드 (Local Dev Mode)
+
+개발 편의를 위해 DB 포트를 외부에 노출하고 `localhost` 도메인 접속을 지원하는 전용 모드를 제공합니다.
+
+### 5.1 실행 방법
+기존 명령어에 `--dev` 플래그를 추가하면 됩니다.
+
+```bash
+./deploy/deploy.sh --core --web --common --oauth2 --admin --dev
+```
+
+### 5.2 주요 접속 URL
+개발 모드에서는 `hosts` 파일 수정 없이 아래 주소로 즉시 접속 가능합니다.
+
+| 서비스 | 접속 주소 (URL) | 비고 |
+| :--- | :--- | :--- |
+| **관리자 UI** | [https://localhost/](https://localhost/) | |
+| **API 문서** | [https://localhost/docs/](https://localhost/docs/) | |
+| **DB 관리** | [https://localhost/phpmyadmin/](https://localhost/phpmyadmin/) | `--tools` 필요 |
+
+### 5.3 개발 모드 특징
+- **Nginx 설정**: `localhost` 및 `127.0.0.1` 호스트명을 지원합니다. (`hosts` 파일 수정 없이 `https://localhost` 접속 가능)
+- **DB 포트 노출**: MariaDB(3306) 및 Redis(6379) 포트가 로컬 호스트로 노출됩니다.
+- **백엔드 프로파일**: Spring Boot가 `local-dev` 프로파일로 실행됩니다. (관리자 계정 자동 생성 등 개발 편의 기능 활성화)
 
 ---
 운영 및 배포에 관한 더 자세한 내용은 아래 문서를 참고하십시오.
 - **[운영 가이드 (Docker Hub 기반)](docs/deploy/README_OPERATIONS_GUIDE.md)**: 이미지 빌드, 푸시 및 운영 서버 구축 상세 가이드
+- **[도커 로그 확인 및 관리 가이드](docs/deploy/README_DOCKER_LOGS.md)**: 컨테이너별 로그 확인 및 트러블슈팅 방법
 - [서비스 분리 및 프로파일 가이드](docs/deploy/README.md): Docker Compose Profiles를 이용한 자원 최적화 원리
 
 ---
 
-## API 문서 확인
+## API 문서 (Swagger)
 
 - Swagger UI: `http://localhost:8080/swagger-ui/index.html`
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
 주의:
-- 기존 `:core:core-api:generateApiDocs` 태스크는 현재 프로젝트에 없습니다.
 - 정적 OpenAPI 산출물 대신 springdoc 런타임 문서를 사용합니다.
 
 ---
