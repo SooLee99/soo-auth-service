@@ -1,0 +1,18 @@
+services:
+  app-admin:
+    extends:
+      file: docker-compose.app-base.yml
+      service: app-base
+    profiles: ["admin"]
+    environment:
+      APP_AUTH_METHOD_EMAIL_ENABLED: "false"
+      APP_AUTH_METHOD_ID_ENABLED: "false"
+      APP_AUTH_METHOD_SMS_ENABLED: "false"
+      APP_AUTH_METHOD_OAUTH2_ENABLED: "false"
+      APP_AUTH_METHOD_ADMIN_ENABLED: "true"
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+        reservations:
+          memory: 384M

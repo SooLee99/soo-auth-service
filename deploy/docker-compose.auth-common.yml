@@ -1,0 +1,20 @@
+services:
+  app-common:
+    extends:
+      file: docker-compose.app-base.yml
+      service: app-base
+    profiles: ["auth-common"]
+    environment:
+      # 공통 기능(Token, Session)은 기본으로 활성화됨 (별도 스위치 없음)
+      # 명시적으로 다른 방식들은 끔
+      APP_AUTH_METHOD_EMAIL_ENABLED: "false"
+      APP_AUTH_METHOD_ID_ENABLED: "false"
+      APP_AUTH_METHOD_SMS_ENABLED: "false"
+      APP_AUTH_METHOD_OAUTH2_ENABLED: "false"
+      APP_AUTH_METHOD_ADMIN_ENABLED: "false"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M

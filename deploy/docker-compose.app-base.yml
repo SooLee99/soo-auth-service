@@ -1,0 +1,40 @@
+services:
+  app-base:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: ${DOCKER_HUB_USERNAME}/soo-auth-service:latest
+    restart: unless-stopped
+    environment:
+      SENTRY_DSN: ${SENTRY_DSN}
+      TZ: Asia/Seoul
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-live}
+      STORAGE_DATABASE_CORE_DB_URL: mariadb:3306/${MARIADB_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true
+      STORAGE_DATABASE_CORE_DB_USERNAME: ${MARIADB_USER}
+      STORAGE_DATABASE_CORE_DB_PASSWORD: ${MARIADB_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      JWT_KEYSTORE_PASSWORD: ${JWT_KEYSTORE_PASSWORD}
+      JWT_KEY_ALIAS: ${JWT_KEY_ALIAS}
+      JWT_KEY_PASSWORD: ${JWT_KEY_PASSWORD}
+      ADMIN_BOOTSTRAP_ENABLED: ${ADMIN_BOOTSTRAP_ENABLED:-false}
+      ADMIN_BOOTSTRAP_USERNAME: ${ADMIN_BOOTSTRAP_USERNAME:-}
+      ADMIN_BOOTSTRAP_PASSWORD: ${ADMIN_BOOTSTRAP_PASSWORD:-}
+      ADMIN_BOOTSTRAP_ALLOWED_PROFILES: ${ADMIN_BOOTSTRAP_ALLOWED_PROFILES:-local,local-dev}
+      ADMIN_BOOTSTRAP_ALLOW_WEAK_PASSWORD: ${ADMIN_BOOTSTRAP_ALLOW_WEAK_PASSWORD:-false}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID}
+      KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET}
+      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
+      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
+    expose:
+      - "8080"
+    networks:
+      - backend
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
