@@ -8,6 +8,7 @@ import io.soo.springboot.core.domain.sms.SmsAdminService
 import io.soo.springboot.core.support.response.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -23,6 +24,7 @@ import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/api/v1/auth/admin/sms")
+@ConditionalOnProperty(name = ["app.auth.method.sms.enabled"], havingValue = "true", matchIfMissing = true)
 class AdminSmsController(
     private val smsAdminService: SmsAdminService,
 ) {

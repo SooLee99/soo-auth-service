@@ -9,6 +9,7 @@ import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.response.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/auth/admin/auth-methods")
+@ConditionalOnProperty(name = ["app.auth.method.admin.enabled"], havingValue = "true", matchIfMissing = true)
 class AdminAuthMethodController(
     private val authMethodConfigService: AuthMethodConfigService,
 ) {

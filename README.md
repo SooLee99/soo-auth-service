@@ -39,7 +39,7 @@
 - `core:core-enum`
   - 여러 모듈에서 공통으로 사용하는 enum/type
 - `core:core-api`
-  - 현재 소스 없는 placeholder 모듈(실행/도메인 책임 없음)
+  - 애플리케이션 실행 Aggregator (bootJar 생성, 모든 core 모듈 통합)
 
 ### Clients
 - `clients:client-solapi`
@@ -104,12 +104,39 @@
 ## 로컬 실행/검증
 
 ```bash
-./gradlew :core:core-auth-common:bootRun
-./gradlew :core:core-auth-common:compileKotlin
-./gradlew :core:core-email:compileKotlin :core:core-id:compileKotlin :core:core-sms:compileKotlin :core:core-oauth2:compileKotlin :core:core-admin:compileKotlin
-./gradlew :core:core-api:testClasses
+./gradlew :core:core-api:bootRun
+./gradlew :core:core-api:compileKotlin
 ./gradlew ktlintCheck
 ```
+
+---
+## Docker 배포 및 운영 가이드
+
+이 프로젝트는 Docker Hub 이미지를 기반으로, **소스 코드 없이도** 운영 서버를 즉시 구축할 수 있도록 설계되었습니다.
+
+### 1. 운영 핵심 요약
+- **코드 없는 배포**: 운영 서버에는 오케스트레이션 파일(Compose, Nginx)만 있으면 됩니다.
+- **단일 이미지, 다중 컨테이너**: 하나의 이미지를 환경 변수에 따라 다른 역할의 컨테이너로 동작시킵니다.
+- **선택적 활성화**: 필요한 인증 방식만 실행하여 서버 자원(CPU, Memory)을 최적화합니다.
+
+### 2. 운영 서버 빠른 시작 (One-liner)
+운영 서버에서 아래 명령어로 필요한 파일만 가져와 즉시 실행할 수 있습니다. (자세한 내용은 [운영 가이드](docs/deploy/README_OPERATIONS_GUIDE.md) 참조)
+
+```bash
+# 1. 배포에 필요한 파일만 가져오기
+git clone --depth 1 --filter=blob:none --sparse https://github.com/your-repo/soo-auth-service.git
+cd soo-auth-service && git sparse-checkout set deploy nginx docker-compose.yml .env.example
+
+# 2. 실행
+./deploy/deploy.sh --core --web --common --all
+```
+
+### 3. 상세 문서 링크
+운영 및 배포에 관한 더 자세한 내용은 아래 문서를 참고하십시오.
+- **[운영 가이드 (Docker Hub 기반)](docs/deploy/README_OPERATIONS_GUIDE.md)**: 이미지 빌드, 푸시 및 운영 서버 구축 상세 가이드
+- [서비스 분리 및 프로파일 가이드](docs/deploy/README.md): Docker Compose Profiles를 이용한 자원 최적화 원리
+
+---
 
 ## API 문서 확인
 

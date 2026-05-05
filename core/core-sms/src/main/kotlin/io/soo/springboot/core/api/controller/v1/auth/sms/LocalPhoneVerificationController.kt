@@ -8,6 +8,7 @@ import io.soo.springboot.core.enums.AuthMethod
 import io.soo.springboot.core.support.response.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/auth/local/phone-verifications")
+@ConditionalOnProperty(name = ["app.auth.method.sms.enabled"], havingValue = "true", matchIfMissing = true)
 class LocalPhoneVerificationController(
     private val authMethodConfigService: AuthMethodConfigService,
     private val phoneVerificationService: PhoneVerificationService,

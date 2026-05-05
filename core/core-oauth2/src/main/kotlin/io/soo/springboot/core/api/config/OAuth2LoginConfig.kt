@@ -1,10 +1,12 @@
 package io.soo.springboot.core.api.config
 
 import io.soo.springboot.core.api.security.oauth2.OAuth2LoginSuccessHandler
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.stereotype.Component
 
 @Component
+@ConditionalOnProperty(name = ["app.auth.method.oauth2.enabled"], havingValue = "true", matchIfMissing = true)
 class OAuth2LoginConfig(
     private val oAuth2LoginSuccessHandler: OAuth2LoginSuccessHandler,
 ) : OAuth2SecurityConfigurer {

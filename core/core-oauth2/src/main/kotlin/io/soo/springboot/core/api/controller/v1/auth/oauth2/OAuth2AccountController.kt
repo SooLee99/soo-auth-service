@@ -6,6 +6,7 @@ import io.soo.springboot.core.support.error.ErrorType
 import io.soo.springboot.core.support.response.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpSession
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestHeader
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/auth/oauth2")
+@ConditionalOnProperty(name = ["app.auth.method.oauth2.enabled"], havingValue = "true", matchIfMissing = true)
 class OAuth2AccountController(
     private val authMethodConfigService: AuthMethodConfigService,
 ) {

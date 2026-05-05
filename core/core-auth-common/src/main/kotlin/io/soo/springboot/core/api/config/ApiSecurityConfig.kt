@@ -3,6 +3,7 @@ package io.soo.springboot.core.api.config
 import io.soo.springboot.core.api.security.access.RestAccessDeniedHandler
 import io.soo.springboot.core.api.security.entrypoint.UnauthorizedEntryPoint
 import io.soo.springboot.core.api.security.local.LocalJsonLoginFilter
+import org.springframework.beans.factory.ObjectProvider
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -27,6 +28,8 @@ class ApiSecurityConfig(
     private val unauthorizedEntryPoint: UnauthorizedEntryPoint,
     private val restAccessDeniedHandler: RestAccessDeniedHandler,
     private val oauth2SecurityConfigurers: List<OAuth2SecurityConfigurer>,
+    @Qualifier("localJsonLoginFilter") private val localJsonLoginFilterProvider: ObjectProvider<LocalJsonLoginFilter>,
+    @Qualifier("adminJsonLoginFilter") private val adminJsonLoginFilterProvider: ObjectProvider<LocalJsonLoginFilter>,
 ) {
     companion object {
         private val PUBLIC_ENDPOINTS = arrayOf(
@@ -82,8 +85,6 @@ class ApiSecurityConfig(
     @Order(1)
     fun securityFilterChain(
         http: HttpSecurity,
-        @Qualifier("localJsonLoginFilter") localJsonLoginFilter: LocalJsonLoginFilter,
-        @Qualifier("adminJsonLoginFilter") adminJsonLoginFilter: LocalJsonLoginFilter,
         daoAuthProvider: DaoAuthenticationProvider,
     ): SecurityFilterChain {
         // ✅ /h2-console/** 는 이 체인에서 제외
@@ -139,8 +140,12 @@ class ApiSecurityConfig(
             auth.requestMatchers("/api/**").authenticated()
             auth.anyRequest().authenticated()
         }
-        http.addFilterBefore(adminJsonLoginFilter, UsernamePasswordAuthenticationFilter::class.java)
-        http.addFilterAt(localJsonLoginFilter, UsernamePasswordAuthenticationFilter::class.java)
+        adminJsonLoginFilterProvider.ifAvailable {
+            http.addFilterBefore(it, UsernamePasswordAuthenticationFilter::class.java)
+        }
+        localJsonLoginFilterProvider.ifAvailable {
+            http.addFilterAt(it, UsernamePasswordAuthenticationFilter::class.java)
+        }
 
         return http.build()
     }

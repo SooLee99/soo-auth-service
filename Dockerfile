@@ -20,6 +20,17 @@ RUN sed -i 's/\r$//' ./gradlew && chmod +x ./gradlew
 # 모든 모듈의 build.gradle.kts 파일 복사 (캐시 최적화)
 COPY core/core-api/build.gradle.kts core/core-api/
 COPY core/core-enum/build.gradle.kts core/core-enum/
+COPY core/core-support/build.gradle.kts core/core-support/
+COPY core/core-auth-common/build.gradle.kts core/core-auth-common/
+COPY core/core-token-common/build.gradle.kts core/core-token-common/
+COPY core/core-user-common/build.gradle.kts core/core-user-common/
+COPY core/core-login-common/build.gradle.kts core/core-login-common/
+COPY core/core-phone-common/build.gradle.kts core/core-phone-common/
+COPY core/core-admin/build.gradle.kts core/core-admin/
+COPY core/core-email/build.gradle.kts core/core-email/
+COPY core/core-id/build.gradle.kts core/core-id/
+COPY core/core-sms/build.gradle.kts core/core-sms/
+COPY core/core-oauth2/build.gradle.kts core/core-oauth2/
 COPY storage/db-core/build.gradle.kts storage/db-core/
 COPY support/logging/build.gradle.kts support/logging/
 COPY support/monitoring/build.gradle.kts support/monitoring/
