@@ -111,7 +111,7 @@ scp soo-auth-deploy.tar.gz user@server-ip:~/
 
 운영 요구사항에 따라 특정 인증 방식을 활성화하거나 비활성화하여 자원을 최적화할 수 있습니다.
 
-### 4.1 인증 방식별 프로파일 조합
+### 5.1 인증 방식별 프로파일 조합
 각 서비스는 `docker compose --profile <name>` 명령으로 제어됩니다.
 
 | 기능 | 프로파일 이름 | 컨테이너 이름 | 설명 |
@@ -125,7 +125,7 @@ scp soo-auth-deploy.tar.gz user@server-ip:~/
 | **OAuth2** | `auth-oauth2` | `app-oauth2` | 소셜 로그인 처리 |
 | **관리자** | `admin` | `app-admin` | 관리자 API 및 사용자 관리 |
 
-### 4.2 자원 최적화 전략
+### 5.2 자원 최적화 전략
 불필요한 컨테이너를 실행하지 않으려면 `deploy.sh`에서 해당 플래그를 제외하거나, `docker compose` 명령 시 해당 프로파일을 호출하지 않으면 됩니다.
 
 **예: 아이디 로그인과 관리자 기능만 사용하는 경우**
@@ -133,6 +133,36 @@ scp soo-auth-deploy.tar.gz user@server-ip:~/
 ./deploy/deploy.sh --core --web --common --id --admin
 ```
 이 경우 `app-email`, `app-sms`, `app-oauth2` 컨테이너는 생성되지 않으며, 관련 자원 소모가 발생하지 않습니다.
+
+### 5.3 시나리오별 즉시 실행 명령어 (복사/붙여넣기)
+
+특정 인증 방식 하나와 관리자 기능을 함께 사용하는 가장 일반적인 시나리오들입니다.
+
+| 시나리오 | 실행 명령어 (추천: deploy.sh) |
+| :--- | :--- |
+| **이메일 로그인 전용** | `./deploy/deploy.sh --core --web --common --email --admin` |
+| **ID/PW 로그인 전용** | `./deploy/deploy.sh --core --web --common --id --admin` |
+| **SMS 로그인 전용** | `./deploy/deploy.sh --core --web --common --sms --admin` |
+| **OAuth2 로그인 전용** | `./deploy/deploy.sh --core --web --common --oauth2 --admin` |
+| **모든 기능 활성화** | `./deploy/deploy.sh --all` |
+| **관리 도구(phpMyAdmin) 포함** | `./deploy/deploy.sh --core --web --common --oauth2 --admin --tools` |
+
+> **Tip**: 만약 관리자(Admin) 기능이 필요 없다면 위 명령어에서 `--admin` 플래그만 제외하면 됩니다.
+> **Note**: phpMyAdmin은 `--tools` 프로파일에 포함되어 있으며, 실행 시 `/phpmyadmin` 경로로 접속 가능합니다.
+
+#### Docker Compose 직접 사용 시
+스크립트 없이 `docker compose` 명령어를 직접 사용하려는 경우 아래와 같이 입력하세요.
+
+```bash
+# 예: OAuth2 전용 실행
+docker compose \
+  --profile core \
+  --profile web \
+  --profile auth-common \
+  --profile auth-oauth2 \
+  --profile admin \
+  up -d
+```
 
 ---
 
@@ -160,3 +190,18 @@ scp soo-auth-deploy.tar.gz user@server-ip:~/
 1. **이미지 업데이트**: Docker Hub에 새 이미지가 푸시되면 운영 서버에서 `docker compose pull` 후 `deploy.sh`를 재실행합니다.
 2. **로그 확인**: `docker compose logs -f <service-name>` 명령으로 특정 컨테이너의 로그를 모니터링할 수 있습니다.
 3. **자원 모니터링**: `docker stats` 명령을 통해 각 컨테이너별 실제 자원 사용량을 확인할 수 있습니다.
+
+---
+
+## 8. 트러블슈팅 (Apple Silicon / M1, M2, M3 사용자)
+
+Apple Silicon(ARM64) 기반 Mac 환경에서 실행 시 `no matching manifest for linux/arm64/v8` 에러가 발생할 수 있습니다.
+
+- **원인**: Docker Hub에 업로드된 이미지가 Intel(AMD64) 아키텍처용으로만 빌드된 경우 발생합니다.
+- **해결**: `docker-compose.yml`에 `platform: linux/amd64` 설정을 추가하여 Rosetta 2를 통해 실행하도록 구성했습니다. (현재 프로젝트 설정에 이미 반영됨)
+- 만약 직접 빌드하여 사용하신다면, 아래 명령어로 본인 아키텍처에 맞게 다시 빌드하세요:
+  ```bash
+  docker build --platform linux/arm64 -t $DOCKER_HUB_USERNAME/soo-auth-service:latest .
+  ```
+
+---

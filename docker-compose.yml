@@ -99,6 +99,7 @@ services:
 
   frontend:
     image: ${DOCKER_HUB_USERNAME}/auth-admin-frontend:latest
+    platform: linux/amd64
     profiles: ["web"]
     pull_policy: always
     restart: unless-stopped
@@ -112,5 +113,20 @@ services:
       - /var/run
     expose:
       - "80"
+    networks:
+      - backend
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    platform: linux/amd64
+    profiles: ["tools"]
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mariadb
+      PMA_ARBITRARY: 1
+    deploy:
+      resources:
+        limits:
+          memory: 256M
     networks:
       - backend

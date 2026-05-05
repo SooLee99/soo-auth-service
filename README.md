@@ -127,11 +127,19 @@
 git clone --depth 1 --filter=blob:none --sparse https://github.com/your-repo/soo-auth-service.git
 cd soo-auth-service && git sparse-checkout set deploy nginx docker-compose.yml .env.example
 
-# 2. 실행
-./deploy/deploy.sh --core --web --common --all
+# 2. 실행 (시나리오별 선택)
+./deploy/deploy.sh --core --web --common --oauth2 --admin # 예: OAuth2 + 관리자
 ```
 
-### 3. 상세 문서 링크
+### 3. 주요 실행 시나리오 (복사용)
+| 시나리오 | 실행 명령어 |
+| :--- | :--- |
+| **이메일 로그인** | `./deploy/deploy.sh --core --web --common --email --admin` |
+| **ID/PW 로그인** | `./deploy/deploy.sh --core --web --common --id --admin` |
+| **SMS 로그인** | `./deploy/deploy.sh --core --web --common --sms --admin` |
+| **OAuth2 로그인** | `./deploy/deploy.sh --core --web --common --oauth2 --admin` |
+
+---
 운영 및 배포에 관한 더 자세한 내용은 아래 문서를 참고하십시오.
 - **[운영 가이드 (Docker Hub 기반)](docs/deploy/README_OPERATIONS_GUIDE.md)**: 이미지 빌드, 푸시 및 운영 서버 구축 상세 가이드
 - [서비스 분리 및 프로파일 가이드](docs/deploy/README.md): Docker Compose Profiles를 이용한 자원 최적화 원리
