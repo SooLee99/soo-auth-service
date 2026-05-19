@@ -18,7 +18,8 @@ include(
     "tests:api-docs",
     "support:logging",
     "support:monitoring",
-    "clients:client-solapi"
+    "clients:client-solapi",
+    "clients:client-kakao"
 )
 
 pluginManagement {

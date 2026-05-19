@@ -85,4 +85,8 @@ enum class ErrorType(
 
     // 500
     DEFAULT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.E500, "예기치 않은 오류가 발생했습니다.", LogLevel.ERROR),
+
+    // 카카오 SDK 토큰 검증 (triplan)
+    KAKAO_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, ErrorCode.E401, "카카오 토큰 검증에 실패했습니다.", LogLevel.WARN),
+    KAKAO_PROVIDER_ERROR(HttpStatus.BAD_GATEWAY, ErrorCode.E500, "카카오 서비스 호출에 실패했습니다.", LogLevel.ERROR),
 }

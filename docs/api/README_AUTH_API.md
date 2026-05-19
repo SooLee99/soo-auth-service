@@ -33,6 +33,7 @@
 
 ### 2.3 OAuth2
 - `GET /api/v1/auth/oauth2/{provider}/authorize-url`
+- `POST /api/v1/auth/oauth2/kakao/token` — Kakao JS SDK accessToken → 자체 JWT 교환 (triplan)
 
 ### 2.4 Admin
 - `POST /api/v1/auth/admin/login` (Spring Security 필터)
@@ -81,7 +82,11 @@
 
 ### 3.5 OAuth2
 - 인가 URL 생성: `OAuth2AccountController.authorizeUrl`
-- 콜백 성공 후: `OAuth2LoginSuccessHandler`
+- 콜백 성공 후: `OAuth2LoginSuccessHandler` (redirect 흐름)
+- SDK 토큰 흐름(triplan): `OAuth2AccountController.loginWithKakaoSdkToken` → `KakaoSdkTokenLogin` → `KakaoOAuthClient.fetchUserMe` → `KakaoParser` → `OAuth2AccountService.signUp` → `AuthTokenManager.issue`
+  - Request: `{ "kakaoAccessToken": "<from Kakao JS SDK>" }`
+  - Response: `LoginSuccessResponse` (`accessToken`, `refreshToken`, `expiresIn`, `user`)
+  - Errors: `KAKAO_TOKEN_INVALID` 401, `KAKAO_PROVIDER_ERROR` 502
 
 ## 4. 문서 확인 경로
 

@@ -23,3 +23,18 @@ logs/*
 
 nginx/logs/*
 !nginx/logs/.gitkeep
+
+# Env (예시 파일만 커밋)
+.env
+.env.*
+!.env.example
+!.env.example.*
+
+# Secrets · keys (절대 커밋 금지)
+*.pem
+*.key
+id_rsa
+id_ed25519
+credentials
+*-credentials.*
+*-secret.*

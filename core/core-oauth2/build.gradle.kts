@@ -4,8 +4,11 @@ dependencies {
     implementation(project(":core:core-auth-common"))
     implementation(project(":core:core-user-common"))
     implementation(project(":core:core-login-common"))
+    implementation(project(":clients:client-kakao"))
     implementation(project(":storage:db-core"))
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+
+    testImplementation("io.mockk:mockk:1.13.10")
 }
