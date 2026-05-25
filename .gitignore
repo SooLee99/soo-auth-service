@@ -20,6 +20,8 @@ nginx/ssl/*
 # logs
 logs/*
 !logs/.gitkeep
+build.log
+*.log
 
 nginx/logs/*
 !nginx/logs/.gitkeep
@@ -38,3 +40,8 @@ id_ed25519
 credentials
 *-credentials.*
 *-secret.*
+# 키스토어는 전체 차단(과거 jwt.p12·jwt-keystore.p12 히스토리 노출 재발 방지)
+*.p12
+*.jks
+core/core-api/src/main/resources/keys/
+.claude/settings.local.json
