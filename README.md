@@ -181,7 +181,8 @@ cd soo-auth-service && git sparse-checkout set deploy nginx docker-compose.yml .
 | :--- | :--- | :--- | :--- |
 | **HTTP** | `80` | `http://127.0.0.1` | HTTPS(443)로 자동 리다이렉트 |
 | **HTTPS** | `443` | `https://127.0.0.1` | **메인 서비스 접속 포트** |
-| **API 서버** | `8080` | `http://app-*:8080` | 컨테이너 내부 통신용 (외부 노출 X) |
+| **API 서버 (컨테이너)** | `8080` | `http://app-*:8080` | 컨테이너 내부 통신용 (외부 노출 X) |
+| **API 서버 (로컬 네이티브)** | `18080` | `http://localhost:18080` | OPS-1 포트 분리. travel-service(8080)와 동시 기동 충돌 방지. `.env.local`의 `SERVER_PORT`로 주입 |
 | **MariaDB** | `3306` | `mariadb:3306` | 컨테이너 내부 통신용 (외부 노출 X) |
 | **Redis** | `6379` | `redis:6379` | 컨테이너 내부 통신용 (외부 노출 X) |
 
@@ -223,11 +224,12 @@ cd soo-auth-service && git sparse-checkout set deploy nginx docker-compose.yml .
 
 ## API 문서 (Swagger)
 
-- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
-- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
+- Swagger UI: `http://localhost:18080/swagger-ui/index.html`
+- OpenAPI JSON: `http://localhost:18080/v3/api-docs`
 
 주의:
 - 정적 OpenAPI 산출물 대신 springdoc 런타임 문서를 사용합니다.
+- 로컬 네이티브 기동 포트는 `18080`입니다(OPS-1: triplan-travel-service가 8080을 쓰므로 충돌 방지차 분리). `.env.local`의 `SERVER_PORT=18080`로 주입되며, 프론트 `VITE_AUTH_BASE_URL=http://localhost:18080/api/v1`와 정합. 컨테이너 내부 통신 포트는 아래 4.4 표대로 `8080` 유지.
 
 ---
 ## 권장 설정
