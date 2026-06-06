@@ -7,9 +7,9 @@ services:
   mariadb:
     profiles: ["dev", "core"]
     ports:
-      - "3306:3306"
+      - "13306:3306"
 
   redis:
     profiles: ["dev", "core"]
     ports:
-      - "6379:6379"
+      - "16379:6379"

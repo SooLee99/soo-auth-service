@@ -5,6 +5,7 @@ import io.soo.springboot.core.api.security.entrypoint.UnauthorizedEntryPoint
 import io.soo.springboot.core.api.security.local.LocalJsonLoginFilter
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
@@ -21,6 +22,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.context.SecurityContextRepository
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @Configuration
 class ApiSecurityConfig(
@@ -30,6 +34,8 @@ class ApiSecurityConfig(
     private val oauth2SecurityConfigurers: List<OAuth2SecurityConfigurer>,
     @Qualifier("localJsonLoginFilter") private val localJsonLoginFilterProvider: ObjectProvider<LocalJsonLoginFilter>,
     @Qualifier("adminJsonLoginFilter") private val adminJsonLoginFilterProvider: ObjectProvider<LocalJsonLoginFilter>,
+    // cors.origins (= env CORS_ORIGINS) 콤마 구분. 로컬 기본값 http://localhost:5173
+    @Value("\${cors.origins:http://localhost:5173}") private val corsOrigins: String,
 ) {
     companion object {
         private val PUBLIC_ENDPOINTS = arrayOf(
@@ -90,6 +96,9 @@ class ApiSecurityConfig(
         // ✅ /h2-console/** 는 이 체인에서 제외
         http.securityMatcher(NegatedRequestMatcher(AntPathRequestMatcher(H2_CONSOLE)))
 
+        // ✅ CORS: 앱이 직접 처리(기존 Caddy oauth2-fwd CORS 프록시 대체). preflight(OPTIONS) 자동 허용.
+        http.cors { it.configurationSource(corsConfigurationSource()) }
+
         http.authenticationProvider(daoAuthProvider)
 
         http.securityContext { it.securityContextRepository(securityContextRepository) }
@@ -136,6 +145,8 @@ class ApiSecurityConfig(
             auth.requestMatchers("/swagger/**").permitAll()
 
             auth.requestMatchers(HttpMethod.GET, "/api/v1/auth/oauth2/*/authorize-url").permitAll()
+            // triplan: Kakao SDK accessToken 검증 → 자체 JWT 교환 (인증 없이 진입)
+            auth.requestMatchers(HttpMethod.POST, "/api/v1/auth/oauth2/kakao/token").permitAll()
             auth.requestMatchers("/api/v1/auth/local/logout").authenticated()
             auth.requestMatchers("/api/**").authenticated()
             auth.anyRequest().authenticated()
@@ -148,6 +159,19 @@ class ApiSecurityConfig(
         }
 
         return http.build()
+    }
+
+    private fun corsConfigurationSource(): CorsConfigurationSource {
+        val config = CorsConfiguration().apply {
+            allowedOrigins = corsOrigins.split(",").map { it.trim() }.filter { it.isNotBlank() }
+            allowedMethods = listOf("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+            allowedHeaders = listOf("Content-Type", "X-Device-Id", "Authorization")
+            allowCredentials = true
+            maxAge = 3600L
+        }
+        return UrlBasedCorsConfigurationSource().apply {
+            registerCorsConfiguration("/**", config)
+        }
     }
 
     private fun jwtAuthenticationConverter(): JwtAuthenticationConverter {

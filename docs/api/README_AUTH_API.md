@@ -34,6 +34,10 @@
 ### 2.3 OAuth2
 - `GET /api/v1/auth/oauth2/{provider}/authorize-url`
 - `POST /api/v1/auth/oauth2/kakao/token` — Kakao JS SDK accessToken → 자체 JWT 교환 (triplan)
+  - request: `{ "kakaoAccessToken": string }` (header `X-Device-Id` 선택)
+  - response: `LoginSuccessResponse.Data` (`token.{accessToken,expiresIn,refreshToken,refreshExpiresIn}`, `user.{id,provider,email,roles}`)
+  - error: `KAKAO_TOKEN_INVALID` 401 (만료/위조 토큰), `KAKAO_PROVIDER_ERROR` 502 (Kakao 5xx/네트워크)
+  - 인증 없이 진입 가능 (security permitAll). redirect 콜백 흐름과는 별개 경로
 
 ### 2.4 Admin
 - `POST /api/v1/auth/admin/login` (Spring Security 필터)

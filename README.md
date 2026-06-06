@@ -26,6 +26,7 @@
   - 휴대폰 인증/휴대폰 기반 로그인 및 SMS
 - `core:core-oauth2`
   - OAuth2 인가 URL/로그인 처리
+  - Kakao JS SDK accessToken → 자체 JWT 교환 SDK-토큰 흐름 (`POST /api/v1/auth/oauth2/kakao/token`)
 - `core:core-support`
   - 공통 에러/응답 타입
 - `core:core-token-common`
