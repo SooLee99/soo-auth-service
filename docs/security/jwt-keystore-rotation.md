@@ -10,6 +10,14 @@
 - 현재 HEAD는 클린이나 약 20일간 공개 노출 → **서명용 개인키 손상(compromised)으로 간주**.
 - 결과: 노출 키로 **누구나 유효한 JWT를 위조**할 수 있음. 키 교체 + 노출 키 신뢰 중단이 필수.
 
+2026-06-07 로컬 재검증:
+
+- `git ls-files '*.p12' '*.jks'` 결과 현재 HEAD 추적 키스토어 없음.
+- `git check-ignore -v core/core-api/src/main/resources/keys/jwt.p12` 및 `jwt-keystore.p12`가 `.gitignore`의
+  `core/core-api/src/main/resources/keys/` 규칙에 매칭됨.
+- `git log --all -- .../jwt.p12 .../jwt-keystore.p12`에서 과거 노출 커밋 `80ab775`, `4981a55`,
+  제거 커밋 `f171938` 확인. 즉 현재 HEAD는 클린이나 공개 히스토리 노출 사실은 유지된다.
+
 ## 2. 키스토어 호환 사양
 
 | 항목 | 값 |
@@ -78,3 +86,10 @@ core/core-api/src/main/resources/keys/
 노출 파일을 git 히스토리에서 제거(`git filter-repo` + force-push)하는 작업은 보안 게이트가 deny한다.
 보안 검토(9d8d4e9a) 승인 후에만 진행하며, 보호 브랜치 영향/협업자 재클론 안내를 동반한다.
 **키 교체(2~6장)가 1차 방어선이고, purge는 노출 흔적 제거(2차)이다 — purge 여부와 무관하게 키는 교체해야 한다.**
+
+## 8. 완료/잔여 구분
+
+- 완료: 재생성 스크립트, 키스토어 ignore 재발 방지, cutover/무효화 절차 문서화, 현재 HEAD 검증.
+- 잔여 운영 액션: 환경별 새 키스토어 생성, secret manager 업로드, `JWT_KEYSTORE_PASSWORD`/`JWT_KEY_PASSWORD`
+  교체, auth-service 재기동, refresh token 전량 revoke 또는 token epoch 증가.
+- 잔여 승인 액션: force-push가 필요한 히스토리 purge는 사용자/보안 승인 전까지 수행하지 않는다.
