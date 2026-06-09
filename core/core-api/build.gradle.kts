@@ -12,6 +12,7 @@ dependencies {
     // core-api 컴파일 클래스패스로 전이되지 않으므로 테스트 클래스패스에 직접 노출한다.
     testImplementation(project(":clients:client-kakao")) // KakaoOAuthClient(@Primary mockk 대상)
     testImplementation(project(":core:core-support")) // ErrorType
+    testImplementation(project(":core:core-phone-common")) // PhoneVerificationNotifier(@Primary mockk 대상)
     testImplementation("org.springframework.boot:spring-boot-starter-web") // MediaType 등 spring-web
 }
 
