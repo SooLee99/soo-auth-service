@@ -13,6 +13,7 @@ dependencies {
     testImplementation(project(":clients:client-kakao")) // KakaoOAuthClient(@Primary mockk 대상)
     testImplementation(project(":core:core-support")) // ErrorType
     testImplementation(project(":core:core-phone-common")) // PhoneVerificationNotifier(@Primary mockk 대상)
+    testImplementation(project(":core:core-enum")) // UserStatus(탈퇴 soft-delete 영속 검증)
     testImplementation("org.springframework.boot:spring-boot-starter-web") // MediaType 등 spring-web
 }
 
