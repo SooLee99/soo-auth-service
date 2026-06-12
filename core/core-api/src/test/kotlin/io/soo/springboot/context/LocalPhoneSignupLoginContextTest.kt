@@ -1,0 +1,202 @@
+package io.soo.springboot.context
+
+import com.fasterxml.jackson.databind.ObjectMapper
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.slot
+import io.soo.springboot.CoreApiApplication
+import io.soo.springboot.core.domain.phone.verification.PhoneVerificationNotifier
+import io.soo.springboot.core.support.error.ErrorType
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Import
+import org.springframework.context.annotation.Primary
+import org.springframework.http.MediaType
+import org.springframework.test.context.DynamicPropertyRegistry
+import org.springframework.test.context.DynamicPropertySource
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+
+/**
+ * E2 보강 — 휴대폰 회원가입/로그인 엔드포인트(`POST /api/v1/auth/local/phone/signup`,
+ * `.../phone/login`)의 full-boot 라운드트립 컨텍스트 테스트.
+ *
+ * 두 엔드포인트 모두 공개(`ApiSecurityConfig` `PUBLIC_ENDPOINTS`)지만, 둘 다 휴대폰 인증 흐름이 발급한
+ * `phoneVerificationToken`(proof)을 소비(1회용)해야만 통과한다 — 인증 없는 가입/로그인을 막는 보안 핵심
+ * 경로다. 그동안 이 두 엔드포인트엔 full `@SpringBootTest` 커버리지가 없었다. 이 테스트가 그 공백을,
+ * **위조 없이 같은 앱의 `/phone-verifications/{request,confirm}` 체인으로 실제 proof를 발급해** 메운다.
+ *
+ * full `@SpringBootTest`로 [CoreApiApplication]을 통째로 띄워 실제 빈으로 계약을 핀한다
+ * (`LocalPhoneAccountService` → JPA(H2) User/LocalCredential 영속화, `LocalPhoneLoginService` →
+ * Redis refresh 토큰 발급, `PhoneVerificationService` → `InMemoryPhoneVerificationStore`(`local`),
+ * `ApiControllerAdvice`, `ApiResponse` 직렬화):
+ *  1. happy 라운드트립 — proof 발급 → signup(가입) → 200; 새 proof 발급 → login → 200 + access/refresh 토큰 발급
+ *  2. signup에 미발급 proof 토큰(임의 UUID) → 400 `PHONE_VERIFICATION_REQUIRED` (인증 없이 가입 차단)
+ *  3. 가입한 적 없는 폰으로 login(유효한 proof라도) → 401 `INVALID_CREDENTIALS`
+ *     (인증 proof만으론 부족 — 실제 계정이 있어야 로그인됨; `MissingPhoneLoginPolicy`)
+ *  4. 같은 폰 중복 signup → 409 `DUPLICATE_PHONE_NUMBER` (유일성 정책)
+ *
+ * proof code는 서버가 `SecureRandom`으로 생성해 SMS notifier로만 내보내므로, 외부 SMS 발송기
+ * [PhoneVerificationNotifier]만 `@Primary` mockk로 대체해 발급된 code를 캡처한다(네트워크 없음).
+ * proof는 1회용이라 signup·login 각각에 별도 proof를 발급한다. 테스트마다 폰 번호를 달리해
+ * 컨텍스트 공유 H2의 유일성 충돌을 피한다.
+ */
+@Tag("context")
+@SpringBootTest(classes = [CoreApiApplication::class])
+@AutoConfigureMockMvc
+@Import(LocalPhoneSignupLoginContextTest.MockNotifierConfig::class)
+class LocalPhoneSignupLoginContextTest {
+
+    @TestConfiguration
+    class MockNotifierConfig {
+        @Bean @Primary fun mockPhoneVerificationNotifier(): PhoneVerificationNotifier = mockk(relaxed = true)
+    }
+
+    @Autowired private lateinit var mockMvc: MockMvc
+    @Autowired private lateinit var objectMapper: ObjectMapper
+    @Autowired private lateinit var notifier: PhoneVerificationNotifier
+
+    private val codeSlot = slot<String>()
+
+    @BeforeEach
+    fun setUp() {
+        // notifier.sendCode(phone, code, ttl) 호출의 code 인자를 캡처한다 — confirm 단계에서 이 code를 그대로 쓴다.
+        every { notifier.sendCode(any(), capture(codeSlot), any()) } returns Unit
+    }
+
+    @Test
+    fun `signup with a verification proof then login issues access and refresh tokens`() {
+        val phone = "010-2000-0001"
+
+        // proof는 1회용 — signup용 토큰을 발급해 가입한다.
+        mockMvc.perform(signupRequest(phone, issueProofToken(phone)))
+            .andExpect(status().isOk)
+
+        // 로그인은 새 proof를 다시 소비한다 — 두 번째 토큰을 발급해 로그인한다.
+        mockMvc.perform(loginRequest(phone, issueProofToken(phone)))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.result").value("SUCCESS"))
+            .andExpect(jsonPath("$.data.accessToken").isNotEmpty)
+            .andExpect(jsonPath("$.data.accessExpiresInSec").isNumber)
+            .andExpect(jsonPath("$.data.refreshToken").isNotEmpty)
+            .andExpect(jsonPath("$.data.refreshExpiresInSec").isNumber)
+    }
+
+    @Test
+    fun `signup with an unissued verification token is rejected`() {
+        // 어떤 confirm으로도 발급된 적 없는 임의 proof 토큰 → 인증 없는 가입 시도.
+        mockMvc.perform(signupRequest("010-2000-0002", "00000000-0000-0000-0000-000000000000"))
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.result").value("ERROR"))
+            .andExpect(jsonPath("$.error.code").value(ErrorType.PHONE_VERIFICATION_REQUIRED.code.name))
+    }
+
+    @Test
+    fun `login for a phone that never signed up is rejected even with a valid proof`() {
+        // 유효한 proof를 발급하지만 그 폰으로 가입한 적은 없다 → 인증 proof만으론 로그인 불가.
+        val phone = "010-2000-0003"
+        mockMvc.perform(loginRequest(phone, issueProofToken(phone)))
+            .andExpect(status().isUnauthorized)
+            .andExpect(jsonPath("$.result").value("ERROR"))
+            .andExpect(jsonPath("$.error.code").value(ErrorType.INVALID_CREDENTIALS.code.name))
+    }
+
+    @Test
+    fun `signing up the same phone twice is rejected by the uniqueness policy`() {
+        val phone = "010-2000-0004"
+
+        mockMvc.perform(signupRequest(phone, issueProofToken(phone)))
+            .andExpect(status().isOk)
+
+        // 새 proof로 같은 폰 재가입 시도 → proof는 통과하지만 유일성 정책에서 차단.
+        mockMvc.perform(signupRequest(phone, issueProofToken(phone)))
+            .andExpect(status().isConflict)
+            .andExpect(jsonPath("$.result").value("ERROR"))
+            .andExpect(jsonPath("$.error.code").value(ErrorType.DUPLICATE_PHONE_NUMBER.code.name))
+    }
+
+    /**
+     * `/phone-verifications/request` → notifier로 캡처한 code로 `/confirm` → 발급된 `phoneVerificationToken`을
+     * 돌려준다. 위조 없이 같은 앱이 발급한 proof를 그대로 signup/login에 태운다.
+     */
+    private fun issueProofToken(phone: String): String {
+        val requestBody = mockMvc.perform(
+            post("/api/v1/auth/local/phone-verifications/request")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(mapOf("phoneNumber" to phone))),
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.data.verificationId").isNotEmpty)
+            .andReturn()
+            .response
+            .getContentAsString(Charsets.UTF_8)
+        val verificationId = objectMapper.readTree(requestBody).path("data").path("verificationId").asText()
+        val code = codeSlot.captured
+
+        val confirmBody = mockMvc.perform(
+            post("/api/v1/auth/local/phone-verifications/confirm")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    objectMapper.writeValueAsString(
+                        mapOf("phoneNumber" to phone, "verificationId" to verificationId, "code" to code),
+                    ),
+                ),
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.data.phoneVerificationToken").isNotEmpty)
+            .andReturn()
+            .response
+            .getContentAsString(Charsets.UTF_8)
+        return objectMapper.readTree(confirmBody).path("data").path("phoneVerificationToken").asText()
+    }
+
+    private fun signupRequest(phone: String, proofToken: String) =
+        post("/api/v1/auth/local/phone/signup")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(
+                objectMapper.writeValueAsString(
+                    mapOf("phoneNumber" to phone, "phoneVerificationToken" to proofToken),
+                ),
+            )
+
+    private fun loginRequest(phone: String, proofToken: String) =
+        post("/api/v1/auth/local/phone/login")
+            .header("X-Device-Id", "ph_dev_${phone.filter { it.isDigit() }}")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(
+                objectMapper.writeValueAsString(
+                    mapOf("phoneNumber" to phone, "phoneVerificationToken" to proofToken),
+                ),
+            )
+
+    companion object {
+        @JvmStatic
+        @DynamicPropertySource
+        fun props(registry: DynamicPropertyRegistry) {
+            val ksPassword = System.getenv("JWT_KEYSTORE_PASSWORD") ?: "devjwtpass"
+            registry.add("app.security.jwt.keystore.password") { ksPassword }
+            registry.add("app.security.jwt.keystore.key-password") {
+                System.getenv("JWT_KEY_PASSWORD") ?: ksPassword
+            }
+            registry.add("app.security.jwt.keystore.alias") { System.getenv("JWT_KEY_ALIAS") ?: "jwt" }
+
+            // dev 기본값은 oauth2만 ON(`AUTH_SMS_ENABLED:false`)이라 SMS 컨트롤러가 @ConditionalOnProperty로
+            // 빈 생성되지 않는다. SMS 인증을 켠 상태의 계약을 핀하기 위해 테스트에서 명시적으로 활성화한다.
+            registry.add("app.auth.method.sms.enabled") { "true" }
+
+            registry.add("spring.security.oauth2.client.registration.kakao.client-id") { "test-kakao-client" }
+            registry.add("spring.security.oauth2.client.registration.kakao.client-secret") { "test-kakao-secret" }
+
+            registry.add("spring.data.redis.host") { System.getenv("REDIS_HOST") ?: "127.0.0.1" }
+            registry.add("spring.data.redis.port") { System.getenv("REDIS_PORT") ?: "6379" }
+        }
+    }
+}
