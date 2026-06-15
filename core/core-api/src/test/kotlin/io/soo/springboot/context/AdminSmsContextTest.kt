@@ -7,6 +7,7 @@ import io.mockk.mockk
 import io.soo.springboot.CoreApiApplication
 import io.soo.springboot.clients.kakao.KakaoOAuthClient
 import org.hamcrest.Matchers.hasItem
+import org.hamcrest.Matchers.not
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -49,6 +50,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
  *  5. 관리자 토큰 POST send round-trip → **200**: 발송 응답 `ok=true`·`provider=LOG`·정규화된 번호·`id` 숫자;
  *     이후 GET logs content에 방금 발송한 text 노출(read-after-write).
  *  6. 관리자 토큰 POST send + 잘못된 번호 → **400 `E400`** (`@Valid` `@Pattern` 위반 → `INVALID_INPUT_VALUE`).
+ *  7. 관리자 토큰 GET logs·stats + 넓은 날짜 범위[2020,2099] → **200**: 발송한 행이 범위 안 →
+ *     logs read-after-write(`findByDateRange`) + stats 숫자 필드(`countByDateRange`/`countOkByDateRange`).
+ *  8. 관리자 토큰 GET logs·stats + 과거 좁은 범위[2000] → **200**: 범위 밖 행 제외 →
+ *     logs에 미노출 + stats total/ok/fail=0, `total==0L` 분기로 rate=0.0(결정적).
+ *
+ * 케이스 1~6은 startDate·endDate 미지정의 no-range 분기만 탔다. 7·8이 date-range 분기
+ * (`findAllByCreatedAtBetween`/`countByCreatedAtBetween`/`countByOk*AndCreatedAtBetween`)를 보강한다.
  *
  * SMS 컨트롤러는 `@ConditionalOnProperty("app.auth.method.sms.enabled", matchIfMissing=true)`지만 dev 기본값이
  * present-and-false(`AUTH_SMS_ENABLED:false`)라 매핑되지 않으므로(Cycle #16 NOTE) `@DynamicPropertySource`로
@@ -173,6 +181,88 @@ class AdminSmsContextTest {
             .andExpect(jsonPath("$.data.content").isArray)
             .andExpect(jsonPath("$.data.content[*].text", hasItem(text)))
             .andExpect(jsonPath("$.data.content[*].ok", hasItem(true)))
+    }
+
+    @Test
+    fun `logs and stats with a wide date range reflect a just-sent sms (date-range branch)`() {
+        val adminToken = issueAdminAccessToken()
+        val text = "date-range 분기 발송 ${System.nanoTime()}"
+
+        // 발송으로 createdAt=now(2026)인 ok 로그 1건을 적재한다.
+        mockMvc.perform(
+            post("/api/v1/auth/admin/sms/send")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer $adminToken")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(mapOf("to" to "010-9999-0001", "text" to text))),
+        )
+            .andExpect(status().isOk)
+
+        // startDate·endDate가 모두 주어지면 listLogs는 findByDateRange(findAllByCreatedAtBetween) 분기를 탄다.
+        // 넓은 범위[2020,2099]는 방금 적재한 행을 포함 → read-after-write로 분기 동작을 핀한다.
+        mockMvc.perform(
+            get("/api/v1/auth/admin/sms/logs")
+                .param("startDate", "2020-01-01T00:00:00")
+                .param("endDate", "2099-12-31T23:59:59")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer $adminToken"),
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.result").value("SUCCESS"))
+            .andExpect(jsonPath("$.data.content").isArray)
+            .andExpect(jsonPath("$.data.content[*].text", hasItem(text)))
+
+        // getStats도 동일하게 countByDateRange/countOkByDateRange 분기를 타며, 방금 ok 1건이 있으니 숫자 필드가 채워진다.
+        mockMvc.perform(
+            get("/api/v1/auth/admin/sms/stats")
+                .param("startDate", "2020-01-01T00:00:00")
+                .param("endDate", "2099-12-31T23:59:59")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer $adminToken"),
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.result").value("SUCCESS"))
+            .andExpect(jsonPath("$.data.total").isNumber)
+            .andExpect(jsonPath("$.data.ok").isNumber)
+            .andExpect(jsonPath("$.data.fail").isNumber)
+            .andExpect(jsonPath("$.data.rate").isNumber)
+    }
+
+    @Test
+    fun `out-of-range window excludes rows and stats report zero with rate 0 (date-range branch)`() {
+        val adminToken = issueAdminAccessToken()
+        val text = "범위 밖 제외 검증 ${System.nanoTime()}"
+
+        // createdAt=now(2026)인 행을 적재한 뒤, 과거 좁은 창[2000-01-01, 2000-01-02]으로 조회한다.
+        mockMvc.perform(
+            post("/api/v1/auth/admin/sms/send")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer $adminToken")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(mapOf("to" to "010-9999-0002", "text" to text))),
+        )
+            .andExpect(status().isOk)
+
+        // findByDateRange는 범위 밖 행을 제외 → 방금 발송한 text가 노출되지 않는다(공유 H2의 다른 행도 모두 2026이라 영향 없음).
+        mockMvc.perform(
+            get("/api/v1/auth/admin/sms/logs")
+                .param("startDate", "2000-01-01T00:00:00")
+                .param("endDate", "2000-01-02T00:00:00")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer $adminToken"),
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.data.content").isArray)
+            .andExpect(jsonPath("$.data.content[*].text", not(hasItem(text))))
+
+        // countByDateRange도 과거 창에서 0 → total/ok/fail=0, 그리고 total==0L 분기로 rate=0.0 (결정적, 공유 상태 무관).
+        mockMvc.perform(
+            get("/api/v1/auth/admin/sms/stats")
+                .param("startDate", "2000-01-01T00:00:00")
+                .param("endDate", "2000-01-02T00:00:00")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer $adminToken"),
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.result").value("SUCCESS"))
+            .andExpect(jsonPath("$.data.total").value(0))
+            .andExpect(jsonPath("$.data.ok").value(0))
+            .andExpect(jsonPath("$.data.fail").value(0))
+            .andExpect(jsonPath("$.data.rate").value(0.0))
     }
 
     @Test
