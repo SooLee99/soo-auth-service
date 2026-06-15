@@ -49,6 +49,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
  *     상세 재조회로 영속 확인.
  *  6. POST tokens-revoke — 관리자가 USER의 토큰을 폐기 → **200**, `userId` 일치(유저 자체는 저장하지 않음).
  *  7. POST tokens-revoke — 존재하지 않는 userId → **404 `E404`** (`findByIdIncludingDeleted` null).
+ *  8. PATCH update — `userStatus=SOFT_DELETED` 직접 지정 → **400 `E400`** (`INVALID_PARAMETER`): update()는
+ *     소프트 삭제를 delete API로만 허용하므로 명시적 SOFT_DELETED 변경은 가드에서 거절된다(#30이 happy-path만 다룸).
+ *  9. PATCH update — 다른 유저가 이미 쓰는 email로 변경 → **409 `E409`** (`DUPLICATE_EMAIL`):
+ *     `validateUpdateEmail`이 대상 email을 점유한 타 유저(id 불일치)를 감지해 거절한다.
  *
  * 토큰은 위조하지 않는다. 외부 upstream Kakao 사용자 조회([KakaoOAuthClient])만 `@Primary` mockk로
  * 대체해 네트워크 없이 실행한다. 변경 테스트마다 고유 카카오 id·email을 써 케이스 순서 독립을 보장한다
@@ -77,6 +81,9 @@ class AdminUsersMutationContextTest {
         stubKakaoUser("ka_at_um_pwreset", 4_295_200_003L, "um-pwreset@triplan.kr", "유저비번")
         stubKakaoUser("ka_at_um_delete", 4_295_200_004L, "um-delete@triplan.kr", "유저삭제")
         stubKakaoUser("ka_at_um_revoke", 4_295_200_005L, "um-revoke@triplan.kr", "유저폐기")
+        stubKakaoUser("ka_at_um_sd", 4_295_200_006L, "um-sd@triplan.kr", "유저상태")
+        stubKakaoUser("ka_at_um_dupA", 4_295_200_007L, "um-dup-a@triplan.kr", "유저중복A")
+        stubKakaoUser("ka_at_um_dupB", 4_295_200_008L, "um-dup-b@triplan.kr", "유저중복B")
     }
 
     private fun stubKakaoUser(token: String, id: Long, email: String, nickname: String) {
@@ -226,6 +233,49 @@ class AdminUsersMutationContextTest {
             .andExpect(status().isNotFound)
             .andExpect(jsonPath("$.result").value("ERROR"))
             .andExpect(jsonPath("$.error.code").value("E404"))
+    }
+
+    @Test
+    fun `PATCH update user - userStatus SOFT_DELETED is rejected with 400`() {
+        val target = issueUserAccessToken("ka_at_um_sd", "dev-um-sd")
+        val adminToken = issueAdminAccessToken()
+
+        // update()는 소프트 삭제를 delete API로만 허용 → 명시적 SOFT_DELETED 지정은 INVALID_PARAMETER로 거절.
+        mockMvc.perform(
+            patch("/api/v1/auth/admin/users/${target.userId}")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer $adminToken")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(mapOf("userStatus" to "SOFT_DELETED"))),
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.result").value("ERROR"))
+            .andExpect(jsonPath("$.error.code").value("E400"))
+    }
+
+    @Test
+    fun `PATCH update user - email colliding with another user returns 409`() {
+        val userA = issueUserAccessToken("ka_at_um_dupA", "dev-um-dupA")
+        val userB = issueUserAccessToken("ka_at_um_dupB", "dev-um-dupB")
+        val adminToken = issueAdminAccessToken()
+
+        // userA의 email을 userB가 이미 점유한 email로 변경 시도 → validateUpdateEmail이 DUPLICATE_EMAIL로 거절.
+        mockMvc.perform(
+            patch("/api/v1/auth/admin/users/${userA.userId}")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer $adminToken")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(mapOf("email" to "um-dup-b@triplan.kr"))),
+        )
+            .andExpect(status().isConflict)
+            .andExpect(jsonPath("$.result").value("ERROR"))
+            .andExpect(jsonPath("$.error.code").value("E409"))
+
+        // userB는 멀쩡히 남아 있어야 한다(영속 비손상 확인).
+        mockMvc.perform(
+            get("/api/v1/auth/admin/users/${userB.userId}")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer $adminToken"),
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.data.email").value("um-dup-b@triplan.kr"))
     }
 
     private data class IssuedUser(val accessToken: String, val userId: Long)
