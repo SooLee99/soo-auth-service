@@ -53,6 +53,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
  *     소프트 삭제를 delete API로만 허용하므로 명시적 SOFT_DELETED 변경은 가드에서 거절된다(#30이 happy-path만 다룸).
  *  9. PATCH update — 다른 유저가 이미 쓰는 email로 변경 → **409 `E409`** (`DUPLICATE_EMAIL`):
  *     `validateUpdateEmail`이 대상 email을 점유한 타 유저(id 불일치)를 감지해 거절한다.
+ * 10. POST password-reset — 소프트 삭제된 USER의 비밀번호 리셋 시 **409 `E409`** (`CONFLICT`,
+ *     `SOFT_DELETED_USER_PASSWORD_RESET_FORBIDDEN`): `updatePassword`의 SOFT_DELETED 가드는
+ *     LocalCredential 조회보다 먼저 실행되므로, OAuth USER라도 소프트 삭제 상태면 404가 아닌 409로 거절된다
+ *     (#30 case 4의 404 LOCAL_CREDENTIAL_NOT_FOUND 가드와 대비되는, 더 앞선 상태 가드 브랜치).
  *
  * 토큰은 위조하지 않는다. 외부 upstream Kakao 사용자 조회([KakaoOAuthClient])만 `@Primary` mockk로
  * 대체해 네트워크 없이 실행한다. 변경 테스트마다 고유 카카오 id·email을 써 케이스 순서 독립을 보장한다
@@ -84,6 +88,7 @@ class AdminUsersMutationContextTest {
         stubKakaoUser("ka_at_um_sd", 4_295_200_006L, "um-sd@triplan.kr", "유저상태")
         stubKakaoUser("ka_at_um_dupA", 4_295_200_007L, "um-dup-a@triplan.kr", "유저중복A")
         stubKakaoUser("ka_at_um_dupB", 4_295_200_008L, "um-dup-b@triplan.kr", "유저중복B")
+        stubKakaoUser("ka_at_um_sddel", 4_295_200_009L, "um-sddel@triplan.kr", "유저삭제후비번")
     }
 
     private fun stubKakaoUser(token: String, id: Long, email: String, nickname: String) {
@@ -276,6 +281,34 @@ class AdminUsersMutationContextTest {
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.data.email").value("um-dup-b@triplan.kr"))
+    }
+
+    @Test
+    fun `POST password-reset - on soft-deleted user returns 409`() {
+        val target = issueUserAccessToken("ka_at_um_sddel", "dev-um-sddel")
+        val targetUserId = target.userId
+        val adminToken = issueAdminAccessToken()
+
+        // 먼저 소프트 삭제(검증된 delete 경로) → userStatus=SOFT_DELETED.
+        mockMvc.perform(
+            post("/api/v1/auth/admin/users/$targetUserId/delete")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer $adminToken")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(mapOf("reason" to "비번리셋전 소프트삭제"))),
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.data.userStatus").value("SOFT_DELETED"))
+
+        // 소프트 삭제 상태에서 비밀번호 리셋 → SOFT_DELETED 가드가 LocalCredential 조회보다 먼저 → 409 CONFLICT.
+        mockMvc.perform(
+            post("/api/v1/auth/admin/users/$targetUserId/password/reset")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer $adminToken")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(mapOf("newPassword" to "Reset3d!Pwd99"))),
+        )
+            .andExpect(status().isConflict)
+            .andExpect(jsonPath("$.result").value("ERROR"))
+            .andExpect(jsonPath("$.error.code").value("E409"))
     }
 
     private data class IssuedUser(val accessToken: String, val userId: Long)
